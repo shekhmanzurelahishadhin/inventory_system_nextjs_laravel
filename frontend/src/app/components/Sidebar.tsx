@@ -157,8 +157,8 @@ const Sidebar = ({ open, setOpen, isCollapsed, darkMode, setIsCollapsed }: Sideb
         ${isCollapsed ? 'w-20' : 'w-64'}
       `}>
         <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
-          {!isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">Valzon</div>}
-          {isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">V</div>}
+          {!isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">Admin Dashboard</div>}
+          {isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">A</div>}
           <button 
             className="text-gray-400 hover:text-white lg:hidden transition-colors duration-200"
             onClick={() => setOpen(false)}
