@@ -15,21 +15,16 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const { login, isAuthenticated, loading: authLoading } = useAuth();
   const router = useRouter();
 
   // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated && !authLoading) {
-      router.replace('/');
-    }
-  }, [isAuthenticated, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError('');
+    setErrorMessage('');
     
     try {
       const result = await login(email, password, rememberMe);
@@ -38,21 +33,16 @@ export default function Login() {
         // Login successful - the AuthContext will handle the redirect
         console.log('Login successful');
       } else {
-        setError(result.message || 'Login failed. Please check your credentials.');
+        setErrorMessage(result.message || 'Login failed. Please check your credentials.');
+        console.log(result.message);
       }
     } catch (error: any) {
-      setError('An unexpected error occurred. Please try again.');
+      setErrorMessage('An unexpected error occurred. Please try again.');
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
     }
   };
-
-
-  // Don't render if already authenticated (will redirect)
-  if (isAuthenticated || authLoading) {
-    return <Preloader />;
-  }
 
   return (
     <>
@@ -71,9 +61,9 @@ export default function Login() {
         </p>
       </div>
       
-      {error && (
+      {errorMessage && (
         <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-          {error}
+          {errorMessage}
         </div>
       )}
       

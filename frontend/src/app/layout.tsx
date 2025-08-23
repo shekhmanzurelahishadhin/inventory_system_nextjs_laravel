@@ -4,6 +4,7 @@ import './globals.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import ClientDashboardWrapper from './components/ClientDashboardWrapper';
+import { AuthProvider } from './context/AuthContext';
 
 config.autoAddCss = false;
 
@@ -19,7 +20,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         {/* Client components go inside this wrapper */}
+         <AuthProvider>
         <ClientDashboardWrapper>{children}</ClientDashboardWrapper>
+        </AuthProvider>
       </body>
     </html>
   );

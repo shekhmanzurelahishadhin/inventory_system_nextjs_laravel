@@ -42,7 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const token = localStorage.getItem('auth_token');
       const userData = localStorage.getItem('user_data');
-      console.log(userData)
       
       if (token && userData) {
         // Verify token is still valid
@@ -60,38 +59,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string, rememberMe: boolean = false) => {
   try {
-    setLoading(true);
-    
-    // First get CSRF cookie
-    // await api.get('/sanctum/csrf-cookie');
-    
+ 
     const response = await api.post('/login', {
       email,
       password,
     });
 
     const { user: userData, token } = response.data;
-    
-    // Store token with different expiration based on remember me
-    // if (rememberMe) {
+
       // Store in localStorage for persistent login
       localStorage.setItem('auth_token', token);
       localStorage.setItem('user_data', JSON.stringify(userData));
-    // } else {
-    //   // Store in sessionStorage for session-only login
-    //   sessionStorage.setItem('auth_token', token);
-    //   sessionStorage.setItem('user_data', JSON.stringify(userData));
-    // }
-    
+  
     setUser(userData);
     
     return { success: true };
   } catch (error: any) {
     const message = error.response?.data?.message || 'Login failed';
     return { success: false, message };
-  } finally {
-    setLoading(false);
-  }
+  } 
 };
 
   const register = async (userData: RegisterData) => {

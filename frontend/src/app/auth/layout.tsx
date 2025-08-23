@@ -1,14 +1,22 @@
 'use client';
 // app/(auth)/layout.tsx
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Preloader from '../components/Preloader';
+import { useRouter } from 'next/navigation';
 
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const { loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading } = useAuth();
+    const router = useRouter();
+    // Redirect if already authenticated
+    useEffect(() => {
+      if (isAuthenticated && !authLoading) {
+        router.replace('/');
+      }
+    }, [isAuthenticated, authLoading, router]);
   // If loading, render only preloader
-  if (authLoading) {
+  if (isAuthenticated || authLoading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-gray-50 dark:bg-gray-900 z-50">
         <Preloader />

@@ -5,8 +5,9 @@ import Sidebar from "./Sidebar";
 import Header from "./Header";
 import UserModal from "./UserModal";
 import { DarkModeProvider } from "../context/DarkModeContext"; // We'll create this
-import { AuthProvider } from "../context/AuthContext"; // Add this import
+import { AuthProvider, useAuth } from "../context/AuthContext"; // Add this import
 import ProtectedRoute from "./ProtectedRoute"; // Import ProtectedRoute
+import Preloader from "./Preloader";
 
 interface Props {
   children: ReactNode;
@@ -20,6 +21,7 @@ export default function ClientDashboardWrapper({ children }: Props) {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const isAuthPage = pathname?.startsWith("/auth");
+  const { isAuthenticated, loading: authLoading } = useAuth();
   // Hydration-safe mount
   useEffect(() => {
     setMounted(true);
@@ -36,10 +38,20 @@ export default function ClientDashboardWrapper({ children }: Props) {
   }, [darkMode, mounted]);
 
   if (!mounted) return null;
-
+ 
+    
+ 
+  // If loading, render only preloader
+  if (authLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-50 dark:bg-gray-900 z-50">
+        <Preloader />
+      </div>
+    );
+  }
   return (
     <>
-      <AuthProvider>
+     
         {isAuthPage ? (
           children
         ) : (
@@ -75,7 +87,7 @@ export default function ClientDashboardWrapper({ children }: Props) {
             </DarkModeProvider>
           </ProtectedRoute>
         )}
-      </AuthProvider>
+      
     </>
   );
 }
