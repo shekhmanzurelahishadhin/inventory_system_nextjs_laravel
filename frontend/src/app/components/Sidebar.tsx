@@ -30,7 +30,7 @@ interface SidebarProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   isCollapsed: boolean;
-  darkMode: boolean;
+  // darkMode: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
 }
 
@@ -41,7 +41,7 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-const Sidebar = ({ open, setOpen, isCollapsed, darkMode, setIsCollapsed }: SidebarProps) => {
+const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed }: SidebarProps) => {
   const pathname = usePathname();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
 

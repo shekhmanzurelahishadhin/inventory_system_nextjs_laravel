@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, ReactNode, ReactElement, isValidElement, Children, cloneElement } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import UserModal from './UserModal';
+import { DarkModeProvider } from '../context/DarkModeContext'; // We'll create this
 
 interface Props {
   children: ReactNode;
@@ -12,7 +13,7 @@ interface Props {
 export default function ClientDashboardWrapper({ children }: Props) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [darkMode, setDarkMode] = useState(false); // default false for SSR
+  const [darkMode, setDarkMode] = useState(false);
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -20,7 +21,7 @@ export default function ClientDashboardWrapper({ children }: Props) {
   useEffect(() => {
     setMounted(true);
     const stored = localStorage.getItem('darkMode');
-    if (stored === 'true') setDarkMode(true);
+    if (stored === 'false') setDarkMode(false);
   }, []);
 
   useEffect(() => {
@@ -34,40 +35,34 @@ export default function ClientDashboardWrapper({ children }: Props) {
   if (!mounted) return null;
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
-      <Sidebar
-        open={sidebarOpen}
-        setOpen={setSidebarOpen}
-        isCollapsed={isCollapsed}
-        setIsCollapsed={setIsCollapsed}
-        darkMode={darkMode}
-      />
-
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <Header
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
+    <DarkModeProvider value={{ darkMode, setDarkMode }}>
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+         <Sidebar
+          open={sidebarOpen}
+          setOpen={setSidebarOpen}
           isCollapsed={isCollapsed}
           setIsCollapsed={setIsCollapsed}
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
-          setUserModalOpen={setUserModalOpen}
         />
 
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {Children.map(children, (child) =>
-            isValidElement<{ darkMode: boolean }>(child)
-              ? cloneElement(child as ReactElement<{ darkMode: boolean }>, { darkMode })
-              : child
-          )}
-        </main>
-      </div>
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <Header
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            isCollapsed={isCollapsed}
+            setIsCollapsed={setIsCollapsed}
+            setUserModalOpen={setUserModalOpen}
+          />
 
-      <UserModal
-        isOpen={userModalOpen}
-        onClose={() => setUserModalOpen(false)}
-        darkMode={darkMode}
-      />
-    </div>
+          <main className="flex-1 overflow-y-auto p-4 md:p-6">
+            {children}
+          </main>
+        </div>
+
+        <UserModal
+          isOpen={userModalOpen}
+          onClose={() => setUserModalOpen(false)}
+        />
+      </div>
+    </DarkModeProvider>
   );
 }

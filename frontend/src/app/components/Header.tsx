@@ -1,4 +1,4 @@
-// app/components/Header.tsx
+
 'use client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -9,14 +9,13 @@ import {
   faMoon,
   faSun
 } from '@fortawesome/free-solid-svg-icons';
+import { useDarkMode } from '../context/DarkModeContext';
 
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
-  darkMode: boolean;
-  setDarkMode: (darkMode: boolean) => void;
   setUserModalOpen: (open: boolean) => void;
 }
 
@@ -25,10 +24,10 @@ export default function Header({
   setSidebarOpen, 
   isCollapsed, 
   setIsCollapsed,
-  darkMode, 
-  setDarkMode,
   setUserModalOpen
 }: HeaderProps) {
+  const { darkMode, setDarkMode } = useDarkMode();
+
   return (
     <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center">

@@ -14,10 +14,9 @@ import {
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
-  darkMode: boolean;
 }
 
-export default function UserModal({ isOpen, onClose, darkMode }: UserModalProps) {
+export default function UserModal({ isOpen, onClose }: UserModalProps) {
   if (!isOpen) return null;
 
   const menuItems = [
