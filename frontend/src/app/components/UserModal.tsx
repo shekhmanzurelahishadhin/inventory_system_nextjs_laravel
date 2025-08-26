@@ -1,15 +1,16 @@
 // app/components/UserModal.tsx
-'use client';
+"use client";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faUser, 
-  faCog, 
-  faSignOutAlt, 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faCog,
+  faSignOutAlt,
   faTimes,
   faCreditCard,
-  faQuestionCircle
-} from '@fortawesome/free-solid-svg-icons';
+  faQuestionCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../context/AuthContext";
 
 interface UserModalProps {
   isOpen: boolean;
@@ -17,24 +18,25 @@ interface UserModalProps {
 }
 
 export default function UserModal({ isOpen, onClose }: UserModalProps) {
+  const { user, logout } = useAuth();
   if (!isOpen) return null;
 
   const menuItems = [
-    { icon: faUser, label: 'Profile', href: '#' },
-    { icon: faCreditCard, label: 'Billing', href: '#' },
-    { icon: faCog, label: 'Settings', href: '#' },
-    { icon: faQuestionCircle, label: 'Help & Support', href: '#' },
-    { icon: faSignOutAlt, label: 'Logout', href: '#' },
+    { icon: faUser, label: "Profile", href: "#" },
+    { icon: faCreditCard, label: "Billing", href: "#" },
+    { icon: faCog, label: "Settings", href: "#" },
+    { icon: faQuestionCircle, label: "Help & Support", href: "#" },
+    { icon: faSignOutAlt, label: "Logout", action: logout },
   ];
 
   return (
     <>
-      <div 
+      <div
         className="fixed inset-0 bg-opacity-20 z-40"
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
         onClick={onClose}
       />
-      
+
       <div className="fixed right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 w-48">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
@@ -42,22 +44,31 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
               JD
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">John Doe</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">admin@example.com</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                John Doe
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                admin@example.com
+              </p>
             </div>
           </div>
         </div>
-        
+
         <div className="p-2">
           {menuItems.map((item, index) => (
-            <a
+            <button
               key={index}
-              href={item.href}
-              className="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+              onClick={() => {
+                if (item.action) {
+                  item.action();
+                  onClose(); // close modal after logout
+                }
+              }}
+              className="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-left"
             >
               <FontAwesomeIcon icon={item.icon} className="w-4 h-4 mr-3" />
               {item.label}
-            </a>
+            </button>
           ))}
         </div>
       </div>

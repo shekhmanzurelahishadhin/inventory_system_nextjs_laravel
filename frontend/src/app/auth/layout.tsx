@@ -1,7 +1,20 @@
+'use client';
 // app/(auth)/layout.tsx
 import { ReactNode } from 'react';
+import { useAuth } from '../context/AuthContext';
+import Preloader from '../components/Preloader';
+
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
+  const { loading: authLoading } = useAuth();
+  // If loading, render only preloader
+  if (authLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-50 dark:bg-gray-900 z-50">
+        <Preloader />
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md">

@@ -1,10 +1,13 @@
 // app/(auth)/login/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
+import { useAuth } from '@/app/context/AuthContext';
+import { useRouter } from 'next/navigation';
+import Preloader from '@/app/components/Preloader';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,17 +15,44 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { login, isAuthenticated, loading: authLoading } = useAuth();
+  const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      router.replace('/');
+    }
+  }, [isAuthenticated, authLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
     
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Login attempt:', { email, password, rememberMe });
+    try {
+      const result = await login(email, password, rememberMe);
+      
+      if (result.success) {
+        // Login successful - the AuthContext will handle the redirect
+        console.log('Login successful');
+      } else {
+        setError(result.message || 'Login failed. Please check your credentials.');
+      }
+    } catch (error: any) {
+      setError('An unexpected error occurred. Please try again.');
+      console.error('Login error:', error);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
+
+
+  // Don't render if already authenticated (will redirect)
+  if (isAuthenticated || authLoading) {
+    return <Preloader />;
+  }
 
   return (
     <>
@@ -40,6 +70,12 @@ export default function Login() {
           </Link>
         </p>
       </div>
+      
+      {error && (
+        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+          {error}
+        </div>
+      )}
       
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
@@ -128,9 +164,19 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+            className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
           >
-            {isLoading ? 'Signing in...' : 'Sign in'}
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing in...
+              </>
+            ) : (
+              'Sign in'
+            )}
           </button>
         </div>
       </form>
