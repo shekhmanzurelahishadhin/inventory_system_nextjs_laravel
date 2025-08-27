@@ -39,7 +39,13 @@ export default function ClientDashboardWrapper({ children }: Props) {
 
   if (!mounted) return null;
  
-    
+  function getInitials(name?: string) {
+    if (!name) return "";
+    return name
+      .split(" ")
+      .map((word) => word[0]?.toUpperCase())
+      .join("");
+  }
  
   // If loading, render only preloader
   if (authLoading) {
@@ -63,6 +69,7 @@ export default function ClientDashboardWrapper({ children }: Props) {
                   setOpen={setSidebarOpen}
                   isCollapsed={isCollapsed}
                   setIsCollapsed={setIsCollapsed}
+                  getInitials={getInitials}
                 />
 
                 <div className="flex flex-col flex-1 overflow-hidden">
@@ -72,6 +79,7 @@ export default function ClientDashboardWrapper({ children }: Props) {
                     isCollapsed={isCollapsed}
                     setIsCollapsed={setIsCollapsed}
                     setUserModalOpen={setUserModalOpen}
+                    getInitials={getInitials}
                   />
 
                   <main className="flex-1 overflow-y-auto p-4 md:p-6">
@@ -82,6 +90,7 @@ export default function ClientDashboardWrapper({ children }: Props) {
                 <UserModal
                   isOpen={userModalOpen}
                   onClose={() => setUserModalOpen(false)}
+                  getInitials={getInitials}
                 />
               </div>
             </DarkModeProvider>

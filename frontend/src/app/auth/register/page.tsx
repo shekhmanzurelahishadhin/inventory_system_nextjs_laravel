@@ -5,6 +5,8 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Link from 'next/link';
+import { useAuth } from '@/app/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -15,17 +17,50 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
+    const { register, isAuthenticated, loading: authLoading } = useAuth();
+    const router = useRouter();
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Registration attempt:', { name, email, password, confirmPassword, agreeTerms });
-      setIsLoading(false);
-    }, 1000);
-  };
+  e.preventDefault();
+  setIsLoading(true);
+
+  if (password !== confirmPassword) {
+    setErrorMessage("Passwords do not match.");
+    setIsLoading(false);
+    return;
+  }
+
+  if (!agreeTerms) {
+    setErrorMessage("You must agree to the terms and conditions.");
+    setIsLoading(false);
+    return;
+  }
+
+  try {
+    const result = await register({
+      name,
+      email,
+      password,
+      password_confirmation: confirmPassword
+    });
+
+    if (result.success) {
+      console.log("Register successful");
+      router.replace("/"); // redirect after register
+    } else {
+      setErrorMessage(result.message || "Registration failed. Please check your details.");
+    }
+  } catch (error: any) {
+    setErrorMessage("An unexpected error occurred. Please try again.");
+    console.error("Register error:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <>

@@ -82,10 +82,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (userData: RegisterData) => {
     try {
-      setLoading(true);
-      
-      await api.get('/sanctum/csrf-cookie');
-      
       const response = await api.post('/register', userData);
       
       const { user: newUser, token } = response.data;
@@ -98,8 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       const message = error.response?.data?.message || 'Registration failed';
       return { success: false, message };
-    } finally {
-      setLoading(false);
     }
   };
 

@@ -10,6 +10,7 @@ import {
   faSun
 } from '@fortawesome/free-solid-svg-icons';
 import { useDarkMode } from '../context/DarkModeContext';
+import { useAuth } from '../context/AuthContext';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -17,6 +18,7 @@ interface HeaderProps {
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
   setUserModalOpen: (open: boolean) => void;
+  getInitials: (name?: string) => string;
 }
 
 export default function Header({ 
@@ -24,9 +26,11 @@ export default function Header({
   setSidebarOpen, 
   isCollapsed, 
   setIsCollapsed,
-  setUserModalOpen
+  setUserModalOpen,
+  getInitials
 }: HeaderProps) {
   const { darkMode, setDarkMode } = useDarkMode();
+  const { user } = useAuth();
 
   return (
     <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -76,9 +80,9 @@ export default function Header({
             onClick={() => setUserModalOpen(true)}
           >
             <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white text-sm">
-              JD
+              {getInitials(user?.name)}
             </div>
-            <span className="ml-2 text-gray-700 dark:text-gray-300 hidden md:block">John Doe</span>
+            <span className="ml-2 text-gray-700 dark:text-gray-300 hidden md:block">{user?.name}</span>
           </button>
         </div>
       </div>

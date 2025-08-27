@@ -25,6 +25,7 @@ import {
   faAngleDoubleLeft
 } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 interface SidebarProps {
   open: boolean;
@@ -32,6 +33,7 @@ interface SidebarProps {
   isCollapsed: boolean;
   // darkMode: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
+  getInitials: (name?: string) => string;
 }
 
 interface MenuItem {
@@ -41,9 +43,10 @@ interface MenuItem {
   children?: MenuItem[];
 }
 
-const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed }: SidebarProps) => {
+const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: SidebarProps) => {
   const pathname = usePathname();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+  const { user } = useAuth();
 
   const toggleMenu = (menuName: string) => {
     setExpandedMenus(prev => ({
@@ -158,7 +161,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed }: SidebarProps) =
       `}>
         <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
           {!isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">Admin Dashboard</div>}
-          {isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">A</div>}
+          {isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">{getInitials('Admin Dashboard')}</div>}
           <button 
             className="text-gray-400 hover:text-white lg:hidden transition-colors duration-200"
             onClick={() => setOpen(false)}
@@ -177,10 +180,10 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed }: SidebarProps) =
             <div className="flex items-center justify-between">
               <div className="flex items-center transition-opacity duration-300">
                 <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white transition-colors duration-200">
-                  JD
+                  {getInitials(user?.name)}
                 </div>
                 <div className="ml-3 transition-opacity duration-300">
-                  <p className="text-sm font-medium text-white">John Doe</p>
+                  <p className="text-sm font-medium text-white">{user?.name}</p>
                   <p className="text-xs font-medium text-gray-400">Administrator</p>
                 </div>
               </div>

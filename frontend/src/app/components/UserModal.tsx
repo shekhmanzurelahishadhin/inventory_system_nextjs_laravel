@@ -15,9 +15,10 @@ import { useAuth } from "../context/AuthContext";
 interface UserModalProps {
   isOpen: boolean;
   onClose: () => void;
+  getInitials: (name?: string) => string;
 }
 
-export default function UserModal({ isOpen, onClose }: UserModalProps) {
+export default function UserModal({ isOpen, onClose, getInitials }: UserModalProps) {
   const { user, logout } = useAuth();
   if (!isOpen) return null;
 
@@ -37,18 +38,18 @@ export default function UserModal({ isOpen, onClose }: UserModalProps) {
         onClick={onClose}
       />
 
-      <div className="fixed right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 w-48">
+      <div className="fixed right-4 top-16 bg-white dark:bg-gray-800 rounded-lg shadow-lg z-50 w-60">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white">
-              JD
+              {getInitials(user?.name)}
             </div>
             <div className="ml-3">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                John Doe
+                {user?.name}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                admin@example.com
+                {user?.email}
               </p>
             </div>
           </div>

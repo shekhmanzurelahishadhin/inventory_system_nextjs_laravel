@@ -27,7 +27,7 @@ export default function Login() {
     setErrorMessage('');
     
     try {
-      const result = await login(email, password, rememberMe);
+      const result = await login(email, password);
       
       if (result.success) {
         // Login successful - the AuthContext will handle the redirect
