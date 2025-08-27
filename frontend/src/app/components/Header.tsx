@@ -1,4 +1,3 @@
-
 'use client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -11,6 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useDarkMode } from '../context/DarkModeContext';
 import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -31,9 +31,11 @@ export default function Header({
 }: HeaderProps) {
   const { darkMode, setDarkMode } = useDarkMode();
   const { user } = useAuth();
+  const [showSearch, setShowSearch] = useState(false);
 
   return (
     <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      {/* Left section */}
       <div className="flex items-center">
         <button 
           className="text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 lg:hidden"
@@ -49,7 +51,8 @@ export default function Header({
           <FontAwesomeIcon icon={faBars} />
         </button>
         
-        <div className="relative ml-4 lg:ml-4">
+        {/* Search bar - hidden on mobile by default, shown when search icon is clicked */}
+        <div className={`relative ml-4 lg:ml-4 ${showSearch ? 'flex' : 'hidden'} lg:flex`}>
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
             <FontAwesomeIcon icon={faSearch} className="text-gray-400" />
           </span>
@@ -58,23 +61,41 @@ export default function Header({
             className="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
             placeholder="Search..."
           />
+          {/* Close search button for mobile */}
+          <button 
+            className="lg:hidden ml-2 text-gray-500"
+            onClick={() => setShowSearch(false)}
+          >
+            ✕
+          </button>
         </div>
       </div>
       
+      {/* Right section */}
       <div className="flex items-center">
+        {/* Search icon for mobile - only shows when search bar is hidden */}
+        {!showSearch && (
+          <button 
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-1 lg:hidden"
+            onClick={() => setShowSearch(true)}
+          >
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+        )}
+        
         <button 
-          className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-2"
+          className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-1 hidden sm:block"
           onClick={() => setDarkMode(!darkMode)}
         >
           <FontAwesomeIcon icon={darkMode ? faSun : faMoon} />
         </button>
-        <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-2">
+        <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-1">
           <FontAwesomeIcon icon={faBell} />
         </button>
-        <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-2">
+        <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-1 hidden sm:block">
           <FontAwesomeIcon icon={faComment} />
         </button>
-        <div className="ml-4 relative">
+        <div className="ml-2 relative">
           <button 
             className="flex items-center"
             onClick={() => setUserModalOpen(true)}
