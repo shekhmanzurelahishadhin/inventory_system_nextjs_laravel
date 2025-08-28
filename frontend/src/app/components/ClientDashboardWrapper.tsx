@@ -20,7 +20,6 @@ export default function ClientDashboardWrapper({ children }: Props) {
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const isAuthPage = pathname?.startsWith("/auth");
   const { isAuthenticated, loading: authLoading } = useAuth();
   // Hydration-safe mount
   useEffect(() => {
@@ -57,10 +56,6 @@ export default function ClientDashboardWrapper({ children }: Props) {
   }
   return (
     <>
-     
-        {isAuthPage ? (
-          children
-        ) : (
           <ProtectedRoute>
             <DarkModeProvider value={{ darkMode, setDarkMode }}>
               <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
@@ -95,8 +90,6 @@ export default function ClientDashboardWrapper({ children }: Props) {
               </div>
             </DarkModeProvider>
           </ProtectedRoute>
-        )}
-      
     </>
   );
 }

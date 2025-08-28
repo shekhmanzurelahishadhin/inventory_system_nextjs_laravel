@@ -12,7 +12,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
     // Redirect if already authenticated
     useEffect(() => {
       if (isAuthenticated && !authLoading) {
-        router.replace('/');
+        router.replace('/dashboard'); // Redirect to dashboard if authenticated
       }
     }, [isAuthenticated, authLoading, router]);
   // If loading, render only preloader

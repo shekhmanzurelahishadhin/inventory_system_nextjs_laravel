@@ -159,6 +159,9 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         ${open ? 'translate-x-0' : '-translate-x-full'}
         ${isCollapsed ? 'w-20' : 'w-64'}
       `}>
+        <Link href="/dashboard" >
+        
+        {/* Sidebar header */}
         <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
           {!isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">Admin Dashboard</div>}
           {isCollapsed && <div className="text-white font-bold text-xl transition-opacity duration-300">{getInitials('Admin Dashboard')}</div>}
@@ -169,6 +172,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
+        </Link>
         
         {/* Navigation with custom scrollbar */}
         <nav className="mt-4 flex-1 overflow-y-auto sidebar-scroll">

@@ -49,7 +49,7 @@ export default function Register() {
 
     if (result.success) {
       console.log("Register successful");
-      router.replace("/"); // redirect after register
+      router.replace("/dashboard"); // redirect after register
     } else {
       setErrorMessage(result.message || "Registration failed. Please check your details.");
     }
