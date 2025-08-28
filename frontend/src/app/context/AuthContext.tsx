@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (token && userData) {
         // Verify token is still valid
         const response = await api.get('/user');
-        setUser(response.data);
+        setUser(response?.data?.user);
       }
     } catch (error) {
       // Token is invalid or expired
