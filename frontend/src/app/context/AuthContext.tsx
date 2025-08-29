@@ -12,15 +12,6 @@ interface User {
   updated_at?: string;
 }
 
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
-  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
-  logout: () => Promise<void>;
-  loading: boolean;
-  isAuthenticated: boolean;
-}
-
 interface RegisterData {
   name: string;
   email: string;
@@ -28,10 +19,25 @@ interface RegisterData {
   password_confirmation: string;
 }
 
+interface AuthContextType {
+  user: User | null;
+  roles: string[];
+  permissions: string[];
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
+  logout: () => Promise<void>;
+  loading: boolean;
+  isAuthenticated: boolean;
+  hasRole: (role: string) => boolean;
+  hasPermission: (permission: string) => boolean;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
+  const [permissions, setPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,55 +47,55 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('auth_token');
-      const userData = localStorage.getItem('user_data');
-      
-      if (token && userData) {
-        // Verify token is still valid
-        const response = await api.get('/user');
-        setUser(response?.data?.user);
-      }
+      if (!token) return;
+
+      const response = await api.get('/user');
+      setUser(response?.data?.user || null);
+      setRoles(response?.data?.roles || []);
+      setPermissions(response?.data?.permissions || []);
     } catch (error) {
-      // Token is invalid or expired
+      // Token invalid/expired → clear local storage
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
+      setUser(null);
+      setRoles([]);
+      setPermissions([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const login = async (email: string, password: string, rememberMe: boolean = false) => {
-  try {
- 
-    const response = await api.post('/login', {
-      email,
-      password,
-    });
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await api.post('/login', { email, password });
+      const { user: userData, token, roles: userRoles, permissions: userPermissions } = response.data;
 
-    const { user: userData, token } = response.data;
-
-      // Store in localStorage for persistent login
       localStorage.setItem('auth_token', token);
       localStorage.setItem('user_data', JSON.stringify(userData));
-  
-    setUser(userData);
-    
-    return { success: true };
-  } catch (error: any) {
-    const message = error.response?.data?.message || 'Login failed';
-    return { success: false, message };
-  } 
-};
+
+      setUser(userData);
+      setRoles(userRoles || []);
+      setPermissions(userPermissions || []);
+
+      return { success: true };
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Login failed';
+      return { success: false, message };
+    }
+  };
 
   const register = async (userData: RegisterData) => {
     try {
       const response = await api.post('/register', userData);
-      
-      const { user: newUser, token } = response.data;
-      
+      const { user: newUser, token, roles: userRoles, permissions: userPermissions } = response.data;
+
       localStorage.setItem('auth_token', token);
       localStorage.setItem('user_data', JSON.stringify(newUser));
+
       setUser(newUser);
-      
+      setRoles(userRoles || []);
+      setPermissions(userPermissions || []);
+
       return { success: true };
     } catch (error: any) {
       const message = error.response?.data?.message || 'Registration failed';
@@ -106,29 +112,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem('auth_token');
       localStorage.removeItem('user_data');
       setUser(null);
+      setRoles([]);
+      setPermissions([]);
     }
+  };
+
+  // --- 🔥 Helpers (Super Admin bypass like Laravel) ---
+  const hasRole = (role: string) => roles.includes(role);
+  const hasPermission = (permission: string) => {
+    if (roles.includes("Super Admin")) return true;
+    return permissions.includes(permission);
   };
 
   const value: AuthContextType = {
     user,
+    roles,
+    permissions,
     login,
     register,
     logout,
     loading,
     isAuthenticated: !!user,
+    hasRole,
+    hasPermission,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error("useAuth must be used within an AuthProvider");
   return context;
 }

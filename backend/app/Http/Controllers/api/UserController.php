@@ -13,7 +13,11 @@ class UserController extends Controller
         $user = Auth::user();
 
         return response()->json([
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ],
             'roles' => $user->getRoleNames(), // returns array of role names
             'permissions' => $user->getAllPermissions()->pluck('name'), // returns array of permission names
         ]);

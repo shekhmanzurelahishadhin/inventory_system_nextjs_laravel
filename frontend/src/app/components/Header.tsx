@@ -30,7 +30,7 @@ export default function Header({
   getInitials
 }: HeaderProps) {
   const { darkMode, setDarkMode } = useDarkMode();
-  const { user } = useAuth();
+  const { user,hasPermission,hasRole } = useAuth();
   const [showSearch, setShowSearch] = useState(false);
 
   return (
@@ -92,9 +92,11 @@ export default function Header({
         <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-1">
           <FontAwesomeIcon icon={faBell} />
         </button>
-        <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-1 hidden sm:block">
-          <FontAwesomeIcon icon={faComment} />
-        </button>
+        {hasPermission('view-chat') && (
+          <button className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mx-1 hidden sm:block">
+            <FontAwesomeIcon icon={faComment} />
+          </button>
+        )}
         <div className="ml-2 relative">
           <button 
             className="flex items-center"

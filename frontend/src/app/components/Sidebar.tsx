@@ -41,12 +41,14 @@ interface MenuItem {
   href: string;
   icon: any;
   children?: MenuItem[];
+  requiredRoles?: string[];
+  requiredPermissions?: string[];
 }
 
 const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: SidebarProps) => {
   const pathname = usePathname();
   const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
-  const { user } = useAuth();
+  const { user,hasRole, hasPermission } = useAuth();
 
   const toggleMenu = (menuName: string) => {
     setExpandedMenus(prev => ({
@@ -66,7 +68,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
       href: '#',
       icon: faDesktop,
       children: [
-        { name: 'Calendar', href: '/apps/calendar', icon: faCalendar },
+        { name: 'Calendar', href: '/apps/calendar', icon: faCalendar, requiredPermissions: ["view-productss"] },
         { name: 'Chat', href: '/apps/chat', icon: faComment },
         { name: 'Email', href: '/apps/email', icon: faEnvelope },
         { 
@@ -96,7 +98,13 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
   ];
 
   const renderMenuItems = (items: MenuItem[], level = 0) => {
-    return items.map((item) => (
+    return items
+    .filter(item => {
+      if (item.requiredRoles && !item.requiredRoles.some(r => hasRole(r))) return false;
+      if (item.requiredPermissions && !item.requiredPermissions.some(p => hasPermission(p))) return false;
+      return true;
+    })
+    .map((item) => (
       <div key={item.name}>
         <div 
           className={`

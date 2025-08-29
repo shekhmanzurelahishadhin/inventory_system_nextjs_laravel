@@ -78,7 +78,11 @@ export default function Register() {
           </Link>
         </p>
       </div>
-      
+        {errorMessage && (
+        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+          {errorMessage}
+        </div>
+      )}
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div>
