@@ -10,15 +10,13 @@ import {
   faCircleCheck,
   faCircleXmark
 } from '@fortawesome/free-solid-svg-icons';
-// Make sure the path is correct and the file exists. If your AuthContext is actually in 'src/app/context/AuthContext.tsx', update the import as follows:
 import { useAuth} from '../../context/AuthContext';
 import { api } from '../../lib/api';
-// Update the import path below if the actual location is different
 import AccessRoute from '../../components/AccessRoute';
 
 interface User {
   id: number;
-  username: string;
+  name: string;
   email: string;
   roles: string[];
   created_at: string;
@@ -53,7 +51,7 @@ export default function ManageUsers() {
   const fetchUsers = async () => {
     try {
       const response = await api.get('/users');
-      setUsers(response.data);
+      setUsers(response.data.users);
     } catch (error) {
       console.error('Failed to fetch users:', error);
       setErrorMessage('Failed to load users');
@@ -77,7 +75,7 @@ export default function ManageUsers() {
     
     const formData = new FormData(e.currentTarget);
     const data = {
-      username: formData.get('username'),
+      name: formData.get('name'),
       email: formData.get('email'),
       password: formData.get('password'),
       password_confirmation: formData.get('password_confirmation'),
@@ -108,7 +106,7 @@ export default function ManageUsers() {
     
     const formData = new FormData(e.currentTarget);
     const data = {
-      username: formData.get('username'),
+      name: formData.get('name'),
       password: formData.get('password'),
       confirm_password: formData.get('confirm_password'),
       roles: formData.getAll('roles'),
@@ -153,7 +151,7 @@ export default function ManageUsers() {
   };
 
   const filteredUsers = users.filter(user => 
-    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.roles.some(role => role.toLowerCase().includes(searchTerm.toLowerCase()))
   );
@@ -167,31 +165,37 @@ export default function ManageUsers() {
   }
 
   return (
-    <div className="container-fluid py-4">
+    <div className="container mx-auto py-4 px-4">
       {/* Success/Error Messages */}
       {successMessage && (
-        <div className="alert alert-success alert-dismissible fade show mb-4" role="alert">
-          {successMessage}
-          <button type="button" className="btn-close" onClick={() => setSuccessMessage('')}></button>
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span className="block sm:inline">{successMessage}</span>
+          <button type="button" className="absolute top-0 right-0 p-3" onClick={() => setSuccessMessage('')}>
+            <span className="text-green-700">×</span>
+          </button>
         </div>
       )}
       {errorMessage && (
-        <div className="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-          {errorMessage}
-          <button type="button" className="btn-close" onClick={() => setErrorMessage('')}></button>
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <span className="block sm:inline">{errorMessage}</span>
+          <button type="button" className="absolute top-0 right-0 p-3" onClick={() => setErrorMessage('')}>
+            <span className="text-red-700">×</span>
+          </button>
         </div>
       )}
 
       {/* Page Title */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="page-title-box d-sm-flex align-items-center justify-content-between">
-            <h4 className="mb-sm-0 text-xl font-semibold">Manage User</h4>
-            <div className="page-title-right">
-              <nav className="breadcrumb m-0">
-                <div className="breadcrumb-item">User Role</div>
-                <div className="breadcrumb-item">User</div>
-                <div className="breadcrumb-item active">Manage User</div>
+      <div className="flex flex-wrap mb-4">
+        <div className="w-full">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <h4 className="text-xl font-semibold mb-2 sm:mb-0">Manage User</h4>
+            <div className="text-sm">
+              <nav className="flex space-x-2">
+                <div className="text-gray-500">User Role</div>
+                <div className="text-gray-500">/</div>
+                <div className="text-gray-500">User</div>
+                <div className="text-gray-500">/</div>
+                <div className="text-blue-600 font-medium">Manage User</div>
               </nav>
             </div>
           </div>
@@ -199,31 +203,31 @@ export default function ManageUsers() {
       </div>
 
       {/* User List */}
-      <div className="row">
-        <div className="col-lg-12">
-          <div className="card">
-            <div className="card-header d-flex justify-content-between align-items-center">
-              <h5 className="card-title mb-0 text-lg font-semibold">User List</h5>
+      <div className="flex flex-wrap">
+        <div className="w-full">
+          <div className="bg-white shadow rounded-lg">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h5 className="text-lg font-semibold">User List</h5>
               <AccessRoute>
                 <button 
-                  className="btn btn-success d-flex align-items-center"
+                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded flex items-center"
                   onClick={() => setShowCreateModal(true)}
                 >
-                  <FontAwesomeIcon icon={faPlus} className="me-2" />
+                  <FontAwesomeIcon icon={faPlus} className="mr-2" />
                   Add New
                 </button>
               </AccessRoute>
             </div>
-            <div className="card-body">
+            <div className="p-6">
               {/* Search Box */}
-              <div className="mb-3">
-                <div className="input-group">
-                  <span className="input-group-text">
+              <div className="mb-4">
+                <div className="relative flex items-center">
+                  <span className="absolute left-3 text-gray-400">
                     <FontAwesomeIcon icon={faSearch} />
                   </span>
                   <input
                     type="text"
-                    className="form-control"
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full"
                     placeholder="Search users..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -232,58 +236,58 @@ export default function ManageUsers() {
               </div>
 
               {/* Users Table */}
-              <div className="table-responsive">
-                <table className="table table-bordered" style={{ width: '100%' }}>
+              <div className="overflow-x-auto">
+                <table className="min-w-full border-collapse border border-gray-300">
                   <thead>
-                    <tr>
-                      <th style={{ width: '3%' }}>Sl No</th>
-                      <th>User Name</th>
-                      <th>Email</th>
-                      <th>Roles</th>
-                      <th>Created At</th>
-                      <th>Updated At</th>
-                      <th>Status</th>
-                      <th>Action</th>
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-300 px-4 py-2 w-1/24">Sl No</th>
+                      <th className="border border-gray-300 px-4 py-2">User Name</th>
+                      <th className="border border-gray-300 px-4 py-2">Email</th>
+                      <th className="border border-gray-300 px-4 py-2">Roles</th>
+                      <th className="border border-gray-300 px-4 py-2">Created At</th>
+                      <th className="border border-gray-300 px-4 py-2">Updated At</th>
+                      <th className="border border-gray-300 px-4 py-2">Status</th>
+                      <th className="border border-gray-300 px-4 py-2">Action</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredUsers.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="text-center py-4">
+                        <td colSpan={8} className="border border-gray-300 px-4 py-4 text-center">
                           No users found
                         </td>
                       </tr>
                     ) : (
                       filteredUsers.map((user, index) => (
-                        <tr key={user.id}>
-                          <td>{index + 1}</td>
-                          <td>{user.username}</td>
-                          <td>{user.email}</td>
-                          <td>
-                            {user.roles.map(role => (
-                              <span key={role} className="badge bg-primary me-1">{role}</span>
-                            ))}
+                        <tr key={user.id} className="hover:bg-gray-50">
+                          <td className="border border-gray-300 px-4 py-2 text-center">{index + 1}</td>
+                          <td className="border border-gray-300 px-4 py-2">{user.name}</td>
+                          <td className="border border-gray-300 px-4 py-2">{user.email}</td>
+                          <td className="border border-gray-300 px-4 py-2">
+                            {/* {user.roles.map(role => (
+                              <span key={role} className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded mr-1">{role}</span>
+                            ))} */}
                           </td>
-                          <td>{new Date(user.created_at).toLocaleDateString()}</td>
-                          <td>{new Date(user.updated_at).toLocaleDateString()}</td>
-                          <td>
+                          <td className="border border-gray-300 px-4 py-2"></td>
+                          <td className="border border-gray-300 px-4 py-2"></td>
+                          <td className="border border-gray-300 px-4 py-2">
                             {user.status === 'active' ? (
-                              <span className="badge bg-success">
-                                <FontAwesomeIcon icon={faCircleCheck} className="me-1" />
+                              <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded flex items-center w-fit">
+                                <FontAwesomeIcon icon={faCircleCheck} className="mr-1" />
                                 Active
                               </span>
                             ) : (
-                              <span className="badge bg-danger">
-                                <FontAwesomeIcon icon={faCircleXmark} className="me-1" />
+                              <span className="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded flex items-center w-fit">
+                                <FontAwesomeIcon icon={faCircleXmark} className="mr-1" />
                                 Inactive
                               </span>
                             )}
                           </td>
-                          <td>
-                            <div className="d-flex gap-2">
+                          <td className="border border-gray-300 px-4 py-2">
+                            <div className="flex space-x-2">
                               <AccessRoute>
                                 <button 
-                                  className="btn btn-info btn-sm"
+                                  className="bg-blue-100 hover:bg-blue-200 text-blue-800 p-2 rounded"
                                   onClick={() => openEditModal(user)}
                                 >
                                   <FontAwesomeIcon icon={faEye} />
@@ -291,7 +295,7 @@ export default function ManageUsers() {
                               </AccessRoute>
                               <AccessRoute>
                                 <button 
-                                  className="btn btn-primary btn-sm"
+                                  className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded"
                                   onClick={() => openEditModal(user)}
                                 >
                                   <FontAwesomeIcon icon={faEdit} />
@@ -299,7 +303,7 @@ export default function ManageUsers() {
                               </AccessRoute>
                               <AccessRoute>
                                 <button 
-                                  className="btn btn-danger btn-sm"
+                                  className="bg-red-500 hover:bg-red-600 text-white p-2 rounded disabled:opacity-50"
                                   onClick={() => handleDeleteUser(user.id)}
                                   disabled={user.id === currentUser?.id}
                                 >
@@ -321,277 +325,275 @@ export default function ManageUsers() {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header bg-light p-3">
-                <h5 className="modal-title">Create User</h5>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div className="px-6 py-4 border-b bg-gray-100 rounded-t-lg">
+              <h5 className="text-lg font-medium">Create User</h5>
+              <button 
+                type="button" 
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setErrors({});
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleCreateUser}>
+              <div className="p-6 max-h-96 overflow-y-auto">
+                {Object.keys(errors).length > 0 && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <ul className="list-disc list-inside">
+                      {Object.entries(errors).map(([field, messages]) => (
+                        messages.map((message, idx) => (
+                          <li key={`${field}-${idx}`}>{message}</li>
+                        ))
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                <div className="mb-4">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                    User Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    id="name"
+                    name="name"
+                    placeholder="Enter User Name"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    id="email"
+                    name="email"
+                    placeholder="Enter User Email"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                    Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    id="password"
+                    name="password"
+                    placeholder="Enter Password"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="password_confirmation" className="block text-sm font-medium text-gray-700 mb-1">
+                    Repeat Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    id="password_confirmation"
+                    name="password_confirmation"
+                    placeholder="Repeat Password"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="roles" className="block text-sm font-medium text-gray-700 mb-1">
+                    Roles <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="roles"
+                    id="roles"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    multiple
+                    required
+                  >
+                    {roles.map(role => (
+                      <option key={role.id} value={role.name}>
+                        {role.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="px-6 py-4 border-t bg-gray-50 rounded-b-lg flex justify-end space-x-3">
                 <button 
                   type="button" 
-                  className="btn-close" 
-                  onClick={() => {
-                    setShowCreateModal(false);
-                    setErrors({});
-                  }}
-                ></button>
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+                  onClick={() => setShowCreateModal(false)}
+                >
+                  Close
+                </button>
+                <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                  Save
+                </button>
               </div>
-              <form onSubmit={handleCreateUser}>
-                <div className="modal-body">
-                  {Object.keys(errors).length > 0 && (
-                    <div className="alert alert-danger">
-                      <ul className="mb-0">
-                        {Object.entries(errors).map(([field, messages]) => (
-                          messages.map((message, idx) => (
-                            <li key={`${field}-${idx}`}>{message}</li>
-                          ))
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  <div className="mb-3">
-                    <label htmlFor="username" className="form-label">
-                      User Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="username"
-                      name="username"
-                      placeholder="Enter User Name"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="email" className="form-label">
-                      Email <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email"
-                      name="email"
-                      placeholder="Enter User Email"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="password" className="form-label">
-                      Password <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password"
-                      name="password"
-                      placeholder="Enter Password"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="password_confirmation" className="form-label">
-                      Repeat Password <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password_confirmation"
-                      name="password_confirmation"
-                      placeholder="Repeat Password"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="roles" className="form-label">
-                      Roles <span className="text-danger">*</span>
-                    </label>
-                    <select
-                      name="roles"
-                      id="roles"
-                      className="form-control form-select"
-                      multiple
-                      required
-                      style={{ width: '100%' }}
-                    >
-                      {roles.map(role => (
-                        <option key={role.id} value={role.name}>
-                          {role.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button 
-                    type="button" 
-                    className="btn btn-light" 
-                    onClick={() => setShowCreateModal(false)}
-                  >
-                    Close
-                  </button>
-                  <button type="submit" className="btn btn-success">
-                    Save
-                  </button>
-                </div>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
       )}
 
       {/* Edit User Modal */}
       {showEditModal && selectedUser && (
-        <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header bg-light p-3">
-                <h5 className="modal-title">Edit User</h5>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div className="px-6 py-4 border-b bg-gray-100 rounded-t-lg">
+              <h5 className="text-lg font-medium">Edit User</h5>
+              <button 
+                type="button" 
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                onClick={() => {
+                  setShowEditModal(false);
+                  setSelectedUser(null);
+                  setErrors({});
+                }}
+              >
+                ×
+              </button>
+            </div>
+            <form onSubmit={handleUpdateUser}>
+              <div className="p-6 max-h-96 overflow-y-auto">
+                {Object.keys(errors).length > 0 && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                    <ul className="list-disc list-inside">
+                      {Object.entries(errors).map(([field, messages]) => (
+                        messages.map((message, idx) => (
+                          <li key={`${field}-${idx}`}>{message}</li>
+                        ))
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                <input type="hidden" name="data_id" value={selectedUser.id} />
+                
+                <div className="mb-4">
+                  <label htmlFor="name2" className="block text-sm font-medium text-gray-700 mb-1">
+                    User Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    id="name2"
+                    name="name"
+                    defaultValue={selectedUser.name}
+                    placeholder="Enter User Name"
+                    required
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="email2" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
+                    id="email2"
+                    name="email"
+                    defaultValue={selectedUser.email}
+                    readOnly
+                  />
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                  <div className="relative">
+                    <input
+                      type="password"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md pr-10"
+                      id="password"
+                      name="password"
+                      placeholder="Enter password"
+                    />
+                    <button 
+                      type="button" 
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="confirm_password" className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                  <div className="relative">
+                    <input
+                      type="password"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md pr-10"
+                      id="confirm_password"
+                      name="confirm_password"
+                      placeholder="Enter confirm password"
+                    />
+                    <button 
+                      type="button" 
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500"
+                    >
+                      <FontAwesomeIcon icon={faEye} />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="role_id2" className="block text-sm font-medium text-gray-700 mb-1">
+                    Roles <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    name="roles"
+                    id="role_id2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    multiple
+                    required
+                    defaultValue={selectedUser.roles}
+                  >
+                    {roles.map(role => (
+                      <option key={role.id} value={role.name}>
+                        {role.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="mb-4">
+                  <label htmlFor="status2" className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    name="status"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    id="status2"
+                    defaultValue={selectedUser.status}
+                  >
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </div>
+              <div className="px-6 py-4 border-t bg-gray-50 rounded-b-lg flex justify-end space-x-3">
                 <button 
                   type="button" 
-                  className="btn-close" 
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
                   onClick={() => {
                     setShowEditModal(false);
                     setSelectedUser(null);
-                    setErrors({});
                   }}
-                ></button>
+                >
+                  Close
+                </button>
+                <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                  Update
+                </button>
               </div>
-              <form onSubmit={handleUpdateUser}>
-                <div className="modal-body">
-                  {Object.keys(errors).length > 0 && (
-                    <div className="alert alert-danger">
-                      <ul className="mb-0">
-                        {Object.entries(errors).map(([field, messages]) => (
-                          messages.map((message, idx) => (
-                            <li key={`${field}-${idx}`}>{message}</li>
-                          ))
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  <input type="hidden" name="data_id" value={selectedUser.id} />
-                  
-                  <div className="mb-3">
-                    <label htmlFor="username2" className="form-label">
-                      User Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="username2"
-                      name="username"
-                      defaultValue={selectedUser.username}
-                      placeholder="Enter User Name"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="email2" className="form-label">Email</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="email2"
-                      name="email"
-                      defaultValue={selectedUser.email}
-                      readOnly
-                    />
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Password</label>
-                    <div className="position-relative auth-pass-inputgroup mb-3">
-                      <input
-                        type="password"
-                        className="form-control pe-5"
-                        id="password"
-                        name="password"
-                        placeholder="Enter password"
-                      />
-                      <button 
-                        type="button" 
-                        className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="confirm_password" className="form-label">Confirm Password</label>
-                    <div className="position-relative auth-pass-inputgroup mb-3">
-                      <input
-                        type="password"
-                        className="form-control pe-5"
-                        id="confirm_password"
-                        name="confirm_password"
-                        placeholder="Enter confirm password"
-                      />
-                      <button 
-                        type="button" 
-                        className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
-                      >
-                        <FontAwesomeIcon icon={faEye} />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="role_id2" className="form-label">
-                      Roles <span className="text-danger">*</span>
-                    </label>
-                    <select
-                      name="roles"
-                      id="role_id2"
-                      className="form-control form-select"
-                      multiple
-                      required
-                      style={{ width: '100%' }}
-                      defaultValue={selectedUser.roles}
-                    >
-                      {roles.map(role => (
-                        <option key={role.id} value={role.name}>
-                          {role.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="mb-3">
-                    <label htmlFor="status2" className="form-label">Status</label>
-                    <select
-                      name="status"
-                      className="form-control form-select"
-                      id="status2"
-                      defaultValue={selectedUser.status}
-                    >
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="modal-footer">
-                  <button 
-                    type="button" 
-                    className="btn btn-light" 
-                    onClick={() => {
-                      setShowEditModal(false);
-                      setSelectedUser(null);
-                    }}
-                  >
-                    Close
-                  </button>
-                  <button type="submit" className="btn btn-success">
-                    Update
-                  </button>
-                </div>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
       )}
