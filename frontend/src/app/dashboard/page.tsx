@@ -13,7 +13,7 @@ export default function DashboardPage() {
     <>
      <AccessRoute
       // requiredRoles={['Admin', 'Super Admin']} // only these roles can access
-      requiredPermissions={['view-products']} // or required permission
+      // requiredPermissions={['view-products']} // or required permission
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <StatsGrid darkMode={darkMode} />
