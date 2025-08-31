@@ -77,7 +77,8 @@ export default function ClientDashboardWrapper({ children }: Props) {
                     getInitials={getInitials}
                   />
 
-                  <main className="flex-1 overflow-y-auto p-4 md:p-6">
+                  {/* <main className="flex-1 overflow-y-auto px-4 pb-4 pt-0 md:px-6  md:pb-6  md:pt-0"> */}
+                  <main className="flex-1 overflow-y-auto">
                     {children}
                   </main>
                 </div>

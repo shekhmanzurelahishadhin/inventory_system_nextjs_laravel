@@ -66,17 +66,19 @@ const PostManagement = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Breadcrumb Section */}
+    <>
+     {/* Breadcrumb Section */}
         <div className="flex flex-wrap mb-6">
-          <div className="w-full bg-white shadow rounded-lg overflow-hidden">
+          <div className="w-full bg-white shadow overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4">
               <h1 className="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">Post Management</h1>
               <Breadcrumb items={breadcrumbItems} />
             </div>
           </div>
         </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+       
 
         {/* Stats Cards */}
 
@@ -193,6 +195,8 @@ const PostManagement = () => {
         </div>
       </div>
     </div>
+    </>
+    
   );
 };
 
