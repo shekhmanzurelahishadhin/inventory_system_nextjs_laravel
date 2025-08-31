@@ -15,6 +15,7 @@ export default function DashboardPage() {
       // requiredRoles={['Admin', 'Super Admin']} // only these roles can access
       // requiredPermissions={['view-products']} // or required permission
     >
+      <div className="min-h-screen bg-gray-50 p-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         <StatsGrid darkMode={darkMode} />
       </div>
@@ -26,6 +27,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-6">
         <TopProducts darkMode={darkMode} />
+      </div>
       </div>
       </AccessRoute>
     </>

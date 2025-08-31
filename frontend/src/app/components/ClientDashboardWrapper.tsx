@@ -78,7 +78,7 @@ export default function ClientDashboardWrapper({ children }: Props) {
                   />
 
                   {/* <main className="flex-1 overflow-y-auto px-4 pb-4 pt-0 md:px-6  md:pb-6  md:pt-0"> */}
-                  <main className="flex-1 overflow-y-auto">
+                  <main className="flex-1 overflow-y-auto">     
                     {children}
                   </main>
                 </div>

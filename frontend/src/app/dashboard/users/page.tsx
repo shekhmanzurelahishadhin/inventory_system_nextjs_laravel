@@ -1,202 +1,221 @@
-'use client';
+"use client";
 // pages/admin/posts/index.js
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPlus, faEdit, faTrash, faEye, faSearch
-} from '@fortawesome/free-solid-svg-icons';
-import Breadcrumb from '../../components/Breadcrumb';
-
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faEdit,
+  faTrash,
+  faEye,
+} from "@fortawesome/free-solid-svg-icons";
+import Breadcrumb from "../../components/Breadcrumb";
+import DataTable from "react-data-table-component";
+import ExportButtons from "@/app/components/ExportButton";
 
 const PostManagement = () => {
   // Sample data for demonstration
   const [posts, setPosts] = useState([
     {
       id: 1,
-      title: 'Getting Started with Next.js',
-      slug: 'getting-started-with-nextjs',
-      category: 'Web Development',
+      title: "Getting Started with Next.js",
+      slug: "getting-started-with-nextjs",
+      category: "Web Development",
       views: 1245,
-      status: 'Published',
-      publishedAt: '2023-06-15',
+      status: "Published",
+      publishedAt: "2023-06-15",
     },
     {
       id: 2,
-      title: 'Advanced React Patterns',
-      slug: 'advanced-react-patterns',
-      category: 'Programming',
+      title: "Advanced React Patterns",
+      slug: "advanced-react-patterns",
+      category: "Programming",
       views: 876,
-      status: 'Draft',
-      publishedAt: '2023-07-22',
+      status: "Draft",
+      publishedAt: "2023-07-22",
     },
     {
       id: 3,
-      title: 'Tailwind CSS Best Practices',
-      slug: 'tailwind-css-best-practices',
-      category: 'CSS',
+      title: "Tailwind CSS Best Practices",
+      slug: "tailwind-css-best-practices",
+      category: "CSS",
       views: 1532,
-      status: 'Published',
-      publishedAt: '2023-05-10',
+      status: "Published",
+      publishedAt: "2023-05-10",
     },
     {
       id: 4,
-      title: 'State Management in React',
-      slug: 'state-management-in-react',
-      category: 'Programming',
+      title: "State Management in React",
+      slug: "state-management-in-react",
+      category: "Programming",
       views: 987,
-      status: 'Published',
-      publishedAt: '2023-08-05',
+      status: "Published",
+      publishedAt: "2023-08-05",
     },
   ]);
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: 'Home', href: '/admin/dashboard' },
-    { label: 'Content Management', href: '/admin/content' },
-    { label: 'Posts', href: '#' },
+    { label: "Home", href: "/admin/dashboard" },
+    { label: "Content Management", href: "/admin/content" },
+    { label: "Posts", href: "#" },
   ];
 
-  // Filter posts based on search term
+  // Filter posts
   const filteredPosts = posts.filter(
     (post) =>
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Columns for DataTable
+  const columns = [
+    {
+      name: "Title",
+      selector: (row) => row.title,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          <div className="font-medium text-gray-900">{row.title}</div>
+          <div className="text-sm text-gray-500">/{row.slug}</div>
+        </div>
+      ),
+    },
+    {
+      name: "Category",
+      selector: (row) => row.category,
+      sortable: true,
+    },
+    {
+      name: "Views",
+      selector: (row) => row.views,
+      sortable: true,
+      style: {
+        justifyContent: "flex-end", // aligns right
+      },
+      cell: (row) => row.views.toLocaleString(),
+    },
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+      cell: (row) => (
+        <span
+          className={`px-2 py-1 text-xs rounded-full ${
+            row.status === "Published"
+              ? "bg-green-100 text-green-800"
+              : "bg-yellow-100 text-yellow-800"
+          }`}
+        >
+          {row.status}
+        </span>
+      ),
+    },
+    {
+      name: "Published Date",
+      selector: (row) => row.publishedAt,
+      sortable: true,
+    },
+    {
+      name: "Actions",
+      cell: (row) => (
+        <div className="flex space-x-2">
+          <button className="text-blue-600 hover:text-blue-900">
+            <FontAwesomeIcon icon={faEye} />
+          </button>
+          <button className="text-indigo-600 hover:text-indigo-900">
+            <FontAwesomeIcon icon={faEdit} />
+          </button>
+          <button className="text-red-600 hover:text-red-900">
+            <FontAwesomeIcon icon={faTrash} />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
-     {/* Breadcrumb Section */}
-        <div className="flex flex-wrap mb-6">
-          <div className="w-full bg-white shadow overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4">
-              <h1 className="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">Post Management</h1>
-              <Breadcrumb items={breadcrumbItems} />
-            </div>
-          </div>
-        </div>
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-       
-
-        {/* Stats Cards */}
-
-        {/* Main Content Card */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {/* Header with Search and Add Button */}
-          <div className="flex flex-col sm:flex-row justify-between items-center p-4 border-b">
-            <div className="relative w-full sm:w-64 mb-4 sm:mb-0">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                 <FontAwesomeIcon icon={faSearch}  className="text-gray-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search posts..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-               <FontAwesomeIcon icon={faPlus}  className="mr-2" />
-              Add New Post
-            </button>
-          </div>
-
-          {/* Posts Table */}
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Title
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Category
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Views
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Published Date
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredPosts.map((post) => (
-                  <tr key={post.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{post.title}</div>
-                      <div className="text-sm text-gray-500">/{post.slug}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{post.category}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{post.views.toLocaleString()}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          post.status === 'Published'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
-                      >
-                        {post.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {post.publishedAt}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900">
-                           <FontAwesomeIcon icon={faEye}  />
-                        </button>
-                        <button className="text-indigo-600 hover:text-indigo-900">
-                           <FontAwesomeIcon icon={faEdit}  />
-                        </button>
-                        <button className="text-red-600 hover:text-red-900">
-                           <FontAwesomeIcon icon={faTrash}  />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 sm:px-6">
-            <div className="flex flex-col sm:flex-row justify-between items-center">
-              <div className="text-sm text-gray-700 mb-4 sm:mb-0">
-                Showing <span className="font-medium">1</span> to <span className="font-medium">4</span> of{' '}
-                <span className="font-medium">{posts.length}</span> results
-              </div>
-              <div className="flex space-x-2">
-                <button className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                  Previous
-                </button>
-                <button className="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                  Next
-                </button>
-              </div>
-            </div>
+      {/* Breadcrumb Section */}
+      <div className="flex flex-wrap mb-6">
+        <div className="w-full bg-white shadow overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4">
+            <h1 className="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">
+              Post Management
+            </h1>
+            <Breadcrumb items={breadcrumbItems} />
           </div>
         </div>
       </div>
-    </div>
+
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-8xl mx-auto">
+          <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800">Categories</h2>
+            <button
+              // onClick={handleCreate}
+              className="mt-2 sm:mt-0 flex items-center px-2 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
+            >
+              <FontAwesomeIcon icon={faPlus} className="mr-2" />
+              Add New
+            </button>
+          </div>
+          {/* DataTable */}
+          <div className="bg-white shadow overflow-hidden pt-8">
+            <DataTable
+              // title="Posts"
+              columns={columns}
+              data={filteredPosts}
+              pagination
+              highlightOnHover
+              pointerOnHover
+              subHeader
+              subHeaderComponent={
+                <div className="flex flex-col sm:flex-row justify-between items-center w-full space-y-2 sm:space-y-0">
+                  {/* Export Buttons */}
+                  <ExportButtons
+                    data={filteredPosts}
+                    fileName="posts"
+                    columns={[
+                      { name: "Title", selector: "title" },
+                      { name: "Slug", selector: "slug" },
+                      { name: "Category", selector: "category" },
+                      { name: "Views", selector: "views" },
+                      { name: "Status", selector: "status" },
+                      { name: "Published Date", selector: "publishedAt" },
+                    ]}
+                  />
+
+                  {/* Search Input */}
+                  <input
+                    type="text"
+                    placeholder="Search posts..."
+                    className="px-2 py-1 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    value={searchTerm}
+                    onChange={(e) => {
+                      const value = e.target.value.toLowerCase();
+                      setSearchTerm(value);
+
+                      // Filter posts
+                      const filtered = posts.filter(
+                        (post) =>
+                          post.title.toLowerCase().includes(value) ||
+                          post.slug.toLowerCase().includes(value) ||
+                          post.category.toLowerCase().includes(value)
+                      );
+                      setPosts(filtered);
+                    }}
+                  />
+                </div>
+              }
+              paginationPerPage={2}
+              paginationRowsPerPageOptions={[5, 10, 25, 50, 100]}
+            />
+          </div>
+        </div>
+      </div>
     </>
-    
   );
 };
 
