@@ -1,6 +1,6 @@
 "use client";
 // pages/admin/posts/index.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -11,9 +11,13 @@ import {
 import Breadcrumb from "../../components/Breadcrumb";
 import DataTable from "react-data-table-component";
 import ExportButtons from "@/app/components/ExportButton";
+import { api } from "@/app/lib/api";
+import { toast } from "react-toastify";
 
 const PostManagement = () => {
   // Sample data for demonstration
+  const [users, setUsers] = useState([]);
+  const [usersSearch, setUsersSearch] = useState([]);
   const [posts, setPosts] = useState([
     {
       id: 1,
@@ -53,6 +57,25 @@ const PostManagement = () => {
     },
   ]);
 
+    // Fetch categories from Laravel API
+    const fetchUsers = async () => {
+        try {
+            // setIsLoading(true);
+            const res = await api.get('/users');
+            setUsers(res.data.data);
+            setUsersSearch(res.data.data); // <-- store filtered list separately
+        } catch (error) {
+            toast.error('Failed to fetch categories');
+            localStorage.removeItem('auth_token');
+        } finally {
+            // setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
   const [searchTerm, setSearchTerm] = useState("");
 
   // Breadcrumb items
@@ -64,10 +87,11 @@ const PostManagement = () => {
 
   // Filter posts
   const filteredPosts = posts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  (post) =>
+    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.category.toLowerCase().includes(searchTerm.toLowerCase())
+);
 
   // Columns for DataTable
   const columns = [
@@ -142,7 +166,7 @@ const PostManagement = () => {
         <div className="w-full bg-white shadow overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4">
             <h1 className="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">
-              Post Management
+              User Management
             </h1>
             <Breadcrumb items={breadcrumbItems} />
           </div>
@@ -152,12 +176,12 @@ const PostManagement = () => {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-8xl mx-auto">
           <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">Categories</h2>
+            <h2 className="text-xl font-semibold text-gray-800">Users</h2>
             <button
               // onClick={handleCreate}
-              className="mt-2 sm:mt-0 flex items-center px-2 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
+              className="mt-2 sm:mt-0 flex items-center px-3 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
             >
-              <FontAwesomeIcon icon={faPlus} className="mr-2" />
+              <FontAwesomeIcon icon={faPlus} className="mr-1" />
               Add New
             </button>
           </div>
@@ -193,19 +217,7 @@ const PostManagement = () => {
                     placeholder="Search posts..."
                     className="px-2 py-1 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={searchTerm}
-                    onChange={(e) => {
-                      const value = e.target.value.toLowerCase();
-                      setSearchTerm(value);
-
-                      // Filter posts
-                      const filtered = posts.filter(
-                        (post) =>
-                          post.title.toLowerCase().includes(value) ||
-                          post.slug.toLowerCase().includes(value) ||
-                          post.category.toLowerCase().includes(value)
-                      );
-                      setPosts(filtered);
-                    }}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
               }

@@ -25,7 +25,7 @@ class UserController extends Controller
     }
     public function users(Request $request)
     {
-        $users = User::with('roles')->get();
+        $users = User::get();
 
         return response()->json([
             'users' => $users, // returns array of permission names

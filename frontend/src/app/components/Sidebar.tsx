@@ -192,7 +192,8 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
     <>
       {open && (
         <div 
-          className="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 lg:hidden transition-opacity duration-300"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
+          className="fixed inset-0 bg-opacity-50 z-30 lg:hidden transition-opacity duration-300"
           onClick={() => setOpen(false)}
         />
       )}
