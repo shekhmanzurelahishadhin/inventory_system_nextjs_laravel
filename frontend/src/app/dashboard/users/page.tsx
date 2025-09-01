@@ -54,9 +54,9 @@ const PostManagement = () => {
   }, [searchTerm, users]);
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: "Home", href: "/admin/dashboard" },
-    { label: "Content Management", href: "/admin/content" },
-    { label: "Posts", href: "#" },
+    { label: "User Role", href: "#" },
+    { label: "User", href: "#" },
+    { label: "Manage User", href: "#" },
   ];
 
   // Filter posts
@@ -85,19 +85,26 @@ const PostManagement = () => {
       sortable: true,
     },
     {
+      name: "Roles",
+      selector: (row) => row.roles,
+      sortable: true,
+    },
+    {
       name: "Actions",
       cell: (row) => (
-        <div className="flex space-x-2">
-          <button className="text-blue-600 hover:text-blue-900">
-            <FontAwesomeIcon icon={faEye} />
-          </button>
-          <button className="text-indigo-600 hover:text-indigo-900">
-            <FontAwesomeIcon icon={faEdit} />
-          </button>
-          <button className="text-red-600 hover:text-red-900">
-            <FontAwesomeIcon icon={faTrash} />
-          </button>
-        </div>
+        row.roles?.includes("Super Admin") ? null : (  // checks inside comma-separated string
+          <div className="flex space-x-2">
+            <button className="text-blue-600 hover:text-blue-900">
+              <FontAwesomeIcon icon={faEye} />
+            </button>
+            <button className="text-indigo-600 hover:text-indigo-900">
+              <FontAwesomeIcon icon={faEdit} />
+            </button>
+            <button className="text-red-600 hover:text-red-900">
+              <FontAwesomeIcon icon={faTrash} />
+            </button>
+          </div>
+        )
       ),
       width: "15%",
       ignoreRowClick: true,
@@ -162,7 +169,7 @@ const PostManagement = () => {
                   />
                 </div>
               }
-              paginationPerPage={2}
+              paginationPerPage={10}
               paginationRowsPerPageOptions={[5, 10, 25, 50, 100]}
             />
           </div>
