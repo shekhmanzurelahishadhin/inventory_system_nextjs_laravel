@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
-import Preloader from './Preloader';
+import Preloader from '../components/ui/Preloader';
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, loading } = useAuth();

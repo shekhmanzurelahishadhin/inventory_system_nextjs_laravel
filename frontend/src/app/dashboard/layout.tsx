@@ -4,7 +4,7 @@ import '../globals.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import { AuthProvider } from '../context/AuthContext';
-import ClientDashboardWrapper from '../components/ClientDashboardWrapper';
+import ClientDashboardWrapper from '../components/dashboard-components/ClientDashboardWrapper';
 
 config.autoAddCss = false;
 

@@ -7,7 +7,7 @@ import { faEnvelope, faLock, faEye, faEyeSlash } from '@fortawesome/free-solid-s
 import Link from 'next/link';
 import { useAuth } from '@/app/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import Preloader from '@/app/components/Preloader';
+import Preloader from '@/app/components/ui/Preloader';
 
 export default function Login() {
   const [email, setEmail] = useState('');

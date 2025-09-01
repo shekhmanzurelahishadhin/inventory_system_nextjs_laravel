@@ -8,8 +8,8 @@ import {
   faMoon,
   faSun
 } from '@fortawesome/free-solid-svg-icons';
-import { useDarkMode } from '../context/DarkModeContext';
-import { useAuth } from '../context/AuthContext';
+import { useDarkMode } from '../../context/DarkModeContext';
+import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
 
 interface HeaderProps {

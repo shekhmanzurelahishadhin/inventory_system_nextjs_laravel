@@ -1,5 +1,4 @@
 "use client";
-// pages/admin/posts/index.js
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,13 +7,13 @@ import {
   faTrash,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
-import Breadcrumb from "../../components/Breadcrumb";
+import Breadcrumb from "../../components/ui/Breadcrumb";
 import DataTable from "react-data-table-component";
-import ExportButtons from "@/app/components/ExportButton";
+import ExportButtons from "@/app/components/ui/ExportButton";
 import { api } from "@/app/lib/api";
 import { toast } from "react-toastify";
 
-const PostManagement = () => {
+const UserManagement = () => {
   // Sample data for demonstration
   const [users, setUsers] = useState([]);
   const [usersSearch, setUsersSearch] = useState([]);
@@ -179,4 +178,4 @@ const PostManagement = () => {
   );
 };
 
-export default PostManagement;
+export default UserManagement;

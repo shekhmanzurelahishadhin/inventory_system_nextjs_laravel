@@ -2,7 +2,7 @@
 // app/(auth)/layout.tsx
 import { ReactNode, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import Preloader from '../components/Preloader';
+import Preloader from '../components/ui/Preloader';
 import { useRouter } from 'next/navigation';
 
 

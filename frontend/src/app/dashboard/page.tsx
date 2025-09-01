@@ -1,10 +1,10 @@
 'use client';
-import StatsGrid from '../components/StatsGrid';
-import ActivityChart from '../components/ActivityChart';
-import RecentTransactions from '../components/RecentTransactions';
-import TopProducts from '../components/TopProducts';
+import StatsGrid from '../components/dashboard-components/StatsGrid';
+import ActivityChart from '../components/dashboard-components/ActivityChart';
+import RecentTransactions from '../components/dashboard-components/RecentTransactions';
+import TopProducts from '../components/dashboard-components/TopProducts';
 import { useDarkMode } from '../context/DarkModeContext';
-import AccessRoute from '../components/AccessRoute';
+import AccessRoute from '../routes/AccessRoute';
 
 export default function DashboardPage() {
   const { darkMode } = useDarkMode();

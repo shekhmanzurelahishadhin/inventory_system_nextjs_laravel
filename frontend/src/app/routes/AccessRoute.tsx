@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
-import Preloader from "./Preloader";
+import Preloader from "../components/ui/Preloader";
 
 interface AccessRouteProps {
   children: React.ReactNode;
