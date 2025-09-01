@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -21,9 +22,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_data');
-      window.location.href = '/auth/login';
+      // localStorage.removeItem('auth_token');
+      // localStorage.removeItem('user_data');
+      // window.location.href = '/auth/login';
+       const router = useRouter();
+      router.replace('/dashboard');
     }
     return Promise.reject(error);
   }

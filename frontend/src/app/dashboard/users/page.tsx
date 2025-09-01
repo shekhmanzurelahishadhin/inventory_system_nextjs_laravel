@@ -18,66 +18,40 @@ const PostManagement = () => {
   // Sample data for demonstration
   const [users, setUsers] = useState([]);
   const [usersSearch, setUsersSearch] = useState([]);
-  const [posts, setPosts] = useState([
-    {
-      id: 1,
-      title: "Getting Started with Next.js",
-      slug: "getting-started-with-nextjs",
-      category: "Web Development",
-      views: 1245,
-      status: "Published",
-      publishedAt: "2023-06-15",
-    },
-    {
-      id: 2,
-      title: "Advanced React Patterns",
-      slug: "advanced-react-patterns",
-      category: "Programming",
-      views: 876,
-      status: "Draft",
-      publishedAt: "2023-07-22",
-    },
-    {
-      id: 3,
-      title: "Tailwind CSS Best Practices",
-      slug: "tailwind-css-best-practices",
-      category: "CSS",
-      views: 1532,
-      status: "Published",
-      publishedAt: "2023-05-10",
-    },
-    {
-      id: 4,
-      title: "State Management in React",
-      slug: "state-management-in-react",
-      category: "Programming",
-      views: 987,
-      status: "Published",
-      publishedAt: "2023-08-05",
-    },
-  ]);
-
-    // Fetch categories from Laravel API
-    const fetchUsers = async () => {
-        try {
-            // setIsLoading(true);
-            const res = await api.get('/users');
-            setUsers(res.data.data);
-            setUsersSearch(res.data.data); // <-- store filtered list separately
-        } catch (error) {
-            toast.error('Failed to fetch categories');
-            localStorage.removeItem('auth_token');
-        } finally {
-            // setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Fetch Users from Laravel API
+  const fetchUsers = async () => {
+    try {
+      // setIsLoading(true);
+      const res = await api.get("/users");
+      console.log(res.data);
+      setUsers(res.data.data);
+      setUsersSearch(res.data.data); // <-- store filtered list separately
+    } catch (error) {
+      toast.error("Failed to fetch Users");
+      localStorage.removeItem("auth_token");
+    } finally {
+      // setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    if (!searchTerm) {
+      setUsersSearch(users);
+    } else {
+      const filtered = users.filter(
+        (user) =>
+          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setUsersSearch(filtered);
+    }
+  }, [searchTerm, users]);
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "Home", href: "/admin/dashboard" },
@@ -86,59 +60,28 @@ const PostManagement = () => {
   ];
 
   // Filter posts
-  const filteredPosts = posts.filter(
-  (post) =>
-    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.slug.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    post.category.toLowerCase().includes(searchTerm.toLowerCase())
-);
+  const filteredPosts = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Columns for DataTable
   const columns = [
     {
-      name: "Title",
-      selector: (row) => row.title,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          <div className="font-medium text-gray-900">{row.title}</div>
-          <div className="text-sm text-gray-500">/{row.slug}</div>
-        </div>
-      ),
+      name: "#", // Serial Number Column
+      cell: (row, index, column, id) => index + 1, // Serial starts at 1
+      width: "5%", // Optional: Adjust width
+      grow: 0, // Optional: Prevent column from growing
     },
     {
-      name: "Category",
-      selector: (row) => row.category,
+      name: "Name",
+      selector: (row) => row.name,
       sortable: true,
     },
     {
-      name: "Views",
-      selector: (row) => row.views,
-      sortable: true,
-      style: {
-        justifyContent: "flex-end", // aligns right
-      },
-      cell: (row) => row.views.toLocaleString(),
-    },
-    {
-      name: "Status",
-      selector: (row) => row.status,
-      sortable: true,
-      cell: (row) => (
-        <span
-          className={`px-2 py-1 text-xs rounded-full ${
-            row.status === "Published"
-              ? "bg-green-100 text-green-800"
-              : "bg-yellow-100 text-yellow-800"
-          }`}
-        >
-          {row.status}
-        </span>
-      ),
-    },
-    {
-      name: "Published Date",
-      selector: (row) => row.publishedAt,
+      name: "Email",
+      selector: (row) => row.email,
       sortable: true,
     },
     {
@@ -156,6 +99,8 @@ const PostManagement = () => {
           </button>
         </div>
       ),
+      width: "15%",
+      ignoreRowClick: true,
     },
   ];
 
@@ -200,14 +145,10 @@ const PostManagement = () => {
                   {/* Export Buttons */}
                   <ExportButtons
                     data={filteredPosts}
-                    fileName="posts"
+                    fileName="users"
                     columns={[
-                      { name: "Title", selector: "title" },
-                      { name: "Slug", selector: "slug" },
-                      { name: "Category", selector: "category" },
-                      { name: "Views", selector: "views" },
-                      { name: "Status", selector: "status" },
-                      { name: "Published Date", selector: "publishedAt" },
+                      { name: "Name", selector: "name" },
+                      { name: "Email", selector: "email" }
                     ]}
                   />
 
