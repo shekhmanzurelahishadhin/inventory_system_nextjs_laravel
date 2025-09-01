@@ -14,6 +14,7 @@ import { api } from "@/app/lib/api";
 import { toast } from "react-toastify";
 import Button from "@/app/components/ui/Button";
 import PageHeader from "@/app/components/layouts/PageHeader";
+import ActionButtons from "@/app/components/ui/ActionButtons";
 
 const UserManagement = () => {
   // Sample data for demonstration
@@ -93,98 +94,105 @@ const UserManagement = () => {
     {
       name: "Actions",
       cell: (row) => (
-        row.roles?.includes("Super Admin") ? null : (  // checks inside comma-separated string
-          <div className="flex space-x-2">
-            <button className="text-blue-600 hover:text-blue-900">
-              <FontAwesomeIcon icon={faEye} />
-            </button>
-            <button className="text-indigo-600 hover:text-indigo-900">
-              <FontAwesomeIcon icon={faEdit} />
-            </button>
-            <button className="text-red-600 hover:text-red-900">
-              <FontAwesomeIcon icon={faTrash} />
-            </button>
-          </div>
-        )
+        <ActionButtons
+          row={row}
+          buttons={[
+            {
+              icon: faEye,
+              onClick: (r) => console.log("View", r),
+              variant: "primary",
+              size: "sm",
+              show: (r) => !r.roles?.includes("Super Admin"),
+              tooltip: "View",
+            },
+            {
+              icon: faEdit,
+              onClick: (r) => console.log("Edit", r),
+              variant: "secondary",
+              size: "sm",
+              show: (r) => !r.roles?.includes("Super Admin"),
+              tooltip: "Edit",
+            },
+            {
+              icon: faTrash,
+              onClick: (r) => console.log("Delete", r),
+              variant: "danger",
+              size: "sm",
+              show: (r) => !r.roles?.includes("Super Admin"),
+              tooltip: "Delete",
+            },
+          ]}
+        />
       ),
       width: "15%",
       ignoreRowClick: true,
-    },
+    }
   ];
 
-  return (
-    <>
-      {/* Breadcrumb Section */}
-      {/* <div className="flex flex-wrap mb-6">
-        <div className="w-full bg-white shadow overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4">
-            <h1 className="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">
-              User Management
-            </h1>
-            <Breadcrumb items={breadcrumbItems} />
-          </div>
+return (
+  <>
+    {/* Breadcrumb Section */}
+    <PageHeader
+      title="User Management"
+      breadcrumbItems={breadcrumbItems}
+      onAdd={() => console.log("Add New")}
+    />
+
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-8xl mx-auto">
+        <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
+          <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
+
+          <Button
+            variant="primary"
+            icon={faPlus}
+            size="md"
+            className="mt-2 sm:mt-0"
+            onClick={() => console.log("Add New clicked")}
+          >
+            Add New
+          </Button>
         </div>
-      </div> */}
-       <PageHeader
-        title="User Management"
-        breadcrumbItems={breadcrumbItems}
-        onAdd={() => console.log("Add New")}
-      />
+        {/* DataTable */}
+        <div className="bg-white shadow overflow-hidden pt-8">
+          <DataTable
+            // title="Posts"
+            columns={columns}
+            data={filteredPosts}
+            pagination
+            highlightOnHover
+            pointerOnHover
+            subHeader
+            subHeaderComponent={
+              <div className="flex flex-col sm:flex-row justify-between items-center w-full space-y-2 sm:space-y-0">
+                {/* Export Buttons */}
+                <ExportButtons
+                  data={filteredPosts}
+                  fileName="users"
+                  columns={[
+                    { name: "Name", selector: "name" },
+                    { name: "Email", selector: "email" }
+                  ]}
+                />
 
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-8xl mx-auto">
-          <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
-
-            <Button
-              variant="primary"
-              icon={faPlus}
-              className="mt-2 sm:mt-0"
-              onClick={() => console.log("Add New clicked")}
-            >
-              Add New
-            </Button>
-          </div>
-          {/* DataTable */}
-          <div className="bg-white shadow overflow-hidden pt-8">
-            <DataTable
-              // title="Posts"
-              columns={columns}
-              data={filteredPosts}
-              pagination
-              highlightOnHover
-              pointerOnHover
-              subHeader
-              subHeaderComponent={
-                <div className="flex flex-col sm:flex-row justify-between items-center w-full space-y-2 sm:space-y-0">
-                  {/* Export Buttons */}
-                  <ExportButtons
-                    data={filteredPosts}
-                    fileName="users"
-                    columns={[
-                      { name: "Name", selector: "name" },
-                      { name: "Email", selector: "email" }
-                    ]}
-                  />
-
-                  {/* Search Input */}
-                  <input
-                    type="text"
-                    placeholder="Search posts..."
-                    className="px-2 py-1 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-              }
-              paginationPerPage={10}
-              paginationRowsPerPageOptions={[5, 10, 25, 50, 100]}
-            />
-          </div>
+                {/* Search Input */}
+                <input
+                  type="text"
+                  placeholder="Search posts..."
+                  className="px-2 py-1 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            }
+            paginationPerPage={10}
+            paginationRowsPerPageOptions={[5, 10, 25, 50, 100]}
+          />
         </div>
       </div>
-    </>
-  );
+    </div>
+  </>
+);
 };
 
 export default UserManagement;
