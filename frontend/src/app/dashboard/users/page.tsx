@@ -12,6 +12,7 @@ import DataTable from "react-data-table-component";
 import ExportButtons from "@/app/components/ui/ExportButton";
 import { api } from "@/app/lib/api";
 import { toast } from "react-toastify";
+import Button from "@/app/components/ui/Button";
 
 const UserManagement = () => {
   // Sample data for demonstration
@@ -128,13 +129,15 @@ const UserManagement = () => {
         <div className="max-w-8xl mx-auto">
           <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800">Users</h2>
-            <button
-              // onClick={handleCreate}
-              className="mt-2 sm:mt-0 flex items-center px-3 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 transition-colors"
+
+            <Button
+              variant="primary"
+              icon={faPlus}
+              className="mt-2 sm:mt-0"
+              onClick={() => console.log("Add New clicked")}
             >
-              <FontAwesomeIcon icon={faPlus} className="mr-1" />
               Add New
-            </button>
+            </Button>
           </div>
           {/* DataTable */}
           <div className="bg-white shadow overflow-hidden pt-8">
