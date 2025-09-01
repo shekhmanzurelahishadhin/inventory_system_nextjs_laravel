@@ -13,6 +13,7 @@ import ExportButtons from "@/app/components/ui/ExportButton";
 import { api } from "@/app/lib/api";
 import { toast } from "react-toastify";
 import Button from "@/app/components/ui/Button";
+import PageHeader from "@/app/components/dashboard-components/PageHeader";
 
 const UserManagement = () => {
   // Sample data for demonstration
@@ -114,7 +115,7 @@ const UserManagement = () => {
   return (
     <>
       {/* Breadcrumb Section */}
-      <div className="flex flex-wrap mb-6">
+      {/* <div className="flex flex-wrap mb-6">
         <div className="w-full bg-white shadow overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4">
             <h1 className="text-2xl font-bold text-gray-800 mb-2 sm:mb-0">
@@ -123,12 +124,17 @@ const UserManagement = () => {
             <Breadcrumb items={breadcrumbItems} />
           </div>
         </div>
-      </div>
+      </div> */}
+       <PageHeader
+        title="User Management"
+        breadcrumbItems={breadcrumbItems}
+        onAdd={() => console.log("Add New")}
+      />
 
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-8xl mx-auto">
           <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">Users</h2>
+            <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
 
             <Button
               variant="primary"
