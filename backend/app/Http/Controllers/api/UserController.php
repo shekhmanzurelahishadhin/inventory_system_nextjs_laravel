@@ -26,10 +26,31 @@ class UserController extends Controller
     }
     public function users(Request $request)
     {
-        $users = User::with('roles:id,name')->get();
+        $query = User::with('roles:id,name');
 
+        // Optional search
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('roles', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Optional pagination
+        $perPage = $request->get('per_page', 10);
+        $users = $query->paginate($perPage);
+
+        // Return resource collection
         return response()->json([
             'data' => UserResource::collection($users),
+            'total' => $users->total(),
+            'current_page' => $users->currentPage(),
+            'per_page' => $users->perPage(),
         ]);
     }
 }

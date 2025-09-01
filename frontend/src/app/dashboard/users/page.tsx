@@ -15,6 +15,7 @@ import { toast } from "react-toastify";
 import Button from "@/app/components/ui/Button";
 import PageHeader from "@/app/components/layouts/PageHeader";
 import ActionButtons from "@/app/components/ui/ActionButtons";
+import DynamicDataTable from "@/app/components/ui/DynamicDataTable";
 
 const UserManagement = () => {
   // Sample data for demonstration
@@ -42,18 +43,19 @@ const UserManagement = () => {
     fetchUsers();
   }, []);
 
-  useEffect(() => {
-    if (!searchTerm) {
-      setUsersSearch(users);
-    } else {
-      const filtered = users.filter(
-        (user) =>
-          user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setUsersSearch(filtered);
-    }
-  }, [searchTerm, users]);
+  // useEffect(() => {
+  //   if (!searchTerm) {
+  //     setUsersSearch(users);
+  //   } else {
+  //     const filtered = users.filter(
+  //       (user) =>
+  //         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         user.roles.toLowerCase().includes(searchTerm.toLowerCase())
+  //     );
+  //     setUsersSearch(filtered);
+  //   }
+  // }, [searchTerm, users]);
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "User Role", href: "#" },
@@ -62,11 +64,12 @@ const UserManagement = () => {
   ];
 
   // Filter posts
-  const filteredPosts = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredPosts = users.filter(
+  //   (user) =>
+  //     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     user.roles.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
 
   // Columns for DataTable
   const columns = [
@@ -129,70 +132,51 @@ const UserManagement = () => {
     }
   ];
 
-return (
-  <>
-    {/* Breadcrumb Section */}
-    <PageHeader
-      title="User Management"
-      breadcrumbItems={breadcrumbItems}
-      onAdd={() => console.log("Add New")}
-    />
+  return (
+    <>
+      {/* Breadcrumb Section */}
+      <PageHeader
+        title="User Management"
+        breadcrumbItems={breadcrumbItems}
+        onAdd={() => console.log("Add New")}
+      />
 
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-8xl mx-auto">
-        <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-8xl mx-auto">
+          <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
 
-          <Button
-            variant="primary"
-            icon={faPlus}
-            size="md"
-            className="mt-2 sm:mt-0"
-            onClick={() => console.log("Add New clicked")}
-          >
-            Add New
-          </Button>
-        </div>
-        {/* DataTable */}
-        <div className="bg-white shadow overflow-hidden pt-8">
-          <DataTable
-            // title="Posts"
-            columns={columns}
-            data={filteredPosts}
-            pagination
-            highlightOnHover
-            pointerOnHover
-            subHeader
-            subHeaderComponent={
-              <div className="flex flex-col sm:flex-row justify-between items-center w-full space-y-2 sm:space-y-0">
-                {/* Export Buttons */}
-                <ExportButtons
-                  data={filteredPosts}
-                  fileName="users"
-                  columns={[
-                    { name: "Name", selector: "name" },
-                    { name: "Email", selector: "email" }
-                  ]}
-                />
+            <Button
+              variant="primary"
+              icon={faPlus}
+              size="md"
+              className="mt-2 sm:mt-0"
+              onClick={() => console.log("Add New clicked")}
+            >
+              Add New
+            </Button>
+          </div>
+          {/* DataTable */}
+          <div className="bg-white shadow overflow-hidden pt-8">
+            <DynamicDataTable
+              columns={columns}
+              apiEndpoint="/users"
+              exportColumns={[
+                { name: "Name", selector: "name" },
+                { name: "Email", selector: "email" },
+                { name: "Roles", selector: "roles" },
+              ]}
+              exportFileName="users_list"
+              paginationRowsPerPageOptions={[10, 20, 50, 100]}
+              defaultPerPage={2}
+              searchPlaceholder="Search users..."
+            />
 
-                {/* Search Input */}
-                <input
-                  type="text"
-                  placeholder="Search posts..."
-                  className="px-2 py-1 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            }
-            paginationPerPage={10}
-            paginationRowsPerPageOptions={[5, 10, 25, 50, 100]}
-          />
+          </div>
         </div>
       </div>
-    </div>
-  </>
-);
+    </>
+  );
 };
 
 export default UserManagement;
