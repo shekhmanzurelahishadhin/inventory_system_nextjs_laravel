@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import ClientDashboardWrapper from './components/dashboard-components/ClientDashboardWrapper';
+import ClientDashboardWrapper from './components/layouts/DashboardWrapper';
 import { AuthProvider } from './context/AuthContext';
 
 config.autoAddCss = false;

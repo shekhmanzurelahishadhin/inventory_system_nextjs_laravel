@@ -1,8 +1,8 @@
 'use client';
-import StatsGrid from '../components/dashboard-components/StatsGrid';
-import ActivityChart from '../components/dashboard-components/ActivityChart';
-import RecentTransactions from '../components/dashboard-components/RecentTransactions';
-import TopProducts from '../components/dashboard-components/TopProducts';
+import StatsGrid from '../components/charts/StatsGrid';
+import ActivityChart from '../components/charts/ActivityChart';
+import RecentTransactions from '../components/charts/RecentTransactions';
+import TopProducts from '../components/charts/TopProducts';
 import { useDarkMode } from '../context/DarkModeContext';
 import AccessRoute from '../routes/AccessRoute';
 

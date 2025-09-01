@@ -3,8 +3,7 @@ import { Inter } from 'next/font/google';
 import '../globals.css';
 import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
-import { AuthProvider } from '../context/AuthContext';
-import ClientDashboardWrapper from '../components/dashboard-components/ClientDashboardWrapper';
+import DashboardWrapper from '../components/layouts/DashboardWrapper';
 
 config.autoAddCss = false;
 
@@ -18,7 +17,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <ClientDashboardWrapper>{children}</ClientDashboardWrapper>
+      <DashboardWrapper>{children}</DashboardWrapper>
     </>
   );
 }

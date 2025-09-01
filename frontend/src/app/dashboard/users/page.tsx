@@ -13,7 +13,7 @@ import ExportButtons from "@/app/components/ui/ExportButton";
 import { api } from "@/app/lib/api";
 import { toast } from "react-toastify";
 import Button from "@/app/components/ui/Button";
-import PageHeader from "@/app/components/dashboard-components/PageHeader";
+import PageHeader from "@/app/components/layouts/PageHeader";
 
 const UserManagement = () => {
   // Sample data for demonstration
