@@ -13,6 +13,7 @@ export default function DashboardPage() {
     <>
      <AccessRoute
       // requiredRoles={['Admin', 'Super Admin']} // only these roles can access
+      
       // requiredPermissions={['view-products']} // or required permission
     >
       <div className="min-h-screen bg-gray-50 p-6">
