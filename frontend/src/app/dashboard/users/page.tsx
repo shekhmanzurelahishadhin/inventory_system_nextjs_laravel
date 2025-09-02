@@ -168,7 +168,7 @@ const UserManagement = () => {
               ]}
               exportFileName="users_list"
               paginationRowsPerPageOptions={[10, 20, 50, 100]}
-              defaultPerPage={10}
+              defaultPerPage={2}
               searchPlaceholder="Search users..."
             />
 
