@@ -72,8 +72,16 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
       href: '#',
       icon: solidIcons.faUserCheck,
       children: [
-        { name: 'Role', href: '/apps/calendar', icon: solidIcons.faMinus, requiredPermissions: ["view-products"] },
-        { name: 'Role Permission', href: '/apps/chat', icon: solidIcons.faMinus },
+        { 
+          name: 'Role', 
+          href: '/dashboard/authorization/roles', 
+          icon: solidIcons.faMinus, 
+          // requiredPermissions: ["view-products"] 
+        },
+        { 
+          name: 'Permission', 
+          href: '/dashboard/authorization/permissions',  
+          icon: solidIcons.faMinus },
         { 
           name: 'User', 
           href: '#',
