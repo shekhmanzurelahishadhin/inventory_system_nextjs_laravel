@@ -7,47 +7,18 @@ import {
   faTrash,
   faEye,
 } from "@fortawesome/free-solid-svg-icons";
-// import Breadcrumb from "../../components/ui/Breadcrumb";
-// import DataTable from "react-data-table-component";
-// import ExportButtons from "@/app/components/ui/ExportButton";
-// import { api } from "@/app/lib/api";
-// import { toast } from "react-toastify";
+
 import Button from "@/app/components/ui/Button";
 import PageHeader from "@/app/components/layouts/PageHeader";
 import ActionButtons from "@/app/components/ui/ActionButtons";
 import DynamicDataTable from "@/app/components/ui/DynamicDataTable";
 
-const UserManagement = () => {
-  // Sample data for demonstration
-  // const [users, setUsers] = useState([]);
-  // const [usersSearch, setUsersSearch] = useState([]);
-  // const [searchTerm, setSearchTerm] = useState("");
-
-  // Fetch Users from Laravel API
-  // const fetchUsers = async () => {
-  //   try {
-  //     // setIsLoading(true);
-  //     const res = await api.get("/users");
-  //     console.log(res.data);
-  //     setUsers(res.data.data);
-  //     setUsersSearch(res.data.data); // <-- store filtered list separately
-  //   } catch (error) {
-  //     toast.error("Failed to fetch Users");
-  //     localStorage.removeItem("auth_token");
-  //   } finally {
-  //     // setIsLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchUsers();
-  // }, []);
-
+const Roles = () => {
+ 
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "User Role", href: "#" },
-    { label: "User", href: "#" },
-    { label: "Manage User", href: "#" },
+    { label: "Roles", href: "#" },
   ];
 
 
@@ -65,13 +36,13 @@ const UserManagement = () => {
       sortable: true,
     },
     {
-      name: "Email",
-      selector: (row) => row.email,
+      name: "Guard Name",
+      selector: (row) => row.guard_name,
       sortable: true,
     },
     {
-      name: "Roles",
-      selector: (row) => row.roles,
+      name: "Created At",
+      selector: (row) => row.created_at,
       sortable: true,
     },
     {
@@ -116,7 +87,7 @@ const UserManagement = () => {
     <>
       {/* Breadcrumb Section */}
       <PageHeader
-        title="User Management"
+        title="Roles Management"
         breadcrumbItems={breadcrumbItems}
         onAdd={() => console.log("Add New")}
       />
@@ -124,7 +95,7 @@ const UserManagement = () => {
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-8xl mx-auto">
           <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
+            <h2 className="text-xl font-semibold text-gray-800">Roles List</h2>
 
             <Button
               variant="primary"
@@ -140,16 +111,16 @@ const UserManagement = () => {
           <div className="bg-white shadow overflow-hidden pt-8">
             <DynamicDataTable
               columns={columns}
-              apiEndpoint="/users"
+              apiEndpoint="/roles"
               exportColumns={[
                 { name: "Name", selector: "name" },
-                { name: "Email", selector: "email" },
-                { name: "Roles", selector: "roles" },
+                { name: "Guard Name", selector: "guard_name" },
+                { name: "Created at", selector: "created_at" },
               ]}
-              exportFileName="users_list"
+              exportFileName="roles_list"
               paginationRowsPerPageOptions={[10, 20, 50, 100]}
-              defaultPerPage={2}
-              searchPlaceholder="Search users..."
+              defaultPerPage={10}
+              searchPlaceholder="Search roles..."
             />
 
           </div>
@@ -159,4 +130,4 @@ const UserManagement = () => {
   );
 };
 
-export default UserManagement;
+export default Roles;

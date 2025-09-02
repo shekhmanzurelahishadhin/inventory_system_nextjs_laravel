@@ -24,7 +24,7 @@ class UserController extends Controller
             'permissions' => $user->getAllPermissions()->pluck('name'), // returns array of permission names
         ]);
     }
-    public function users(Request $request)
+    public function index(Request $request)
     {
         $query = User::with('roles:id,name');
 
