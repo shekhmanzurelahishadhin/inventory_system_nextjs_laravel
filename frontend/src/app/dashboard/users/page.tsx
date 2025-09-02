@@ -24,38 +24,25 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch Users from Laravel API
-  const fetchUsers = async () => {
-    try {
-      // setIsLoading(true);
-      const res = await api.get("/users");
-      console.log(res.data);
-      setUsers(res.data.data);
-      setUsersSearch(res.data.data); // <-- store filtered list separately
-    } catch (error) {
-      toast.error("Failed to fetch Users");
-      localStorage.removeItem("auth_token");
-    } finally {
-      // setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+  // const fetchUsers = async () => {
+  //   try {
+  //     // setIsLoading(true);
+  //     const res = await api.get("/users");
+  //     console.log(res.data);
+  //     setUsers(res.data.data);
+  //     setUsersSearch(res.data.data); // <-- store filtered list separately
+  //   } catch (error) {
+  //     toast.error("Failed to fetch Users");
+  //     localStorage.removeItem("auth_token");
+  //   } finally {
+  //     // setIsLoading(false);
+  //   }
+  // };
 
   // useEffect(() => {
-  //   if (!searchTerm) {
-  //     setUsersSearch(users);
-  //   } else {
-  //     const filtered = users.filter(
-  //       (user) =>
-  //         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //         user.roles.toLowerCase().includes(searchTerm.toLowerCase())
-  //     );
-  //     setUsersSearch(filtered);
-  //   }
-  // }, [searchTerm, users]);
+  //   fetchUsers();
+  // }, []);
+
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "User Role", href: "#" },
@@ -63,13 +50,6 @@ const UserManagement = () => {
     { label: "Manage User", href: "#" },
   ];
 
-  // Filter posts
-  // const filteredPosts = users.filter(
-  //   (user) =>
-  //     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //     user.roles.toLowerCase().includes(searchTerm.toLowerCase())
-  // );
 
   // Columns for DataTable
   const columns = [
@@ -168,7 +148,7 @@ const UserManagement = () => {
               ]}
               exportFileName="users_list"
               paginationRowsPerPageOptions={[10, 20, 50, 100]}
-              defaultPerPage={10}
+              defaultPerPage={1}
               searchPlaceholder="Search users..."
             />
 
