@@ -11,7 +11,7 @@ interface PageHeaderProps {
   onAdd?: () => void;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ title, breadcrumbItems, onAdd }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ title, breadcrumbItems }) => {
   return (
     <div className="flex flex-wrap mb-6">
       <div className="w-full bg-white shadow overflow-hidden">

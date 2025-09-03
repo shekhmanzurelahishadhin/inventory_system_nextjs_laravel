@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, ReactNode } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import UserModal from "./UserModal";
+import UserModal from "../ui/UserModal";
 import { DarkModeProvider } from "../../context/DarkModeContext"; // We'll create this
 import { AuthProvider, useAuth } from "../../context/AuthContext"; // Add this import
 import ProtectedRoute from "../../routes/ProtectedRoute"; // Import ProtectedRoute
