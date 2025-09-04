@@ -146,7 +146,7 @@ const UserManagement = () => {
                 { name: "Email", selector: "email" },
                 { name: "Roles", selector: "roles" },
               ]}
-              exportFileName="users_list"
+              exportFileName="Users"
               paginationRowsPerPageOptions={[10, 20, 50, 100]}
               defaultPerPage={2}
               searchPlaceholder="Search users..."
