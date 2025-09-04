@@ -13,6 +13,8 @@ import PageHeader from "@/app/components/layouts/PageHeader";
 import ActionButtons from "@/app/components/ui/ActionButtons";
 import DynamicDataTable from "@/app/components/ui/DynamicDataTable";
 import Modal from "@/app/components/ui/Modal";
+import DynamicViewTable from "@/app/components/ui/DynamicViewTable";
+import DynamicForm from "@/app/components/ui/DynamicForm";
 
 const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -26,7 +28,11 @@ const Roles = () => {
     { label: "User Role", href: "#" },
     { label: "Roles", href: "#" },
   ];
-
+const roleFields = [
+  { label: "Name", key: "name", type: "text", required: true, showOn:"both"  },
+  { label: "Guard Name", key: "guard_name", type: "text", readOnly: true, showOn:"view" },
+  { label: "Created At", key: "created_at", type: "date", readOnly: true, showOn:"view" },
+];
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -144,66 +150,50 @@ const Roles = () => {
       {/* Modal */}
 
       <Modal
-        isOpen={!!modalType}
-        onClose={closeModal}
-        size="lg"
-        title={
-          modalType === "create"
-            ? "Create Role"
-            : modalType === "edit"
-            ? "Edit Role"
-            : "View Role"
-        }
-        footer={
-          modalType === "view" ? (
-            <Button variant="secondary" onClick={closeModal}>
-              Close
-            </Button>
-          ) : (
-            <>
-              <Button variant="secondary" onClick={closeModal}>
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  console.log(`${modalType} role`, selectedRole);
-                  closeModal();
-                }}
-              >
-                {modalType === "create" ? "Create" : "Update"}
-              </Button>
-            </>
-          )
-        }
-      >
-        {modalType === "view" && (
-          <div>
-            <table className="min-w-full divide-y divide-gray-200">
-              <tbody className="bg-white divide-y divide-gray-200">
-                <tr><td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Name</td><td className="px-6 py-4 whitespace-nowrap">{selectedRole?.name}</td></tr>
-                <tr><td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Guard Name</td><td className="px-6 py-4 whitespace-nowrap">{selectedRole?.guard_name}</td></tr>
-                <tr><td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">Created At</td><td className="px-6 py-4 whitespace-nowrap">{selectedRole?.created_at}</td></tr> 
-              </tbody>
-            </table>
-          </div>
-        )}
+  isOpen={!!modalType}
+  onClose={closeModal}
+  size="lg"
+  title={
+    modalType === "create"
+      ? "Create Role"
+      : modalType === "edit"
+      ? "Edit Role"
+      : "View Role"
+  }
+  footer={
+    modalType === "view" ? (
+      <Button variant="secondary" onClick={closeModal}>
+        Close
+      </Button>
+    ) : (
+      <>
+        <Button variant="secondary" onClick={closeModal}>
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          onClick={() => {
+            // console.log(`${modalType} role`, selectedRole);
+            // closeModal();
+          }}
+          
+        >
+          {modalType === "create" ? "Create" : "Update"}
+        </Button>
+      </>
+    )
+  }
+>
+  {modalType === "view" && <DynamicViewTable data={selectedRole} fields={roleFields} />}
 
-        {(modalType === "create" || modalType === "edit") && (
-          <form className="my-5 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Role Name
-              </label>
-              <input
-                type="text"
-                defaultValue={modalType === "edit" ? selectedRole?.name : ""}
-                className="mt-1 block w-full p-3 rounded-sm border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-200"
-              />
-            </div>
-          </form>
-        )}
-      </Modal>
+  {(modalType === "create" || modalType === "edit") && (
+    <DynamicForm
+      data={modalType === "edit" ? selectedRole : null}
+      fields={roleFields}
+      onChange={(data) => setSelectedRole(data)}
+    />
+  )}
+</Modal>
     </>
   );
 };
