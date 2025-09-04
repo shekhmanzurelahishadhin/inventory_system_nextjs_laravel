@@ -19,12 +19,17 @@ const Roles = () => {
     null
   );
   const [selectedRole, setSelectedRole] = useState<any>(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "User Role", href: "#" },
     { label: "Roles", href: "#" },
   ];
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const openModal = (type: "create" | "edit" | "view", role: any = null) => {
     setModalType(type);
@@ -94,6 +99,8 @@ const Roles = () => {
       ignoreRowClick: true,
     },
   ];
+
+  if (!isMounted) return null;
 
   return (
     <>
@@ -191,20 +198,7 @@ const Roles = () => {
               <input
                 type="text"
                 defaultValue={modalType === "edit" ? selectedRole?.name : ""}
-                className="mt-1 block w-full p-3 rounded-sm border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Guard Name
-              </label>
-              <input
-                type="text"
-                defaultValue={
-                  modalType === "edit" ? selectedRole?.guard_name : ""
-                }
-                className="mt-1 block w-full p-3 rounded-sm border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                className="mt-1 block w-full p-3 rounded-sm border border-gray-300 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-200"
               />
             </div>
           </form>
