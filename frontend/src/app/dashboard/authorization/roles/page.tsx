@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlus,
@@ -15,6 +15,9 @@ import DynamicDataTable from "@/app/components/ui/DynamicDataTable";
 import Modal from "@/app/components/ui/Modal";
 import DynamicViewTable from "@/app/components/ui/DynamicViewTable";
 import DynamicForm from "@/app/components/ui/DynamicForm";
+import { api } from "@/app/lib/api";
+import Preloader from "@/app/components/ui/Preloader";
+import { toast } from "react-toastify";
 
 const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -22,17 +25,25 @@ const Roles = () => {
   );
   const [selectedRole, setSelectedRole] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tableData, setTableData] = useState<any[]>([]); // Local state for table data
+  const [totalRows, setTotalRows] = useState(0); // Local state for total rows
 
+  const formRef = useRef<any>(null);
+  
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "User Role", href: "#" },
     { label: "Roles", href: "#" },
   ];
-const roleFields = [
-  { label: "Name", key: "name", type: "text", required: true, showOn:"both"  },
-  { label: "Guard Name", key: "guard_name", type: "text", readOnly: true, showOn:"view" },
-  { label: "Created At", key: "created_at", type: "date", readOnly: true, showOn:"view" },
-];
+  
+  const roleFields = [
+    { label: "Name", key: "name", type: "text", required: true, showOn: "both" },
+    { label: "Guard Name", key: "guard_name", type: "text", readOnly: true, showOn: "view" },
+    { label: "Created At", key: "created_at", type: "date", readOnly: true, showOn: "view" },
+  ];
+  
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -40,20 +51,72 @@ const roleFields = [
   const openModal = (type: "create" | "edit" | "view", role: any = null) => {
     setModalType(type);
     setSelectedRole(role);
+    setBackendErrors({}); 
+    setIsSubmitting(false);
   };
 
   const closeModal = () => {
     setModalType(null);
     setSelectedRole(null);
+    setBackendErrors({});
+    setIsSubmitting(false);
+  };
+
+  const handleFormSubmit = async (formData: Record<string, any>) => {
+    try {
+      setIsSubmitting(true);
+      setBackendErrors({});
+      
+      if (modalType === "create") {
+        const response = await api.post("/roles", formData);
+        const newRole = response.data.data || response.data;
+        
+        // Update local state instead of refetching
+        setTableData(prevData => [newRole, ...prevData]);
+        setTotalRows(prevTotal => prevTotal + 1);
+        
+        toast.success("Role saved successfully");
+        
+      } else if (modalType === "edit" && selectedRole?.id) {
+        const response = await api.put(`/roles/${selectedRole.id}`, formData);
+        const updatedRole = response.data.data || response.data;
+        
+        // Update local state instead of refetching
+        setTableData(prevData => 
+          prevData.map(role => 
+            role.id === selectedRole.id ? updatedRole : role
+          )
+        );
+        
+        toast.success("Role updated successfully");
+      }
+      
+      setIsSubmitting(false);
+      closeModal();
+      
+    } catch (error: any) {
+      setIsSubmitting(false);
+      if (error.response?.status === 422) {
+        setBackendErrors(error.response.data.errors);
+      } else {
+        toast.error(error.response?.data.message || "Failed to save data");
+      }
+    }
+  };
+
+  // Handle data loaded from API (initial load or search/filter)
+  const handleDataLoaded = (data: any[], total: number) => {
+    setTableData(data);
+    setTotalRows(total);
   };
 
   // Columns for DataTable
   const columns = [
     {
-      name: "#", // Serial Number Column
-      cell: (row, index, column, id) => index + 1, // Serial starts at 1
-      width: "5%", // Optional: Adjust width
-      grow: 0, // Optional: Prevent column from growing
+      name: "#",
+      cell: (row, index) => index + 1,
+      width: "5%",
+      grow: 0,
     },
     {
       name: "Name",
@@ -106,11 +169,10 @@ const roleFields = [
     },
   ];
 
-  if (!isMounted) return null;
+  if (!isMounted) return <Preloader />;
 
   return (
     <>
-      {/* Breadcrumb Section */}
       <PageHeader title="Roles Management" breadcrumbItems={breadcrumbItems} />
 
       <div className="min-h-screen bg-gray-50 p-6">
@@ -128,6 +190,7 @@ const roleFields = [
               Add New
             </Button>
           </div>
+          
           {/* DataTable */}
           <div className="bg-white shadow overflow-hidden pt-8">
             <DynamicDataTable
@@ -142,58 +205,56 @@ const roleFields = [
               paginationRowsPerPageOptions={[10, 20, 50, 100]}
               defaultPerPage={10}
               searchPlaceholder="Search roles..."
+              onDataLoaded={handleDataLoaded} // Pass callback to get data
+              externalData={tableData} // Pass local data
+              externalTotalRows={totalRows} // Pass local total rows
             />
           </div>
         </div>
       </div>
 
       {/* Modal */}
-
       <Modal
-  isOpen={!!modalType}
-  onClose={closeModal}
-  size="lg"
-  title={
-    modalType === "create"
-      ? "Create Role"
-      : modalType === "edit"
-      ? "Edit Role"
-      : "View Role"
-  }
-  footer={
-    modalType === "view" ? (
-      <Button variant="secondary" onClick={closeModal}>
-        Close
-      </Button>
-    ) : (
-      <>
-        <Button variant="secondary" onClick={closeModal}>
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          onClick={() => {
-            // console.log(`${modalType} role`, selectedRole);
-            // closeModal();
-          }}
-          
-        >
-          {modalType === "create" ? "Create" : "Update"}
-        </Button>
-      </>
-    )
-  }
->
-  {modalType === "view" && <DynamicViewTable data={selectedRole} fields={roleFields} />}
+        isOpen={!!modalType}
+        onClose={closeModal}
+        size="lg"
+        title={modalType === "create" ? "Create Role" : modalType === "edit" ? "Edit Role" : "View Role"}
+        footer={
+          modalType === "view" ? (
+            <Button variant="secondary" onClick={closeModal}>Close</Button>
+          ) : (
+            <>
+              <Button variant="secondary" onClick={closeModal}>Cancel</Button>
+              <Button
+                variant="primary"
+                onClick={() => formRef.current?.submitForm()}
+                disabled={isSubmitting}
+                className={`${isSubmitting ? "opacity-60 cursor-not-allowed" : "opacity-100"}`}
+              >
+                {isSubmitting
+                  ? modalType === "create"
+                    ? "Creating..."
+                    : "Updating..."
+                  : modalType === "create"
+                    ? "Create"
+                    : "Update"}
+              </Button>
+            </>
+          )
+        }
+      >
+        {modalType === "view" && <DynamicViewTable data={selectedRole} fields={roleFields} />}
 
-  {(modalType === "create" || modalType === "edit") && (
-    <DynamicForm
-      data={modalType === "edit" ? selectedRole : null}
-      fields={roleFields}
-      onChange={(data) => setSelectedRole(data)}
-    />
-  )}
-</Modal>
+        {(modalType === "create" || modalType === "edit") && (
+          <DynamicForm
+            ref={formRef}
+            data={modalType === "edit" ? selectedRole : null}
+            fields={roleFields}
+            onSubmit={handleFormSubmit}
+            backendErrors={backendErrors}
+          />
+        )}
+      </Modal>
     </>
   );
 };

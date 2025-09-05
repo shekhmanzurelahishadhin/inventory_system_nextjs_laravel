@@ -1,0 +1,39 @@
+<?php
+
+
+namespace App\Services;
+
+
+use Spatie\Permission\Models\Role;
+
+class RoleService
+{
+    public function getRoles($filters = [], $perPage = 10)
+    {
+        $query = Role::query();
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('guard_name', 'like', "%{$search}%");
+        }
+
+        return $query->paginate($perPage);
+    }
+
+    public function createRole($data)
+    {
+        return Role::create($data);
+    }
+
+    public function updateRole(Role $role, $data)
+    {
+        $role->update($data);
+        return $role;
+    }
+
+    public function deleteRole(Role $role)
+    {
+        return $role->delete();
+    }
+}
