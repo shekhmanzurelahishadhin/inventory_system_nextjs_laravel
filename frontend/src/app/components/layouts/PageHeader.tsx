@@ -8,7 +8,6 @@ import Breadcrumb from "../ui/Breadcrumb";
 interface PageHeaderProps {
   title: string;
   breadcrumbItems: { label: string; href: string }[];
-  onAdd?: () => void;
 }
 
 const PageHeader: React.FC<PageHeaderProps> = ({ title, breadcrumbItems }) => {
