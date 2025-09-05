@@ -33,7 +33,6 @@ const DynamicDataTable = <T extends any>({
   const [searchTerm, setSearchTerm] = useState("");
   const [perPage, setPerPage] = useState(defaultPerPage);
   const [currentPage, setCurrentPage] = useState(1);
-  const [internalRefresh, setInternalRefresh] = useState(0); // Add internal refresh state
 
   const { data, loading, totalRows, error, refetch } = usePaginatedData<T>({
     apiEndpoint,
@@ -62,7 +61,7 @@ const DynamicDataTable = <T extends any>({
       <DataTable
         columns={columns}
         data={data}
-        progressPending={loading}
+        // progressPending={loading}
         pagination
         paginationServer
         paginationTotalRows={totalRows}

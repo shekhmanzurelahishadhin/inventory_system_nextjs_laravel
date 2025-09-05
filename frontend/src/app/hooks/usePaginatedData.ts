@@ -1,6 +1,6 @@
 // hooks/usePaginatedData.ts
 "use client";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { api } from "@/app/lib/api";
 import { useDebounce } from "./useDebounce";
 
@@ -29,6 +29,8 @@ export function usePaginatedData<T>({
   const [loading, setLoading] = useState(false);
   const [totalRows, setTotalRows] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const previousDataRef = useRef<T[]>([]); // Store previous data
+  const isInitialLoadRef = useRef(true); // Track initial load
 
   // Debounced search term
   const debouncedSearch = useDebounce(searchTerm, 500);
@@ -37,6 +39,11 @@ export function usePaginatedData<T>({
   const fetchData = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     setError(null);
+
+    // Only store previous data if we already have data (not initial load)
+    if (!isInitialLoadRef.current && data.length > 0) {
+      previousDataRef.current = data;
+    }
 
     try {
       const res = await api.get<PaginatedResponse<T>>(apiEndpoint, {
@@ -51,23 +58,30 @@ export function usePaginatedData<T>({
 
       setData(res.data.data);
       setTotalRows(res.data.total);
+      isInitialLoadRef.current = false; // Mark initial load as complete
     } catch (err: any) {
       if (err.name !== "CanceledError" && err.name !== "AbortError") {
         console.error("Fetch error:", err);
         setError(err.message || "Something went wrong");
+        // Restore previous data on error
+        setData(previousDataRef.current);
       }
     } finally {
       setLoading(false);
     }
-  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams)]);
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams), data]);
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchData(controller.signal);
+    
+    // Only fetch if it's not the exact same request
+    if (!isInitialLoadRef.current || data.length === 0) {
+      fetchData(controller.signal);
+    }
 
     // Cancel request on cleanup
     return () => controller.abort();
-  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams)]); // Remove fetchData from dependencies
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams)]);
 
   // Return the refetch function
   const refetch = useCallback(() => {
