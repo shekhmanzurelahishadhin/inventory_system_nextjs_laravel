@@ -87,7 +87,7 @@ const DynamicDataTable = <T extends any>({
             <input
               type="text"
               placeholder={searchPlaceholder}
-              className="px-2 py-1 border rounded-md w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="px-2 py-2 border border-gray-300 rounded-md w-full sm:w-64 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
