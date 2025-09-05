@@ -21,8 +21,11 @@ class RoleService
         return $query->orderBy('id','desc')->paginate($perPage);
     }
 
-    public function createRole($data)
+    public function createRole(array $data)
     {
+        // Force guard_name to 'web' if not provided
+        $data['guard_name'] = 'web';
+
         return Role::create($data);
     }
 
