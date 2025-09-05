@@ -27,8 +27,7 @@ const Roles = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [tableData, setTableData] = useState<any[]>([]); // Local state for table data
-  const [totalRows, setTotalRows] = useState(0); // Local state for total rows
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // Add this line
 
   const formRef = useRef<any>(null);
   
@@ -68,31 +67,18 @@ const Roles = () => {
       setBackendErrors({});
       
       if (modalType === "create") {
-        const response = await api.post("/roles", formData);
-        const newRole = response.data.data || response.data;
-        
-        // Update local state instead of refetching
-        setTableData(prevData => [newRole, ...prevData]);
-        setTotalRows(prevTotal => prevTotal + 1);
-        
+        await api.post("/roles", formData);
         toast.success("Role saved successfully");
-        
       } else if (modalType === "edit" && selectedRole?.id) {
-        const response = await api.put(`/roles/${selectedRole.id}`, formData);
-        const updatedRole = response.data.data || response.data;
-        
-        // Update local state instead of refetching
-        setTableData(prevData => 
-          prevData.map(role => 
-            role.id === selectedRole.id ? updatedRole : role
-          )
-        );
-        
+        await api.put(`/roles/${selectedRole.id}`, formData);
         toast.success("Role updated successfully");
       }
       
       setIsSubmitting(false);
       closeModal();
+      
+      // Force table to refetch by updating refreshTrigger
+      setRefreshTrigger(prev => prev + 1);
       
     } catch (error: any) {
       setIsSubmitting(false);
@@ -102,12 +88,6 @@ const Roles = () => {
         toast.error(error.response?.data.message || "Failed to save data");
       }
     }
-  };
-
-  // Handle data loaded from API (initial load or search/filter)
-  const handleDataLoaded = (data: any[], total: number) => {
-    setTableData(data);
-    setTotalRows(total);
   };
 
   // Columns for DataTable
@@ -205,9 +185,7 @@ const Roles = () => {
               paginationRowsPerPageOptions={[10, 20, 50, 100]}
               defaultPerPage={10}
               searchPlaceholder="Search roles..."
-              onDataLoaded={handleDataLoaded} // Pass callback to get data
-              externalData={tableData} // Pass local data
-              externalTotalRows={totalRows} // Pass local total rows
+              refreshTrigger={refreshTrigger} // Add this prop
             />
           </div>
         </div>

@@ -1,6 +1,6 @@
 // hooks/usePaginatedData.ts
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { api } from "@/app/lib/api";
 import { useDebounce } from "./useDebounce";
 
@@ -33,41 +33,49 @@ export function usePaginatedData<T>({
   // Debounced search term
   const debouncedSearch = useDebounce(searchTerm, 500);
 
+  // Create a refetch function that can be called manually
+  const fetchData = useCallback(async (signal?: AbortSignal) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await api.get<PaginatedResponse<T>>(apiEndpoint, {
+        params: {
+          search: debouncedSearch,
+          page: currentPage,
+          per_page: perPage,
+          ...extraParams,
+        },
+        signal: signal,
+      });
+
+      setData(res.data.data);
+      setTotalRows(res.data.total);
+    } catch (err: any) {
+      if (err.name !== "CanceledError" && err.name !== "AbortError") {
+        console.error("Fetch error:", err);
+        setError(err.message || "Something went wrong");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams)]);
+
   useEffect(() => {
     const controller = new AbortController();
-
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await api.get<PaginatedResponse<T>>(apiEndpoint, {
-          params: {
-            search: debouncedSearch,
-            page: currentPage,
-            per_page: perPage,
-            ...extraParams,
-          },
-          signal: controller.signal,
-        });
-
-        setData(res.data.data);
-        setTotalRows(res.data.total);
-      } catch (err: any) {
-        if (err.name !== "CanceledError" && err.name !== "AbortError") {
-          console.error("Fetch error:", err);
-          setError(err.message || "Something went wrong");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    fetchData(controller.signal);
 
     // Cancel request on cleanup
     return () => controller.abort();
-  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams)]);
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams)]); // Remove fetchData from dependencies
 
-  return { data, loading, totalRows, error };
+  // Return the refetch function
+  const refetch = useCallback(() => {
+    const controller = new AbortController();
+    fetchData(controller.signal);
+    
+    return () => controller.abort();
+  }, [fetchData]);
+
+  return { data, loading, totalRows, error, refetch };
 }
