@@ -19,6 +19,7 @@ import { api } from "@/app/lib/api";
 import Preloader from "@/app/components/ui/Preloader";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { confirmAction } from "@/app/components/common/confirmAction";
 
 const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -92,70 +93,52 @@ const Roles = () => {
   };
 
     // Delete role function with SweetAlert2 confirmation
-  const handleDeleteRole = async (role: any) => {
-    try {
-      // Show confirmation dialog
-      const result = await Swal.fire({
-        title: 'Are you sure?',
-        text: `You are about to delete the role "${role.name}". This action cannot be undone!`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        reverseButtons: true,
-        customClass: {
-          confirmButton: 'px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700',
-          cancelButton: 'px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 mr-3'
-        }
-      });
+ const handleDeleteRole = async (role: any) => {
+  const confirmed = await confirmAction({
+    title: "Are you sure?",
+    text: `You are about to delete the role "${role.name}".!`,
+    confirmButtonText: "Yes, delete it!",
+    cancelButtonText: "Cancel"
+  });
 
-      // If user confirms deletion
-      if (result.isConfirmed) {
-        // Show loading indicator
-        Swal.fire({
-          title: 'Deleting...',
-          text: 'Please wait while we delete the role',
-          allowOutsideClick: false,
-          didOpen: () => {
-            Swal.showLoading();
-          }
-        });
+  if (!confirmed) return;
 
-        // Make API call to delete
-        await api.delete(`/roles/${role.id}`);
+  try {
+    // Show loading
+    Swal.fire({
+      title: "Deleting...",
+      text: `Please wait while we delete the role`,
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
 
-        // Show success message
-        Swal.fire({
-          title: 'Deleted!',
-          text: `Role "${role.name}" has been deleted successfully.`,
-          icon: 'success',
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'OK'
-        });
+    // API call
+    await api.delete(`/roles/${role.id}`);
 
-        // Refresh the table
-        setRefreshTrigger(prev => prev + 1);
-        
-      }
-    } catch (error: any) {
-      // Close loading dialog
-      Swal.close();
-      
-      // Show error message
-      const errorMessage = error.response?.data?.message || 'Failed to delete role';
-      
-      Swal.fire({
-        title: 'Error!',
-        text: errorMessage,
-        icon: 'error',
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'OK'
-      });
-    }
-  };
+    Swal.close(); // close loading
 
+    // Success message
+    Swal.fire({
+      title: "Deleted!",
+      text: `Role "${role.name}" has been deleted successfully.`,
+      icon: "success",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "OK"
+    });
+
+    // Refresh table
+    setRefreshTrigger(prev => prev + 1);
+  } catch (error: any) {
+    Swal.close();
+    Swal.fire({
+      title: "Error!",
+      text: error.response?.data?.message || "Failed to delete role",
+      icon: "error",
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "OK"
+    });
+  }
+};
   // Columns for DataTable
   const columns = [
     {
