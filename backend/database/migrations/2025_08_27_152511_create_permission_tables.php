@@ -23,8 +23,14 @@ return new class extends Migration
         Schema::create($tableNames['permissions'], static function (Blueprint $table) {
             // $table->engine('InnoDB');
             $table->bigIncrements('id'); // permission id
-            $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
-            $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
+            $table->string('name');       // permission name (e.g., user.view, post.create)
+            $table->string('guard_name'); // e.g., web, api
+
+            // ✅ New Columns
+            $table->string('module')->nullable();   // e.g., User Management, Blog
+            $table->string('menu')->nullable();     // e.g., Users, Posts
+            $table->string('sub_menu')->nullable(); // e.g., List, Create, Publish
+
             $table->timestamps();
 
             $table->unique(['name', 'guard_name']);
