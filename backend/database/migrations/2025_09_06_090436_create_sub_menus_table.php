@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('sub_menus', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('menu_id')->constrained()->onDelete('cascade'); // matches menus.id
+            $table->foreignId('module_id')->constrained()->onDelete('cascade'); // matches modules.id
+            $table->foreignId('menu_id')->constrained()->onDelete('cascade')->nullable(); // matches menus.id
             $table->string('name');
             $table->string('slug');
             $table->timestamps();

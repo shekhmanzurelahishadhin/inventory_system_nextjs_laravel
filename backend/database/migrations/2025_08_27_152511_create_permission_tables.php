@@ -27,9 +27,9 @@ return new class extends Migration
             $table->string('guard_name'); // e.g., web, api
 
             // ✅ New Columns
-            $table->string('module')->nullable();   // e.g., User Management, Blog
-            $table->string('menu')->nullable();     // e.g., Users, Posts
-            $table->string('sub_menu')->nullable(); // e.g., List, Create, Publish
+            $table->string('module_id')->nullable();   // e.g., User Management, Blog
+            $table->string('menu_id')->nullable();     // e.g., Users, Posts
+            $table->string('sub_menu_id')->nullable(); // e.g., List, Create, Publish
 
             $table->timestamps();
 
