@@ -14,12 +14,21 @@ class PermissionService
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
+
             $query->where('name', 'like', "%{$search}%")
-                ->orWhere('module_name', 'like', "%{$search}%")
-                ->orWhere('menu_name', 'like', "%{$search}%")
-                ->orWhere('subMenu_name', 'like', "%{$search}%");
+                ->orWhereHas('module', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('menu', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })
+                ->orWhereHas('subMenu', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                });
         }
 
-        return $query->with('module:id,name','menu:id,name','subMenu:id,name')->orderBy('id','desc')->paginate($perPage);
+        return $query->with(['module:id,name','menu:id,name','subMenu:id,name'])
+            ->orderBy('id','desc')
+            ->paginate($perPage);
     }
 }
