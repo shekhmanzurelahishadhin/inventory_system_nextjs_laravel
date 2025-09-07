@@ -4,13 +4,14 @@
 namespace App\Services;
 
 
+use App\Models\authorization\PermissionModel;
 use Spatie\Permission\Models\Permission;
 
 class PermissionService
 {
     public function getPermission($filters = [], $perPage = 10)
     {
-        $query = Permission::query();
+        $query = PermissionModel::query();
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
