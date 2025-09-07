@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api\authorization;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\authorization\roles\CreateRoleRequest;
 use App\Http\Requests\authorization\roles\UpdateRoleRequest;
-use App\Http\Resources\authoriziation\RoleResource;
+use App\Http\Resources\authorization\RoleResource;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;

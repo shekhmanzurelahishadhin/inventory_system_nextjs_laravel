@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\authoriziation;
+namespace App\Http\Resources\authorization;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RoleResource extends JsonResource
+class PermissionRecource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,7 +17,9 @@ class RoleResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'guard_name' => $this->guard_name,
+            'module_name' => $this->module?->name ?? null,
+            'menu_name' => $this->menu?->name ?? null,
+            'subMenu_name' => $this->subMenu?->name ?? null,
             'created_at' => $this->created_at->toDateTimeString(),
         ];
     }
