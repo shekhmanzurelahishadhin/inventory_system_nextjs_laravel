@@ -20,6 +20,8 @@ import Preloader from "@/app/components/ui/Preloader";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { confirmAction } from "@/app/components/common/confirmAction";
+import AccessRoute from "@/app/routes/AccessRoute";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -30,6 +32,7 @@ const Roles = () => {
   const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // Add this line
+  const {hasPermission} = useAuth();
 
   const formRef = useRef<any>(null);
   
@@ -173,6 +176,7 @@ const Roles = () => {
               onClick: (r) => openModal("view", r),
               variant: "primary",
               size: "sm",
+              show: (r) => hasPermission('role.view'),
               tooltip: "View",
             },
             {
@@ -180,7 +184,7 @@ const Roles = () => {
               onClick: (r) => openModal("edit", r),
               variant: "secondary",
               size: "sm",
-              show: (r) => !r.name?.includes("Super Admin"),
+              show: (r) => !r.name?.includes("Super Admin") && hasPermission('role.edit'),
               tooltip: "Edit",
             },
             {
@@ -188,7 +192,7 @@ const Roles = () => {
               onClick: (r) =>  handleDeleteRole(r),
               variant: "danger",
               size: "sm",
-              show: (r) => !r.name?.includes("Super Admin"),
+              show: (r) => !r.name?.includes("Super Admin") && hasPermission('role.delete'),
               tooltip: "Delete",
             },
           ]}
@@ -203,6 +207,8 @@ const Roles = () => {
 
   return (
     <>
+    <AccessRoute requiredPermissions={['role.view', 'role.create', 'role.edit', 'role.delete']}> 
+    
       <PageHeader title="Roles Management" breadcrumbItems={breadcrumbItems} />
 
       <div className="min-h-screen bg-gray-50 p-6">
@@ -216,6 +222,7 @@ const Roles = () => {
               size="md"
               className="mt-2 sm:mt-0"
               onClick={() => openModal("create")}
+              show={hasPermission('role.create')}
             >
               Add New
             </Button>
@@ -283,6 +290,7 @@ const Roles = () => {
           />
         )}
       </Modal>
+      </AccessRoute>
     </>
   );
 };

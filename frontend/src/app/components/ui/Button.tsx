@@ -17,6 +17,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     | "info"
     | "outline";
   size?: "sm" | "md" | "lg";
+  show?: boolean; // condition function
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -25,8 +26,12 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   size = "md",
   className = "",
+  show = true,
   ...props
 }) => {
+
+  if (!show) return null; // ✅ hide if false
+
   const baseStyles = "flex items-center justify-center rounded-md font-medium transition-colors";
 
   const variants: Record<string, string> = {
@@ -45,7 +50,6 @@ const Button: React.FC<ButtonProps> = ({
     md: "px-3 py-2 text-base",
     lg: "px-4 py-3 text-lg",
   };
-
   return (
     <button
       className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
