@@ -275,5 +275,4 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
     </>
   );
 };
-
 export default Sidebar;
