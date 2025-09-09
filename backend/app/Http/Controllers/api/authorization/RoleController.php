@@ -12,6 +12,14 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:role.create|role.view|role.edit|role.delete')->only('index');
+        $this->middleware('permission:role.create')->only('store');
+        $this->middleware('permission:role.edit')->only('update');
+        $this->middleware('permission:role.delete')->only('destroy');
+    }
+
     public function index(Request $request, RoleService $roleService)
     {
         $perPage = $request->get('per_page', 10);

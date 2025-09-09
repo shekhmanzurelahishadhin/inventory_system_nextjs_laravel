@@ -62,9 +62,14 @@ export function usePaginatedData<T>({
     } catch (err: any) {
       if (err.name !== "CanceledError" && err.name !== "AbortError") {
         console.error("Fetch error:", err);
-        setError(err.message || "Something went wrong");
-        // Restore previous data on error
-        setData(previousDataRef.current);
+        if (err.response?.status === 403) {
+          setError("You do not have permission to view this data.");
+          setData([]); // clear table, or keep old data if you prefer
+        } else {
+          setError(err.message || "Something went wrong");
+          // Restore previous data on error (except 403)
+          setData(previousDataRef.current);
+        }
       }
     } finally {
       setLoading(false);
@@ -73,7 +78,7 @@ export function usePaginatedData<T>({
 
   useEffect(() => {
     const controller = new AbortController();
-    
+
     // Only fetch if it's not the exact same request
     if (!isInitialLoadRef.current || data.length === 0) {
       fetchData(controller.signal);
@@ -87,7 +92,7 @@ export function usePaginatedData<T>({
   const refetch = useCallback(() => {
     const controller = new AbortController();
     fetchData(controller.signal);
-    
+
     return () => controller.abort();
   }, [fetchData]);
 
