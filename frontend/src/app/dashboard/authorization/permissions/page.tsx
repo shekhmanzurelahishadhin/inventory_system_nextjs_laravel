@@ -21,6 +21,8 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { confirmAction } from "@/app/components/common/confirmAction";
 import { permission } from "process";
+import AccessRoute from "@/app/routes/AccessRoute";
+import { useAuth } from "@/app/context/AuthContext";
 
 const Permissions = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -31,6 +33,7 @@ const Permissions = () => {
   const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // Add this line
+  const {hasPermission} = useAuth();
 
   const formRef = useRef<any>(null);
   
@@ -189,22 +192,23 @@ const Permissions = () => {
               variant: "primary",
               size: "sm",
               tooltip: "View",
+              show: (r) => hasPermission('permission.view'),
             },
             {
               icon: faEdit,
               onClick: (r) => openModal("edit", r),
               variant: "secondary",
               size: "sm",
-              show: (r) => !r.name?.includes("Super Admin"),
               tooltip: "Edit",
+              show: (r) => hasPermission('permission.edit'),
             },
             {
               icon: faTrash,
               onClick: (r) =>  handleDelete(r),
               variant: "danger",
               size: "sm",
-              show: (r) => !r.name?.includes("Super Admin"),
               tooltip: "Delete",
+              show: (r) => hasPermission('permission.delete'),
             },
           ]}
         />
@@ -218,6 +222,7 @@ const Permissions = () => {
 
   return (
     <>
+    {/* <AccessRoute requiredPermissions={['permission.view', 'permission.create', 'permission.edit', 'permission.delete']}>  */}
       <PageHeader title="Permissions Management" breadcrumbItems={breadcrumbItems} />
 
       <div className="min-h-screen bg-gray-50 p-6">
@@ -231,6 +236,7 @@ const Permissions = () => {
               size="md"
               className="mt-2 sm:mt-0"
               onClick={() => openModal("create")}
+              show={hasPermission('permission.create')}
             >
               Add New
             </Button>
@@ -300,6 +306,7 @@ const Permissions = () => {
           />
         )}
       </Modal>
+      {/* </AccessRoute> */}
     </>
   );
 };

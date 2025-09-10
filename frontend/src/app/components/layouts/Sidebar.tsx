@@ -81,7 +81,8 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         { 
           name: 'Permission', 
           href: '/dashboard/authorization/permissions',  
-          icon: solidIcons.faKey 
+          icon: solidIcons.faKey,
+          requiredPermissions: ['permission.view', 'permission.create', 'permission.edit', 'permission.delete']
         },
         { 
           name: 'User', 

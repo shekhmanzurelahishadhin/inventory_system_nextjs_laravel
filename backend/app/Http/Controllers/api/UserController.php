@@ -10,6 +10,13 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:user.create|user.view|user.edit|user.delete')->only('index');
+        $this->middleware('permission:user.create')->only('store');
+        $this->middleware('permission:user.edit')->only('update');
+        $this->middleware('permission:user.delete')->only('destroy');
+    }
     public function user(Request $request)
     {
         $user = Auth::user();
