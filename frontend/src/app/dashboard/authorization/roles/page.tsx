@@ -207,7 +207,7 @@ const Roles = () => {
 
   return (
     <>
-    {/* <AccessRoute requiredPermissions={['role.view', 'role.create', 'role.edit', 'role.delete']}>  */}
+    <AccessRoute requiredPermissions={['role.view', 'role.create', 'role.edit', 'role.delete']}> 
     
       <PageHeader title="Roles Management" breadcrumbItems={breadcrumbItems} />
 
@@ -290,7 +290,7 @@ const Roles = () => {
           />
         )}
       </Modal>
-      {/* </AccessRoute> */}
+      </AccessRoute>
     </>
   );
 };

@@ -76,7 +76,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
           name: 'Role', 
           href: '/dashboard/authorization/roles', 
           icon: solidIcons.faShieldAlt,
-          // requiredPermissions: ['role.view', 'role.create', 'role.edit', 'role.delete']
+          requiredPermissions: ['role.view', 'role.create', 'role.edit', 'role.delete']
         },
         { 
           name: 'Permission', 

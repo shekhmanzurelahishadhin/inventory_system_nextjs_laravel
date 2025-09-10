@@ -23,35 +23,18 @@ class RoleController extends Controller
 
     public function index(Request $request, RoleService $roleService)
     {
-        $role = \Spatie\Permission\Models\Role::find(3);
-
-//        dd([
-//            'role_name' => $role->name,
-//            'role_guard' => $role->guard_name,
-//            'permissions' => $role->permissions->map(function ($permission) {
-//                return [
-//                    'name' => $permission->name,
-//                    'guard' => $permission->guard_name,
-//                ];
-//            }),
-//        ]);
-//        $user->hasPermissionTo('role.view'); // true
-//        $user->hasPermissionTo('user.edit'); // true
-//        dd(auth()->user()->hasPermissionTo('user.edit'));
-
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $perPage = $request->get('per_page', 10);
         $filters = $request->only('search');
 
         $roles = $roleService->getRoles($filters, $perPage);
-        $hasPermission = auth()->user()->getAllPermissions();
-//        dd($hasPermission);
+
         return response()->json([
             'data' => RoleResource::collection($roles),
             'total' => $roles->total(),
             'current_page' => $roles->currentPage(),
             'per_page' => $roles->perPage(),
-            'perm' => $hasPermission,
         ]);
     }
 
