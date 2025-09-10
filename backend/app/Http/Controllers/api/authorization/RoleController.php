@@ -13,29 +13,39 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-//    public function __construct()
-//    {
-//        $this->middleware('permission:role.create|role.view|role.edit|role.delete')->only('index');
-//        $this->middleware('permission:role.create')->only('store');
-//        $this->middleware('permission:role.edit')->only('update');
-//        $this->middleware('permission:role.delete')->only('destroy');
-//    }
+    public function __construct()
+    {
+        $this->middleware('permission:role.create|role.view|role.edit|role.delete')->only('index');
+        $this->middleware('permission:role.create')->only('store');
+        $this->middleware('permission:role.edit')->only('update');
+        $this->middleware('permission:role.delete')->only('destroy');
+    }
 
     public function index(Request $request, RoleService $roleService)
     {
-        $user = auth()->user();
-        dd(
-            $user->getAllPermissions(), // see what permissions it detects
-            $user->roles,               // check role guard
-            $user->hasPermissionTo('role.view'),        // should be false now
-            $user->hasPermissionTo('role.view', 'sanctum')  // should be true
-        );
+        $role = \Spatie\Permission\Models\Role::find(3);
+
+//        dd([
+//            'role_name' => $role->name,
+//            'role_guard' => $role->guard_name,
+//            'permissions' => $role->permissions->map(function ($permission) {
+//                return [
+//                    'name' => $permission->name,
+//                    'guard' => $permission->guard_name,
+//                ];
+//            }),
+//        ]);
+//        $user->hasPermissionTo('role.view'); // true
+//        $user->hasPermissionTo('user.edit'); // true
+//        dd(auth()->user()->hasPermissionTo('user.edit'));
+
 
         $perPage = $request->get('per_page', 10);
         $filters = $request->only('search');
 
         $roles = $roleService->getRoles($filters, $perPage);
         $hasPermission = auth()->user()->getAllPermissions();
+//        dd($hasPermission);
         return response()->json([
             'data' => RoleResource::collection($roles),
             'total' => $roles->total(),
