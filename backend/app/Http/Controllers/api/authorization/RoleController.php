@@ -66,4 +66,24 @@ class RoleController extends Controller
             'message' => 'Role deleted successfully',
         ]);
     }
+
+    // RoleController.php
+    public function getPermissions($id)
+    {
+        $role = Role::findOrFail($id);
+        return response()->json([
+            'role' => $role,
+            'permissions' => $role->permissions->pluck('name'),
+        ]);
+    }
+
+    public function assignPermissions(Request $request, $id)
+    {
+        $role = Role::findOrFail($id);
+        $permissions = $request->input('permissions', []);
+        $role->syncPermissions($permissions);
+
+        return response()->json(['message' => 'Permissions updated successfully']);
+    }
+
 }

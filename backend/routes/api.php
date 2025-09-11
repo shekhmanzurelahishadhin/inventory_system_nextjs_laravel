@@ -18,10 +18,22 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users', [UserController::class, 'index']);
 
     //Roles manage routes
-    Route::get('/roles', [RoleController::class, 'index']);
-    Route::post('/roles', [RoleController::class, 'store']);
-    Route::put('/roles/{role}', [RoleController::class, 'update']);
-    Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
+//    Route::get('/roles', [RoleController::class, 'index']);
+//    Route::post('/roles', [RoleController::class, 'store']);
+//    Route::put('/roles/{role}', [RoleController::class, 'update']);
+//    Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
+    Route::prefix('roles')->group(function () {
+        // CRUD
+        Route::get('/', [RoleController::class, 'index']);       // list roles
+        Route::post('/', [RoleController::class, 'store']);      // create role
+        Route::put('/{role}', [RoleController::class, 'update']); // update role
+        Route::delete('/{role}', [RoleController::class, 'destroy']); // delete role
+
+        // Extra
+//        Route::get('/{role}', [RoleController::class, 'sshow']);  // get role details
+        Route::get('/{role}/permissions', [RoleController::class, 'getPermissions']); // fetch assigned
+        Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions']); // assign/update
+    });
 
     //Roles manage routes
     Route::get('/permissions', [PermissionController::class, 'index']);
