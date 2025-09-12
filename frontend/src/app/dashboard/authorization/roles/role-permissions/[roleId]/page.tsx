@@ -89,10 +89,10 @@ const RolePermissionsPage = () => {
                 className="h-4 w-4"
               />
               <span>
-                {perm.module_name || "No Module"} 
-        {perm.menu_name || "No Menu"} 
-        {perm.sub_menu_name || ""} 
-        {perm.name}
+                {perm.module_name || "No Module"}
+                {perm.menu_name || "No Menu"}
+                {perm.sub_menu_name || ""}
+                {perm.name}
               </span>
             </label>
           ))}
