@@ -6,6 +6,14 @@ import { toast } from "react-toastify";
 import Button from "@/app/components/ui/Button";
 import PageHeader from "@/app/components/layouts/PageHeader";
 import Preloader from "@/app/components/ui/Preloader";
+import { useAuth } from "@/app/context/AuthContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faArrowLeft
+} from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
+
 
 const RolePermissionsPage = () => {
   const { roleId } = useParams(); // role id
@@ -16,6 +24,7 @@ const RolePermissionsPage = () => {
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { hasRole, hasPermission, refreshUser } = useAuth();
   const breadcrumbItems = [
     { label: "Roles", href: "/dashboard/authorization/roles" },
     { label: "Assign Permissions", href: "#" },
@@ -57,6 +66,11 @@ const RolePermissionsPage = () => {
         permissions: selectedPermissions,
       });
       toast.success("Permissions updated successfully");
+      // If current user’s role was updated, refresh their permissions
+       if (hasRole(role?.name)) {
+      console.log("Refreshing user permissions...");
+      await refreshUser();
+    }
       router.push("/dashboard/authorization/roles"); // go back
     } catch (error: any) {
       toast.error(
@@ -81,6 +95,17 @@ const RolePermissionsPage = () => {
             <h2 className="text-xl font-semibold text-gray-800">
               Select Permissions
             </h2>
+            <Link href="/dashboard/authorization/roles" style={{ fontSize:"12px" }}>
+              <Button
+                variant="danger"
+                icon={faArrowLeft}
+                size="md"
+                className="mt-2 sm:mt-0"
+                show={hasPermission("role.view")||hasPermission("role.edit")||hasPermission("role.delete")||hasPermission("role.create")}
+              >
+                Back
+              </Button>
+              </Link>
           </div>
 
           {/* DataTable */}

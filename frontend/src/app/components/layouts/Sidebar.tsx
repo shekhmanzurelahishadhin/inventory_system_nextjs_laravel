@@ -89,7 +89,12 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
           href: '#',
           icon: solidIcons.faUsers,
           children: [
-            { name: 'Manage User', href: '/dashboard/users', icon: solidIcons.faUserCog },
+            { 
+              name: 'Manage User', 
+              href: '/dashboard/users', 
+              icon: solidIcons.faUserCog , 
+              requiredPermissions: ['user.view', 'user.create', 'user.edit', 'user.delete']
+            },
             { name: 'User Permission', href: '/apps/ecommerce/product-detail', icon: solidIcons.faUserLock },
           ]
         },

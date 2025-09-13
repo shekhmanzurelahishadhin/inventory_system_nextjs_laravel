@@ -30,6 +30,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   hasRole: (role: string) => boolean;
   hasPermission: (permission: string) => boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -124,6 +125,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return permissions.includes(permission);
   };
 
+  const refreshUser = async () => {
+  try {
+    const response = await api.get("/user"); // should return user + roles + permissions
+    setUser(response?.data?.user || null);
+    setRoles(response?.data?.roles || []);
+    setPermissions(response?.data?.permissions || []);
+  } catch (error) {
+    console.error("Failed to refresh user:", error);
+  }
+};
+
   const value: AuthContextType = {
     user,
     roles,
@@ -135,6 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: !!user,
     hasRole,
     hasPermission,
+    refreshUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
