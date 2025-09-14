@@ -61,6 +61,14 @@ class ModuleMenuPermissionSeeder extends Seeder
                 'sub_menu_id' => null,
             ]
         );
+        Permission::updateOrCreate(
+            ['name' => 'role.assign-permissions', 'guard_name' => 'web'],
+            [
+                'module_id'   => $userRoleModule->id,
+                'menu_id'     => $roleMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
 
 
         // Permission

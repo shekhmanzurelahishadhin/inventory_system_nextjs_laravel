@@ -206,7 +206,7 @@ const Roles = () => {
               onClick: (r) => router.push(`/dashboard/authorization/roles/role-permissions/${r.id}`),
               variant: "success",
               size: "sm",
-              // show: (r) => hasPermission("role.assign-permissions"),
+              show: (r) => hasPermission("role.assign-permissions"),
               tooltip: "Assign Permissions",
             },
             {
