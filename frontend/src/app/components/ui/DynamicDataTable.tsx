@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"; // Add useEffect import
 import DataTable, { TableColumn } from "react-data-table-component";
 import ExportButtons from "./ExportButton";
 import { usePaginatedData } from "@/app/hooks/usePaginatedData";
+import Preloader from "./Preloader";
+import DatatableLoader from "./DatatableLoader";
 
 interface ExportColumn<T> {
   name: string;
@@ -57,46 +59,48 @@ const DynamicDataTable = <T extends any>({
           {error}
         </div>
       )}
-
-      <DataTable
-        columns={columns}
-        data={data}
-        // progressPending={loading}
-        pagination
-        paginationServer
-        paginationTotalRows={totalRows}
-        paginationPerPage={perPage}
-        paginationRowsPerPageOptions={paginationRowsPerPageOptions}
-        onChangeRowsPerPage={(newPerPage) => {
-          setPerPage(newPerPage);
-          setCurrentPage(1);
-        }}
-        onChangePage={(page) => setCurrentPage(page)}
-        highlightOnHover
-        pointerOnHover
-        subHeader
-        subHeaderComponent={
-          <div className="flex flex-col sm:flex-row justify-between items-center w-full space-y-2 sm:space-y-0">
-            {exportColumns && (
-              <ExportButtons
-                data={data}
-                fileName={exportFileName}
-                columns={exportColumns}
+      <div className="relative">
+        <DataTable
+          columns={columns}
+          data={data}
+          // progressPending={loading}
+          pagination
+          paginationServer
+          paginationTotalRows={totalRows}
+          paginationPerPage={perPage}
+          paginationRowsPerPageOptions={paginationRowsPerPageOptions}
+          onChangeRowsPerPage={(newPerPage) => {
+            setPerPage(newPerPage);
+            setCurrentPage(1);
+          }}
+          onChangePage={(page) => setCurrentPage(page)}
+          highlightOnHover
+          pointerOnHover
+          subHeader
+          subHeaderComponent={
+            <div className="flex flex-col sm:flex-row justify-between items-center w-full space-y-2 sm:space-y-0">
+              {exportColumns && (
+                <ExportButtons
+                  data={data}
+                  fileName={exportFileName}
+                  columns={exportColumns}
+                />
+              )}
+              <input
+                type="text"
+                placeholder={searchPlaceholder}
+                className="px-2 py-2 border border-gray-300 rounded-md w-full sm:w-64 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setCurrentPage(1);
+                }}
               />
-            )}
-            <input
-              type="text"
-              placeholder={searchPlaceholder}
-              className="px-2 py-2 border border-gray-300 rounded-md w-full sm:w-64 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-        }
-      />
+            </div>
+          }
+        />
+        {loading && (<DatatableLoader />)}
+      </div>
     </div>
   );
 };
