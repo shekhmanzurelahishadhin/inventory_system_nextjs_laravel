@@ -16,8 +16,11 @@ import Button from "@/app/components/ui/Button";
 import PageHeader from "@/app/components/layouts/PageHeader";
 import ActionButtons from "@/app/components/ui/ActionButtons";
 import DynamicDataTable from "@/app/components/ui/DynamicDataTable";
+import { useAuth } from "@/app/context/AuthContext";
+import AccessRoute from "@/app/routes/AccessRoute";
 
 const UserManagement = () => {
+    const { hasPermission } = useAuth();
   // Sample data for demonstration
   // const [users, setUsers] = useState([]);
   // const [usersSearch, setUsersSearch] = useState([]);
@@ -85,7 +88,7 @@ const UserManagement = () => {
               onClick: (r) => console.log("View", r),
               variant: "primary",
               size: "sm",
-              show: (r) => !r.roles?.includes("Super Admin"),
+              show: (r) => !r.roles?.includes("Super Admin") && hasPermission("user.view"),
               tooltip: "View",
             },
             {
@@ -93,7 +96,7 @@ const UserManagement = () => {
               onClick: (r) => console.log("Edit", r),
               variant: "secondary",
               size: "sm",
-              show: (r) => !r.roles?.includes("Super Admin"),
+              show: (r) => !r.roles?.includes("Super Admin") && hasPermission("user.edit"),
               tooltip: "Edit",
             },
             {
@@ -101,7 +104,7 @@ const UserManagement = () => {
               onClick: (r) => console.log("Delete", r),
               variant: "danger",
               size: "sm",
-              show: (r) => !r.roles?.includes("Super Admin"),
+              show: (r) => !r.roles?.includes("Super Admin") && hasPermission("user.delete"),
               tooltip: "Delete",
             },
           ]}
@@ -114,6 +117,14 @@ const UserManagement = () => {
 
   return (
     <>
+    <AccessRoute
+            requiredPermissions={[
+              "user.view",
+              "user.create",
+              "user.edit",
+              "user.delete",
+            ]}
+          >
       {/* Breadcrumb Section */}
       <PageHeader
         title="User Management"
@@ -131,6 +142,7 @@ const UserManagement = () => {
               icon={faPlus}
               size="md"
               className="mt-2 sm:mt-0"
+              show={hasPermission("user.create")}
               onClick={() => console.log("Add New clicked")}
             >
               Add New
@@ -155,6 +167,7 @@ const UserManagement = () => {
           </div>
         </div>
       </div>
+      </AccessRoute>
     </>
   );
 };
