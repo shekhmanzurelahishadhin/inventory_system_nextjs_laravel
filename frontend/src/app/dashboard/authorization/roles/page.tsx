@@ -71,9 +71,9 @@ const Roles = () => {
     },
   ];
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // useEffect(() => {
+  //   setIsMounted(true);
+  // }, []);
 
   const openModal = (type: "create" | "edit" | "view", role: any = null) => {
     setModalType(type);
@@ -236,7 +236,7 @@ const Roles = () => {
     },
   ];
 
-  if (!isMounted) return <Preloader />;
+  // if (!isMounted) return <Preloader />;
 
   return (
     <>
