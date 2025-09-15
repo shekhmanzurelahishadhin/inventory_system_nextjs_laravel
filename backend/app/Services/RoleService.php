@@ -29,13 +29,13 @@ class RoleService
         return Role::create($data);
     }
 
-    public function updateRole(Role $role, $data)
+    public function updateRole($role, $data)
     {
         $role->update($data);
         return $role;
     }
 
-    public function deleteRole(Role $role)
+    public function deleteRole($role)
     {
         return $role->delete();
     }

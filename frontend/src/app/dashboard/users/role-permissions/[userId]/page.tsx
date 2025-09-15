@@ -366,20 +366,20 @@ const UserPermissionsPage = () => {
                         {filteredPermissions.length}
                       </span>
                     </div>
-                    <div className="flex space-x-2 mt-3">
+                    <div className="flex space-x-10 mt-3">
                       <Button
                         variant="primary"
                         onClick={selectAllFiltered}
-                        size="sm"
-                        className="w-full text-center justify-center"
+                        size="md"
+                        className="w-70 text-center justify-center"
                       >
                         Select All
                       </Button>
                       <Button
                         variant="secondary"
                         onClick={deselectAllFiltered}
-                        size="sm"
-                        className="w-full text-center justify-center"
+                        size="md"
+                        className="w-70 text-center justify-center"
                       >
                         Deselect All
                       </Button>

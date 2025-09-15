@@ -73,13 +73,16 @@ const handleFormChange = async (updated: Record<string, any>) => {
     { label: "Permissions", href: "#" },
   ];
   
-  const permissionFields = [
-    { label: "Name", key: "name", type: "text", required: true, showOn: "both" },
-    { label: "Module", key: "module_id", type: "select", required: true, showOn: "both", options: modules },
-    { label: "Menu", key: "menu_id", type: "select", required: true, showOn: "both", options: menus },
-    { label: "Sub Menu", key: "sub_menu_id", type: "select", showOn: "both", options: subMenus },
-    { label: "Created At", key: "created_at", type: "date", readOnly: true, showOn: "view" },
-  ];
+const permissionFields = [
+  { label: "Name", key: "name", type: "text", required: true, showOn: "both" },
+  { label: "Module", key: "module_name", type: "text", readOnly: true, showOn: "view" },
+  { label: "Module", key: "module_id", type: "select", required: true, showOn: "create-edit", options: modules },
+  { label: "Menu", key: "menu_name", type: "text", readOnly: true, showOn: "view" },
+  { label: "Menu", key: "menu_id", type: "select", required: true, showOn: "create-edit", options: menus },
+  { label: "Sub Menu", key: "sub_menu_name", type: "text", readOnly: true, showOn: "view" },
+  { label: "Sub Menu", key: "sub_menu_id", type: "select", showOn: "create-edit", options: subMenus },
+  { label: "Created At", key: "created_at", type: "date", readOnly: true, showOn: "view" },
+];
   
 
   
@@ -91,7 +94,24 @@ const handleFormChange = async (updated: Record<string, any>) => {
     setModalType(type);
     setSelectedPermission(permission);
     setBackendErrors({}); 
-    setIsSubmitting(false);
+    setIsSubmitting(false);    
+    if (type === "edit" && permission) {
+      // Pre-fetch modules, menus, sub-menus for edit
+      (async () => {
+        const modRes = await api.get("/modules");
+        const mods = modRes.data.map((m: any) => ({ value: m.id, label: m.name })));
+        setModules(mods);     
+        const menuRes = await api.get(`/menus?module_id=${permission.module_id}`);
+        const mns = menuRes.data.map((m: any) => ({ value: m.id, label: m.name })));
+        setMenus(mns);     
+        const subMenuRes = await api.get(`/sub-menus?menu_id=${permission.menu_id}`);
+        const subs = subMenuRes.data.map((s: any) => ({ value: s.id, label: s.name })));
+        setSubMenus(subs);     
+      })();
+    } else {
+      setMenus([]);
+      setSubMenus([]);
+    }
   };
 
   const closeModal = () => {
@@ -99,6 +119,8 @@ const handleFormChange = async (updated: Record<string, any>) => {
     setSelectedPermission(null);
     setBackendErrors({});
     setIsSubmitting(false);
+    setMenus([]);
+    setSubMenus([]);  
   };
 
   const handleFormSubmit = async (formData: Record<string, any>) => {

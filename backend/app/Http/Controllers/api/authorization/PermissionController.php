@@ -4,12 +4,16 @@ namespace App\Http\Controllers\api\authorization;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\authorization\permission\CreatePermissionRequest;
+use App\Http\Requests\authorization\permission\UpdatePermissionRequest;
 use App\Http\Resources\authorization\PermissionRecource;
 use App\Models\authorization\Menu;
 use App\Models\authorization\Module;
+use App\Models\authorization\PermissionModel;
 use App\Models\authorization\SubMenu;
 use Illuminate\Http\Request;
 use App\Services\PermissionService;
+use Spatie\Permission\Models\Permission;
+
 class PermissionController extends Controller
 {
     public function __construct()
@@ -39,27 +43,28 @@ class PermissionController extends Controller
         $permission = $permissionService->createPermission($request->validated());
 
         return response()->json([
-            'message' => 'Role created successfully',
+            'message' => 'Permission created successfully',
             'data' => new PermissionRecource($permission),
         ]);
     }
 
-    public function update(UpdateRoleRequest $request, RoleService $roleService,  Role $role)
+    public function update(UpdatePermissionRequest $request, PermissionService $permissionService,  Permission $permission)
     {
-        $updatedRole = $roleService->updateRole($role, $request->validated());
+        $updatedPermission = $permissionService->updatePermission($permission, $request->validated());
+
 
         return response()->json([
-            'message' => 'Role updated successfully',
-            'data' => new RoleResource($updatedRole),
+            'message' => 'Permission updated successfully',
+            'data' => new PermissionRecource($updatedPermission),
         ]);
     }
 
-    public function destroy(RoleService $roleService, Role $role)
+    public function destroy(PermissionService $permissionService, Permission $permission)
     {
-        $roleService->deleteRole($role);
+        $permissionService->deletePermission($permission);
 
         return response()->json([
-            'message' => 'Role deleted successfully',
+            'message' => 'Permission deleted successfully',
         ]);
     }
     public function modules()

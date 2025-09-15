@@ -40,4 +40,18 @@ class PermissionService
 
         return Permission::create($data);
     }
+
+    public function updatePermission($permission, $data)
+    {
+
+        $data = collect($data)->except(['created_at'])->toArray();
+
+        $permission->update($data);
+
+        return $permission;
+    }
+    public function deletePermission($permission)
+    {
+        return $permission->delete();
+    }
 }

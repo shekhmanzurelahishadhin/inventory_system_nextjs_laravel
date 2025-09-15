@@ -9,32 +9,38 @@ interface DynamicViewTableProps {
 const DynamicViewTable: React.FC<DynamicViewTableProps> = ({ data, fields }) => {
   if (!data) return null;
 
-  const renderValue = (field: any) => {
-    const value = data[field.key];
+const renderValue = (field: any) => {
+  const value = data[field.key];
 
-    // If a custom render function exists, use it
-    if (field.render) return field.render(value, data);
+  // Use a custom render function if provided
+  if (field.render) return field.render(value, data);
 
-    // Handle checkbox
-    if (field.type === "checkbox") return value ? "Yes" : "No";
+  // Handle select fields with options
+  if (field.type === "select" && field.options) {
+    const option = field.options.find((opt: any) => opt.value === value);
+    return option ? option.label : "-";
+  }
 
-    // Handle date formatting
-    if (field.type === "date" && value) {
-      const d = new Date(value);
-      return isNaN(d.getTime()) ? value : d.toLocaleDateString();
-    }
+  // Handle checkbox
+  if (field.type === "checkbox") return value ? "Yes" : "No";
 
-    // Handle number / currency formatting
-    if (field.type === "currency" && typeof value === "number") {
-      return `${field.prefix || "$"}${value}${field.suffix || ""}`;
-    }
+  // Handle date formatting
+  if (field.type === "date" && value) {
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? value : d.toLocaleDateString();
+  }
 
-    // Prefix / Suffix
-    if (field.prefix || field.suffix) return `${field.prefix || ""}${value}${field.suffix || ""}`;
+  // Handle number / currency formatting
+  if (field.type === "currency" && typeof value === "number") {
+    return `${field.prefix || "$"}${value}${field.suffix || ""}`;
+  }
 
-    // Default
-    return value ?? "-";
-  };
+  // Prefix / Suffix
+  if (field.prefix || field.suffix) return `${field.prefix || ""}${value}${field.suffix || ""}`;
+
+  // Default
+  return value ?? "-";
+};
 
   return (
     <div className="overflow-x-auto">
