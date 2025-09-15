@@ -36,6 +36,36 @@ const Permissions = () => {
   const {hasPermission} = useAuth();
 
   const formRef = useRef<any>(null);
+
+  const [modules, setModules] = useState<any[]>([]);
+const [menus, setMenus] = useState<any[]>([]);
+const [subMenus, setSubMenus] = useState<any[]>([]);
+
+useEffect(() => {
+  const fetchModules = async () => {
+    const res = await api.get("/modules");
+    setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+  };
+  fetchModules();
+  console.log('Modules fetched');
+}, []);
+
+// When form changes
+const handleFormChange = async (updated: Record<string, any>) => {
+  // Module selected → fetch menus
+  if (updated.module_id) {
+    const res = await api.get(`/menus?module_id=${updated.module_id}`);
+    setMenus(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+    setSubMenus([]); // reset sub menus
+  }
+
+  // Menu selected → fetch sub menus
+  if (updated.menu_id) {
+    const res = await api.get(`/sub-menus?menu_id=${updated.menu_id}`);
+    setSubMenus(res.data.map((s: any) => ({ value: s.id, label: s.name })));
+  }
+};
+
   
   // Breadcrumb items
   const breadcrumbItems = [
@@ -45,11 +75,13 @@ const Permissions = () => {
   
   const permissionFields = [
     { label: "Name", key: "name", type: "text", required: true, showOn: "both" },
-    { label: "Module", key: "module_name", type: "text", readOnly: true, showOn: "both" },
-    { label: "Menu", key: "menu_name", type: "text", readOnly: true, showOn: "both" },
-    { label: "Sub Menu", key: "sub_menu_name", type: "text", readOnly: true, showOn: "both" },
+    { label: "Module", key: "module_id", type: "select", required: true, showOn: "both", options: modules },
+    { label: "Menu", key: "menu_id", type: "select", required: true, showOn: "both", options: menus },
+    { label: "Sub Menu", key: "sub_menu_id", type: "select", showOn: "both", options: subMenus },
     { label: "Created At", key: "created_at", type: "date", readOnly: true, showOn: "view" },
   ];
+  
+
   
   useEffect(() => {
     setIsMounted(true);
@@ -303,11 +335,13 @@ const Permissions = () => {
         {modalType === "view" && <DynamicViewTable data={selectedPermission} fields={permissionFields} />}
 
         {(modalType === "create" || modalType === "edit") && (
+          console.log('Rendering form with menus:', selectedPermission),
           <DynamicForm
             ref={formRef}
             data={modalType === "edit" ? selectedPermission : null}
             fields={permissionFields}
             onSubmit={handleFormSubmit}
+             onChange={handleFormChange}
             backendErrors={backendErrors}
           />
         )}

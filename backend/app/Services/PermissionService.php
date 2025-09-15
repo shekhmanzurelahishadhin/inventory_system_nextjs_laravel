@@ -32,4 +32,12 @@ class PermissionService
             ->orderBy('id','desc')
             ->paginate($perPage);
     }
+
+    public function createPermission(array $data)
+    {
+        // Force guard_name to 'web' if not provided
+        $data['guard_name'] = 'web';
+
+        return Permission::create($data);
+    }
 }

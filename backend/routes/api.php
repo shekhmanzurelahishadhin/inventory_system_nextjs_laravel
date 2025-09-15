@@ -21,10 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/users/{user}/permissions', [UserController::class, 'assignPermissions']);
 
     //Roles manage routes
-//    Route::get('/roles', [RoleController::class, 'index']);
-//    Route::post('/roles', [RoleController::class, 'store']);
-//    Route::put('/roles/{role}', [RoleController::class, 'update']);
-//    Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
     Route::prefix('roles')->group(function () {
         // CRUD
         Route::get('/', [RoleController::class, 'index']);       // list roles
@@ -33,7 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{role}', [RoleController::class, 'destroy']); // delete role
 
         // Extra
-//        Route::get('/{role}', [RoleController::class, 'sshow']);  // get role details
         Route::get('/{role}/permissions', [RoleController::class, 'getPermissions']); // fetch assigned
         Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions']); // assign/update
     });
@@ -43,6 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/permissions', [PermissionController::class, 'store']);
     Route::put('/permissions/{permission}', [PermissionController::class, 'update']);
     Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy']);
+
+    Route::get('/modules', [PermissionController::class, 'modules']);
+    Route::get('/menus', [PermissionController::class, 'menus']);
+    Route::get('/sub-menus', [PermissionController::class, 'subMenus']);
 });
 
 Route::get('/test-cors', function () {
