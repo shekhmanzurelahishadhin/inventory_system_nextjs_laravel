@@ -7,6 +7,8 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -59,5 +61,41 @@ class UserController extends Controller
             'current_page' => $users->currentPage(),
             'per_page' => $users->perPage(),
         ]);
+    }
+
+    public function getUserPermissions(User $user)
+    {
+        // Return user with their direct permissions
+        return response()->json([
+            'user' => $user,
+            'permissions' => $user->getDirectPermissions()->pluck('name')
+        ]);
+    }
+
+    /**
+     * Assign direct permissions to user
+     */
+    public function assignPermissions(Request $request, User $user)
+    {
+
+        try {
+            // Get permission models from permission names
+            $permissions = Permission::whereIn('name', $request->permissions)->get();
+
+            // Sync permissions - this automatically handles revoking and granting
+            $user->syncPermissions($permissions);
+
+            return response()->json([
+                'message' => 'Permissions synchronized successfully',
+                'user' => $user->only(['id', 'name', 'email']),
+                'permissions' => $user->getDirectPermissions()->pluck('name')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to assign permissions',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

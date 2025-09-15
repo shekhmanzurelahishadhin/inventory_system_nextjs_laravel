@@ -6,6 +6,7 @@ import {
   faEdit,
   faTrash,
   faEye,
+  faUserTag,
 } from "@fortawesome/free-solid-svg-icons";
 // import Breadcrumb from "../../components/ui/Breadcrumb";
 // import DataTable from "react-data-table-component";
@@ -18,9 +19,11 @@ import ActionButtons from "@/app/components/ui/ActionButtons";
 import DynamicDataTable from "@/app/components/ui/DynamicDataTable";
 import { useAuth } from "@/app/context/AuthContext";
 import AccessRoute from "@/app/routes/AccessRoute";
+import { useRouter } from "next/navigation";
 
 const UserManagement = () => {
-    const { hasPermission } = useAuth();
+  const { hasPermission } = useAuth();
+   const router = useRouter();
   // Sample data for demonstration
   // const [users, setUsers] = useState([]);
   // const [usersSearch, setUsersSearch] = useState([]);
@@ -52,7 +55,6 @@ const UserManagement = () => {
     { label: "User", href: "#" },
     { label: "Manage User", href: "#" },
   ];
-
 
   // Columns for DataTable
   const columns = [
@@ -88,15 +90,26 @@ const UserManagement = () => {
               onClick: (r) => console.log("View", r),
               variant: "primary",
               size: "sm",
-              show: (r) => !r.roles?.includes("Super Admin") && hasPermission("user.view"),
+              show: (r) =>
+                !r.roles?.includes("Super Admin") && hasPermission("user.view"),
               tooltip: "View",
+            },
+            {
+              icon: faUserTag,
+              onClick: (user) => router.push(`/dashboard/users/role-permissions/${user.id}`),
+              variant: "info",
+              size: "sm",
+              // show: (user) => !user.roles?.includes("Super Admin") && hasPermission("user.assign-roles"),
+              show: (user) => !user.roles?.includes("Super Admin"),
+              tooltip: "Assign Roles",
             },
             {
               icon: faEdit,
               onClick: (r) => console.log("Edit", r),
               variant: "secondary",
               size: "sm",
-              show: (r) => !r.roles?.includes("Super Admin") && hasPermission("user.edit"),
+              show: (r) =>
+                !r.roles?.includes("Super Admin") && hasPermission("user.edit"),
               tooltip: "Edit",
             },
             {
@@ -104,7 +117,9 @@ const UserManagement = () => {
               onClick: (r) => console.log("Delete", r),
               variant: "danger",
               size: "sm",
-              show: (r) => !r.roles?.includes("Super Admin") && hasPermission("user.delete"),
+              show: (r) =>
+                !r.roles?.includes("Super Admin") &&
+                hasPermission("user.delete"),
               tooltip: "Delete",
             },
           ]}
@@ -112,61 +127,62 @@ const UserManagement = () => {
       ),
       width: "15%",
       ignoreRowClick: true,
-    }
+    },
   ];
 
   return (
     <>
-    <AccessRoute
-            requiredPermissions={[
-              "user.view",
-              "user.create",
-              "user.edit",
-              "user.delete",
-            ]}
-          >
-      {/* Breadcrumb Section */}
-      <PageHeader
-        title="User Management"
-        breadcrumbItems={breadcrumbItems}
-        onAdd={() => console.log("Add New")}
-      />
+      <AccessRoute
+        requiredPermissions={[
+          "user.view",
+          "user.create",
+          "user.edit",
+          "user.delete",
+        ]}
+      >
+        {/* Breadcrumb Section */}
+        <PageHeader
+          title="User Management"
+          breadcrumbItems={breadcrumbItems}
+          onAdd={() => console.log("Add New")}
+        />
 
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-8xl mx-auto">
-          <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">Users List</h2>
+        <div className="min-h-screen bg-gray-50 p-6">
+          <div className="max-w-8xl mx-auto">
+            <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Users List
+              </h2>
 
-            <Button
-              variant="primary"
-              icon={faPlus}
-              size="md"
-              className="mt-2 sm:mt-0"
-              show={hasPermission("user.create")}
-              onClick={() => console.log("Add New clicked")}
-            >
-              Add New
-            </Button>
-          </div>
-          {/* DataTable */}
-          <div className="bg-white shadow overflow-hidden pt-8">
-            <DynamicDataTable
-              columns={columns}
-              apiEndpoint="/users"
-              exportColumns={[
-                { name: "Name", selector: "name" },
-                { name: "Email", selector: "email" },
-                { name: "Roles", selector: "roles" },
-              ]}
-              exportFileName="Users"
-              paginationRowsPerPageOptions={[10, 20, 50, 100]}
-              defaultPerPage={2}
-              searchPlaceholder="Search users..."
-            />
-
+              <Button
+                variant="primary"
+                icon={faPlus}
+                size="md"
+                className="mt-2 sm:mt-0"
+                show={hasPermission("user.create")}
+                onClick={() => console.log("Add New clicked")}
+              >
+                Add New
+              </Button>
+            </div>
+            {/* DataTable */}
+            <div className="bg-white shadow overflow-hidden pt-8">
+              <DynamicDataTable
+                columns={columns}
+                apiEndpoint="/users"
+                exportColumns={[
+                  { name: "Name", selector: "name" },
+                  { name: "Email", selector: "email" },
+                  { name: "Roles", selector: "roles" },
+                ]}
+                exportFileName="Users"
+                paginationRowsPerPageOptions={[10, 20, 50, 100]}
+                defaultPerPage={2}
+                searchPlaceholder="Search users..."
+              />
+            </div>
           </div>
         </div>
-      </div>
       </AccessRoute>
     </>
   );
