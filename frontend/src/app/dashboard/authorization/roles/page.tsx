@@ -236,7 +236,6 @@ const Roles = () => {
     },
   ];
 
-  if (!isMounted) return <Preloader />;
 
   return (
     <>

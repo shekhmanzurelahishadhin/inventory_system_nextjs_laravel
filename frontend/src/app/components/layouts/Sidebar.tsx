@@ -66,71 +66,106 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
   };
 
   const navigation: MenuItem[] = [
-    { name: 'Dashboard', href: '/dashboard', icon: solidIcons.faChartLine },
-    { 
-      name: 'User Role', 
-      href: '#',
+    { name: "Dashboard", href: "/dashboard", icon: solidIcons.faChartLine },
+    {
+      name: "User Role",
+      href: "#",
       icon: solidIcons.faUserCheck,
       children: [
-        { 
-          name: 'Role', 
-          href: '/dashboard/authorization/roles', 
+        {
+          name: "Role",
+          href: "/dashboard/authorization/roles",
           icon: solidIcons.faShieldAlt,
-          requiredPermissions: ['role.view', 'role.create', 'role.edit', 'role.delete']
+          requiredPermissions: [
+            "role.view",
+            "role.create",
+            "role.edit",
+            "role.delete",
+          ],
         },
-        { 
-          name: 'Permission', 
-          href: '/dashboard/authorization/permissions',  
+        {
+          name: "Permission",
+          href: "/dashboard/authorization/permissions",
           icon: solidIcons.faKey,
-          requiredPermissions: ['permission.view', 'permission.create', 'permission.edit', 'permission.delete']
+          requiredPermissions: [
+            "permission.view",
+            "permission.create",
+            "permission.edit",
+            "permission.delete",
+          ],
         },
-        { 
-          name: 'User', 
-          href: '#',
-          icon: solidIcons.faUsers,
-          children: [
-            { 
-              name: 'Manage User', 
-              href: '/dashboard/users', 
-              icon: solidIcons.faUserCog , 
-              requiredPermissions: ['user.view', 'user.create', 'user.edit', 'user.delete']
-            },
-            { name: 'User Permission', href: '/apps/ecommerce/product-detail', icon: solidIcons.faUserLock },
-          ]
+        {
+          name: "User",
+          href: "/dashboard/users",
+          icon: solidIcons.faUserCog,
+          requiredPermissions: [
+            "user.view",
+            "user.create",
+            "user.edit",
+            "user.delete",
+          ],
         },
-      ]
+      ],
     },
-    { 
-      name: 'Apps', 
-      href: '#',
+    {
+      name: "Apps",
+      href: "#",
       icon: solidIcons.faThLarge,
       children: [
-        { name: 'Calendar', href: '/apps/calendar', icon: solidIcons.faCalendar },
-        { name: 'Chat', href: '/apps/chat', icon: solidIcons.faComment },
-        { name: 'Email', href: '/apps/email', icon: solidIcons.faEnvelope },
-        { 
-          name: 'Ecommerce', 
-          href: '#',
+        {
+          name: "Calendar",
+          href: "/apps/calendar",
+          icon: solidIcons.faCalendar,
+        },
+        { name: "Chat", href: "/apps/chat", icon: solidIcons.faComment },
+        { name: "Email", href: "/apps/email", icon: solidIcons.faEnvelope },
+        {
+          name: "Ecommerce",
+          href: "#",
           icon: solidIcons.faShoppingBag,
           children: [
-            { name: 'Products', href: '/apps/ecommerce/products', icon: solidIcons.faBox },
-            { name: 'Product Detail', href: '/apps/ecommerce/product-detail', icon: solidIcons.faBoxOpen },
-            { name: 'Orders', href: '/apps/ecommerce/orders', icon: solidIcons.faReceipt },
-            { name: 'Customers', href: '/apps/ecommerce/customers', icon: solidIcons.faUserFriends },
-          ]
+            {
+              name: "Products",
+              href: "/apps/ecommerce/products",
+              icon: solidIcons.faBox,
+            },
+            {
+              name: "Product Detail",
+              href: "/apps/ecommerce/product-detail",
+              icon: solidIcons.faBoxOpen,
+            },
+            {
+              name: "Orders",
+              href: "/apps/ecommerce/orders",
+              icon: solidIcons.faReceipt,
+            },
+            {
+              name: "Customers",
+              href: "/apps/ecommerce/customers",
+              icon: solidIcons.faUserFriends,
+            },
+          ],
         },
-      ]
+      ],
     },
-    { 
-      name: 'Pages', 
-      href: '#',
+    {
+      name: "Pages",
+      href: "#",
       icon: solidIcons.faFile,
       children: [
-        { name: 'Profile', href: '/pages/profile', icon: solidIcons.faUserCircle },
-        { name: 'Settings', href: '/pages/settings', icon: solidIcons.faCog },
-        { name: 'Pricing', href: '/pages/pricing', icon: solidIcons.faTag },
-        { name: 'Timeline', href: '/pages/timeline', icon: solidIcons.faStream },
-      ]
+        {
+          name: "Profile",
+          href: "/pages/profile",
+          icon: solidIcons.faUserCircle,
+        },
+        { name: "Settings", href: "/pages/settings", icon: solidIcons.faCog },
+        { name: "Pricing", href: "/pages/pricing", icon: solidIcons.faTag },
+        {
+          name: "Timeline",
+          href: "/pages/timeline",
+          icon: solidIcons.faStream,
+        },
+      ],
     },
   ];
 

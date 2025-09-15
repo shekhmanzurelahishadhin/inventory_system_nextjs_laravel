@@ -116,16 +116,16 @@ class ModuleMenuPermissionSeeder extends Seeder
             ['name' => 'User', 'module_id' => $userRoleModule->id],
             ['slug' => 'user']
         );
-        $userSubMenu = SubMenu::updateOrCreate(
-            ['name' => 'Manage User', 'module_id' => $userRoleModule->id, 'menu_id' => $userMenu->id],
-            ['slug' => 'manage-user']
-        );
+//        $userSubMenu = SubMenu::updateOrCreate(
+//            ['name' => 'Manage User', 'module_id' => $userRoleModule->id, 'menu_id' => $userMenu->id],
+//            ['slug' => 'manage-user']
+//        );
         Permission::updateOrCreate(
             ['name' => 'user.create', 'guard_name' => 'web'],
             [
                 'module_id'   => $userRoleModule->id,
                 'menu_id'     => $userMenu->id,
-                'sub_menu_id' => $userSubMenu->id,
+                'sub_menu_id' => null,
             ]
         );
         Permission::updateOrCreate(
@@ -133,7 +133,7 @@ class ModuleMenuPermissionSeeder extends Seeder
             [
                 'module_id'   => $userRoleModule->id,
                 'menu_id'     => $userMenu->id,
-                'sub_menu_id' => $userSubMenu->id,
+                'sub_menu_id' => null,
             ]
         );
         Permission::updateOrCreate(
@@ -141,7 +141,7 @@ class ModuleMenuPermissionSeeder extends Seeder
             [
                 'module_id'   => $userRoleModule->id,
                 'menu_id'     => $userMenu->id,
-                'sub_menu_id' => $userSubMenu->id,
+                'sub_menu_id' => null,
             ]
         );
         Permission::updateOrCreate(
@@ -149,7 +149,15 @@ class ModuleMenuPermissionSeeder extends Seeder
             [
                 'module_id'   => $userRoleModule->id,
                 'menu_id'     => $userMenu->id,
-                'sub_menu_id' => $userSubMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'user.assign-permissions', 'guard_name' => 'web'],
+            [
+                'module_id'   => $userRoleModule->id,
+                'menu_id'     => $userMenu->id,
+                'sub_menu_id' => null,
             ]
         );
     }
