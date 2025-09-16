@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,28 +34,13 @@ class UserController extends Controller
             'permissions' => $user->getAllPermissions()->pluck('name'), // returns array of permission names
         ]);
     }
-    public function index(Request $request)
+    public function index(Request $request, UserService $userService)
     {
-        $query = User::with('roles:id,name');
-
-        // Optional search
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhereHas('roles', function ($q2) use ($search) {
-                        $q2->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
-        // Optional pagination
         $perPage = $request->get('per_page');
-        $users = $query->paginate($perPage);
+        $filters = $request->only('search');
 
-        // Return resource collection
+        $users = $userService->getUsers($filters, $perPage);
+
         return response()->json([
             'data' => UserResource::collection($users),
             'total' => $users->total(),
