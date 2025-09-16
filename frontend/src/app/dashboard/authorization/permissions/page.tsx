@@ -24,6 +24,7 @@ import { permission } from "process";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import FormSkeleton from "@/app/components/ui/FormSkeleton";
+import DatatableLoader from "@/app/components/ui/DatatableLoader";
 
 const Permissions = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -468,7 +469,8 @@ const Permissions = () => {
             <>
               {loadingDropdowns ? (
                 <div className="p-6 text-center">
-                  <FormSkeleton fields={permissionFields} mode={modalType} />
+                  {/* <FormSkeleton fields={permissionFields} mode={modalType} /> */}
+                  <DatatableLoader/>
                 </div>
               ) : (
                 <DynamicForm
