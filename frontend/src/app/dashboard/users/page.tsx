@@ -6,7 +6,7 @@ import {
   faEdit,
   faTrash,
   faEye,
-  faUserTag
+  faUserTag,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -35,6 +35,7 @@ const Users = () => {
     {}
   ); // Backend validation errors
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [roles, setRoles] = useState<any[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // refresh trigger for DataTable
   const { hasPermission } = useAuth(); // Access control
 
@@ -47,56 +48,63 @@ const Users = () => {
     { label: "User", href: "#" },
   ];
 
+  useEffect(() => {
+    const fetchRoles = async () => {
+      const res = await api.get("/roles");
+      setRoles(
+        res.data.data.map((role: any) => ({ value: role.id, label: role.name }))
+      );
+    };
+    fetchRoles();
+    console.log("Role fetched");
+  }, []);
+
   const userFields = [
-  {
-    label: "Name",
-    key: "name",
-    type: "text",
-    required: true,
-    showOn: "both",
-  },
-  {
-    label: "Email",
-    key: "email",
-    type: "email",
-    required: true,
-    showOn: "both",
-  },
-  {
-    label: "Password",
-    key: "password",
-    type: "password",
-    required: true,
-    showOn: "create", // only on create
-  },
-  {
-    label: "Confirm Password",
-    key: "password_confirmation",
-    type: "password",
-    required: true,
-    showOn: "create", // only on create
-  },
-  {
-    label: "Roles",
-    key: "roles",
-    type: "multiselect",
-    required: true,
-    showOn: "both",
-    options: [
-      { label: "Admin", value: "admin" },
-      { label: "Editor", value: "editor" },
-      { label: "Viewer", value: "viewer" },
-    ] 
-  },
-  {
-    label: "Created At",
-    key: "created_at",
-    type: "date",
-    readOnly: true,
-    showOn: "view",
-  },
-];
- // Fields for DynamicForm and DynamicViewTable
+    {
+      label: "Name",
+      key: "name",
+      type: "text",
+      required: true,
+      showOn: "both",
+    },
+    {
+      label: "Email",
+      key: "email",
+      type: "email",
+      required: true,
+      showOn: "both",
+    },
+    {
+      label: "Password",
+      key: "password",
+      type: "password",
+      required: true,
+      showOn: "create", // only on create
+    },
+    {
+      label: "Confirm Password",
+      key: "password_confirmation",
+      type: "password",
+      required: true,
+      showOn: "create", // only on create
+    },
+    {
+      label: "Roles",
+      key: "roles",
+      type: "multiselect",
+      required: true,
+      showOn: "both",
+      options: roles,
+    },
+    {
+      label: "Created At",
+      key: "created_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
+    },
+  ];
+  // Fields for DynamicForm and DynamicViewTable
 
   // Ensure component is mounted (for client-side rendering)
   useEffect(() => {
@@ -110,7 +118,6 @@ const Users = () => {
     setBackendErrors({});
     setIsSubmitting(false);
   };
-
 
   // Close modal function
   const closeModal = () => {
@@ -216,7 +223,7 @@ const Users = () => {
     },
     {
       name: "Roles",
-      selector: (row) => row.roles,
+      selector: (row) => row.rolesName,
       sortable: true,
     },
     {
@@ -227,36 +234,40 @@ const Users = () => {
           buttons={[
             {
               icon: faEye,
-              onClick: (r) => openModal("view", r),
+              onClick: (user) => openModal("view", user),
               variant: "primary",
               size: "sm",
-              show: (r) => hasPermission("user.view"),
+              show: (user) => hasPermission("user.view"),
               tooltip: "View",
             },
-              {
+            {
               icon: faUserTag,
-              onClick: (user) => router.push(`/dashboard/users/role-permissions/${user.id}`),
+              onClick: (user) =>
+                router.push(`/dashboard/users/role-permissions/${user.id}`),
               variant: "info",
               size: "sm",
-              show: (user) => !user.roles?.includes("Super Admin") && hasPermission("user.assign-permissions"),
+              show: (user) =>
+                !user.rolesName?.includes("Super Admin") &&
+                hasPermission("user.assign-permissions"),
               tooltip: "Assign Permissions",
             },
             {
               icon: faEdit,
-              onClick: (r) => openModal("edit", r),
+              onClick: (user) => openModal("edit", user),
               variant: "secondary",
               size: "sm",
               show: (user) =>
-                !user.roles?.includes("Super Admin") && hasPermission("user.edit"),
+                !user.rolesName?.includes("Super Admin") &&
+                hasPermission("user.edit"),
               tooltip: "Edit",
             },
             {
               icon: faTrash,
-              onClick: (r) => handleDeleteUser(r),
+              onClick: (user) => handleDeleteUser(user),
               variant: "danger",
               size: "sm",
               show: (user) =>
-                !user.roles?.includes("Super Admin") &&
+                !user.rolesName?.includes("Super Admin") &&
                 hasPermission("user.delete"),
               tooltip: "Delete",
             },
@@ -268,7 +279,6 @@ const Users = () => {
     },
   ];
 
-
   return (
     <>
       <AccessRoute
@@ -279,17 +289,12 @@ const Users = () => {
           "user.delete",
         ]}
       >
-        <PageHeader
-          title="User Management"
-          breadcrumbItems={breadcrumbItems}
-        />
+        <PageHeader title="User Management" breadcrumbItems={breadcrumbItems} />
 
         <div className="min-h-screen bg-gray-50 p-6">
           <div className="max-w-8xl mx-auto">
             <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">
-                User List
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-800">User List</h2>
 
               <Button
                 variant="primary"
@@ -311,7 +316,7 @@ const Users = () => {
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Email", selector: "email" },
-                  { name: "Roles", selector: "roles" },
+                  { name: "Roles", selector: "rolesName" },
                 ]}
                 exportFileName="users"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
@@ -355,12 +360,30 @@ const Users = () => {
                       : "opacity-100"
                   }`}
                 >
-                   {isSubmitting ?
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg> : ''
-                  }
+                  {isSubmitting ? (
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    ""
+                  )}
                   {isSubmitting
                     ? modalType === "create"
                       ? "Creating..."

@@ -337,145 +337,154 @@ const Permissions = () => {
 
   return (
     <>
-      <AccessRoute requiredPermissions={['permission.view', 'permission.create', 'permission.edit', 'permission.delete']}> 
-      <PageHeader
-        title="Permissions Management"
-        breadcrumbItems={breadcrumbItems}
-      />
+      <AccessRoute
+        requiredPermissions={[
+          "permission.view",
+          "permission.create",
+          "permission.edit",
+          "permission.delete",
+        ]}
+      >
+        <PageHeader
+          title="Permissions Management"
+          breadcrumbItems={breadcrumbItems}
+        />
 
-      <div className="min-h-screen bg-gray-50 p-6">
-        <div className="max-w-8xl mx-auto">
-          <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Permissions List
-            </h2>
+        <div className="min-h-screen bg-gray-50 p-6">
+          <div className="max-w-8xl mx-auto">
+            <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-800">
+                Permissions List
+              </h2>
 
-            <Button
-              variant="primary"
-              icon={faPlus}
-              size="md"
-              className="mt-2 sm:mt-0"
-              onClick={() => openModal("create")}
-              show={hasPermission("permission.create")}
-            >
-              Add New
-            </Button>
-          </div>
-
-          {/* DataTable */}
-          <div className="bg-white shadow overflow-hidden pt-8">
-            <DynamicDataTable
-              columns={columns}
-              apiEndpoint="/permissions"
-              exportColumns={[
-                { name: "Name", selector: "name" },
-                { name: "Module Name", selector: "module_name" },
-                { name: "Menu Name", selector: "menu_name" },
-                { name: "Sub Menu Name", selector: "sub_menu_name" },
-                { name: "Created at", selector: "created_at" },
-              ]}
-              exportFileName="Permissions"
-              paginationRowsPerPageOptions={[10, 20, 50, 100]}
-              defaultPerPage={10}
-              searchPlaceholder="Search permission..."
-              refreshTrigger={refreshTrigger} // Add this prop
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Modal */}
-      <Modal
-        isOpen={!!modalType}
-        onClose={closeModal}
-        size="lg"
-        title={
-          modalType === "create"
-            ? "Create Permission"
-            : modalType === "edit"
-            ? "Edit Permission"
-            : "View Permission"
-        }
-        footer={
-          modalType === "view" ? (
-            <Button variant="secondary" onClick={closeModal}>
-              Close
-            </Button>
-          ) : (
-            <>
-              <Button variant="secondary" onClick={closeModal}>
-                Cancel
-              </Button>
               <Button
                 variant="primary"
-                onClick={() => formRef.current?.submitForm()}
-                disabled={isSubmitting}
-                className={`${
-                  isSubmitting ? "opacity-60 cursor-not-allowed" : "opacity-100"
-                }`}
+                icon={faPlus}
+                size="md"
+                className="mt-2 sm:mt-0"
+                onClick={() => openModal("create")}
+                show={hasPermission("permission.create")}
               >
-                {isSubmitting ? (
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                ) : (
-                  ""
-                )}
-                {isSubmitting
-                  ? modalType === "create"
-                    ? "Creating..."
-                    : "Updating..."
-                  : modalType === "create"
-                  ? "Create"
-                  : "Update"}
+                Add New
               </Button>
-            </>
-          )
-        }
-      >
-        {modalType === "view" && (
-          <DynamicViewTable
-            data={selectedPermission}
-            fields={permissionFields}
-          />
-        )}
+            </div>
 
-        {(modalType === "create" || modalType === "edit") && (
-          <>
-            {loadingDropdowns ? (
-              <div className="p-6 text-center">
-                <FormSkeleton fields={permissionFields} mode={modalType} />
-              </div>
-            ) : (
-              <DynamicForm
-                ref={formRef}
-                data={modalType === "edit" ? selectedPermission : null}
-                fields={permissionFields}
-                onSubmit={handleFormSubmit}
-                onChange={handleFormChange}
-                backendErrors={backendErrors}
+            {/* DataTable */}
+            <div className="bg-white shadow overflow-hidden pt-8">
+              <DynamicDataTable
+                columns={columns}
+                apiEndpoint="/permissions"
+                exportColumns={[
+                  { name: "Name", selector: "name" },
+                  { name: "Module Name", selector: "module_name" },
+                  { name: "Menu Name", selector: "menu_name" },
+                  { name: "Sub Menu Name", selector: "sub_menu_name" },
+                  { name: "Created at", selector: "created_at" },
+                ]}
+                exportFileName="Permissions"
+                paginationRowsPerPageOptions={[10, 20, 50, 100]}
+                defaultPerPage={10}
+                searchPlaceholder="Search permission..."
+                refreshTrigger={refreshTrigger} // Add this prop
               />
-            )}
-          </>
-        )}
-      </Modal>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal */}
+        <Modal
+          isOpen={!!modalType}
+          onClose={closeModal}
+          size="lg"
+          title={
+            modalType === "create"
+              ? "Create Permission"
+              : modalType === "edit"
+              ? "Edit Permission"
+              : "View Permission"
+          }
+          footer={
+            modalType === "view" ? (
+              <Button variant="secondary" onClick={closeModal}>
+                Close
+              </Button>
+            ) : (
+              <>
+                <Button variant="secondary" onClick={closeModal}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => formRef.current?.submitForm()}
+                  disabled={isSubmitting}
+                  className={`${
+                    isSubmitting
+                      ? "opacity-60 cursor-not-allowed"
+                      : "opacity-100"
+                  }`}
+                >
+                  {isSubmitting ? (
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    ""
+                  )}
+                  {isSubmitting
+                    ? modalType === "create"
+                      ? "Creating..."
+                      : "Updating..."
+                    : modalType === "create"
+                    ? "Create"
+                    : "Update"}
+                </Button>
+              </>
+            )
+          }
+        >
+          {modalType === "view" && (
+            <DynamicViewTable
+              data={selectedPermission}
+              fields={permissionFields}
+            />
+          )}
+
+          {(modalType === "create" || modalType === "edit") && (
+            <>
+              {loadingDropdowns ? (
+                <div className="p-6 text-center">
+                  <FormSkeleton fields={permissionFields} mode={modalType} />
+                </div>
+              ) : (
+                <DynamicForm
+                  ref={formRef}
+                  data={modalType === "edit" ? selectedPermission : null}
+                  fields={permissionFields}
+                  onSubmit={handleFormSubmit}
+                  onChange={handleFormChange}
+                  backendErrors={backendErrors}
+                />
+              )}
+            </>
+          )}
+        </Modal>
       </AccessRoute>
     </>
   );
