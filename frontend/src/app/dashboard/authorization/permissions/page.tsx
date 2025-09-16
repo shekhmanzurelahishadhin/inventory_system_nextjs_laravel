@@ -337,7 +337,7 @@ const Permissions = () => {
 
   return (
     <>
-      {/* <AccessRoute requiredPermissions={['permission.view', 'permission.create', 'permission.edit', 'permission.delete']}>  */}
+      <AccessRoute requiredPermissions={['permission.view', 'permission.create', 'permission.edit', 'permission.delete']}> 
       <PageHeader
         title="Permissions Management"
         breadcrumbItems={breadcrumbItems}
@@ -476,7 +476,7 @@ const Permissions = () => {
           </>
         )}
       </Modal>
-      {/* </AccessRoute> */}
+      </AccessRoute>
     </>
   );
 };

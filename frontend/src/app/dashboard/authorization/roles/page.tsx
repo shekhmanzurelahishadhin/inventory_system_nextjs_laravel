@@ -29,17 +29,17 @@ const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
     null
   );
-  const [selectedRole, setSelectedRole] = useState<any>(null);
-  const [isMounted, setIsMounted] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<any>(null); // Selected role for view/edit
+  const [isMounted, setIsMounted] = useState(false); // To ensure client-side rendering
   const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>(
     {}
-  );
+  ); // Backend validation errors
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0); // Add this line
-  const { hasPermission } = useAuth();
+  const [refreshTrigger, setRefreshTrigger] = useState(0); // refresh trigger for DataTable
+  const { hasPermission } = useAuth(); // Access control
 
-  const formRef = useRef<any>(null);
-  const router = useRouter();
+  const formRef = useRef<any>(null); // Ref for DynamicForm
+  const router = useRouter(); // Next.js router
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -69,12 +69,14 @@ const Roles = () => {
       readOnly: true,
       showOn: "view",
     },
-  ];
+  ]; // Fields for DynamicForm and DynamicViewTable
 
+  // Ensure component is mounted (for client-side rendering)
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
+  // Open modal function
   const openModal = (type: "create" | "edit" | "view", role: any = null) => {
     setModalType(type);
     setSelectedRole(role);
@@ -82,6 +84,8 @@ const Roles = () => {
     setIsSubmitting(false);
   };
 
+
+  // Close modal function
   const closeModal = () => {
     setModalType(null);
     setSelectedRole(null);
@@ -89,6 +93,7 @@ const Roles = () => {
     setIsSubmitting(false);
   };
 
+  // Handle form submission for create/edit
   const handleFormSubmit = async (formData: Record<string, any>) => {
     try {
       setIsSubmitting(true);
@@ -285,7 +290,7 @@ const Roles = () => {
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={10}
                 searchPlaceholder="Search roles..."
-                refreshTrigger={refreshTrigger} // Add this prop
+                refreshTrigger={refreshTrigger}
               />
             </div>
           </div>

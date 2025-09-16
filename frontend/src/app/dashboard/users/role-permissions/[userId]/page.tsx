@@ -49,7 +49,7 @@ const UserPermissionsPage = () => {
   const [filteredPermissions, setFilteredPermissions] = useState<any[]>([]);
   
   const breadcrumbItems = [
-    { label: "Users", href: "/dashboard/user-management" },
+    { label: "Users", href: "/dashboard/users" },
     { label: "Assign Permissions", href: "#" },
   ];
 
@@ -263,7 +263,7 @@ const UserPermissionsPage = () => {
                   >
                     Deselect All
                   </Button>
-                  <Link href="/dashboard/user-management">
+                  <Link href="/dashboard/users">
                     <Button
                       variant="secondary"
                       icon={faArrowLeft}
