@@ -1,12 +1,17 @@
-"use client";
 import React from "react";
 import Select from "react-select";
 
+interface Option {
+  value: string | number;
+  label: string;
+}
+
 interface MultiSelectFieldProps {
-  value: string[]; // selected values
-  options: { label: string; value: string | number }[];
-  onChange: (values: string[]) => void;
+  value: any[];
+  options: Option[];
+  onChange: (values: any[]) => void;
   placeholder?: string;
+  padding?: string; // optional padding prop
 }
 
 const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
@@ -14,17 +19,31 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
   options,
   onChange,
   placeholder,
+  padding = "0.5rem", // default padding
 }) => {
-  const selectedOptions = options.filter((opt) => value.includes(opt.value));
-
   return (
     <Select
       isMulti
-      value={selectedOptions}
-      onChange={(selected) => onChange(selected.map((s) => s.value))}
+      value={options.filter((opt) => value.includes(opt.value))}
+      onChange={(selected) =>
+        onChange(selected.map((s: any) => s.value))
+      }
       options={options}
-      placeholder={placeholder || "Select..."}
-      className="mt-1"
+      placeholder={placeholder}
+      styles={{
+        control: (provided) => ({
+          ...provided,
+          padding: padding, // apply padding
+        }),
+        multiValue: (provided) => ({
+          ...provided,
+          padding: "2px 4px", // optional for selected items
+        }),
+        input: (provided) => ({
+          ...provided,
+          margin: "0px",
+        }),
+      }}
     />
   );
 };
