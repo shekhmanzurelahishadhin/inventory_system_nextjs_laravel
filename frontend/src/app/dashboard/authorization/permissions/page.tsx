@@ -23,6 +23,7 @@ import { confirmAction } from "@/app/components/common/confirmAction";
 import { permission } from "process";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
+import FormSkeleton from "@/app/components/ui/FormSkeleton";
 
 const Permissions = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -30,87 +31,148 @@ const Permissions = () => {
   );
   const [selectedPermission, setSelectedPermission] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>({});
+  const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>(
+    {}
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // Add this line
-  const {hasPermission} = useAuth();
+  const { hasPermission } = useAuth();
+  const [loadingDropdowns, setLoadingDropdowns] = useState(false);
 
   const formRef = useRef<any>(null);
 
   const [modules, setModules] = useState<any[]>([]);
-const [menus, setMenus] = useState<any[]>([]);
-const [subMenus, setSubMenus] = useState<any[]>([]);
+  const [menus, setMenus] = useState<any[]>([]);
+  const [subMenus, setSubMenus] = useState<any[]>([]);
 
-useEffect(() => {
-  const fetchModules = async () => {
-    const res = await api.get("/modules");
-    setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+  useEffect(() => {
+    const fetchModules = async () => {
+      const res = await api.get("/modules");
+      setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+    };
+    fetchModules();
+    console.log("Modules fetched");
+  }, []);
+
+  // When form changes
+  const handleFormChange = async (updated: Record<string, any>) => {
+    // Module selected → fetch menus
+    if (updated.module_id) {
+      const res = await api.get(`/menus?module_id=${updated.module_id}`);
+      setMenus(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+      setSubMenus([]); // reset sub menus
+    }
+
+    // Menu selected → fetch sub menus
+    if (updated.menu_id) {
+      const res = await api.get(`/sub-menus?menu_id=${updated.menu_id}`);
+      setSubMenus(res.data.map((s: any) => ({ value: s.id, label: s.name })));
+    }
   };
-  fetchModules();
-  console.log('Modules fetched');
-}, []);
 
-// When form changes
-const handleFormChange = async (updated: Record<string, any>) => {
-  // Module selected → fetch menus
-  if (updated.module_id) {
-    const res = await api.get(`/menus?module_id=${updated.module_id}`);
-    setMenus(res.data.map((m: any) => ({ value: m.id, label: m.name })));
-    setSubMenus([]); // reset sub menus
-  }
-
-  // Menu selected → fetch sub menus
-  if (updated.menu_id) {
-    const res = await api.get(`/sub-menus?menu_id=${updated.menu_id}`);
-    setSubMenus(res.data.map((s: any) => ({ value: s.id, label: s.name })));
-  }
-};
-
-  
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "User Role", href: "#" },
     { label: "Permissions", href: "#" },
   ];
-  
-const permissionFields = [
-  { label: "Name", key: "name", type: "text", required: true, showOn: "both" },
-  { label: "Module", key: "module_name", type: "text", readOnly: true, showOn: "view" },
-  { label: "Module", key: "module_id", type: "select", required: true, showOn: "create-edit", options: modules },
-  { label: "Menu", key: "menu_name", type: "text", readOnly: true, showOn: "view" },
-  { label: "Menu", key: "menu_id", type: "select", required: true, showOn: "create-edit", options: menus },
-  { label: "Sub Menu", key: "sub_menu_name", type: "text", readOnly: true, showOn: "view" },
-  { label: "Sub Menu", key: "sub_menu_id", type: "select", showOn: "create-edit", options: subMenus },
-  { label: "Created At", key: "created_at", type: "date", readOnly: true, showOn: "view" },
-];
-  
 
-  
+  const permissionFields = [
+    {
+      label: "Name",
+      key: "name",
+      type: "text",
+      required: true,
+      showOn: "both",
+    },
+    {
+      label: "Module",
+      key: "module_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Module",
+      key: "module_id",
+      type: "select",
+      required: true,
+      showOn: "create-edit",
+      options: modules,
+    },
+    {
+      label: "Menu",
+      key: "menu_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Menu",
+      key: "menu_id",
+      type: "select",
+      required: true,
+      showOn: "create-edit",
+      options: menus,
+    },
+    {
+      label: "Sub Menu",
+      key: "sub_menu_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Sub Menu",
+      key: "sub_menu_id",
+      type: "select",
+      showOn: "create-edit",
+      options: subMenus,
+    },
+    {
+      label: "Created At",
+      key: "created_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
+    },
+  ];
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const openModal = (type: "create" | "edit" | "view", permission: any = null) => {
+  const openModal = (
+    type: "create" | "edit" | "view",
+    permission: any = null
+  ) => {
     setModalType(type);
     setSelectedPermission(permission);
-    setBackendErrors({}); 
-    setIsSubmitting(false);    
+    setBackendErrors({});
+    setIsSubmitting(false);
+
     if (type === "edit" && permission) {
-      // Pre-fetch modules, menus, sub-menus for edit
+      setLoadingDropdowns(true);
       (async () => {
-        const modRes = await api.get("/modules");
-        const mods = modRes.data.map((m: any) => ({ value: m.id, label: m.name })));
-        setModules(mods);     
-        const menuRes = await api.get(`/menus?module_id=${permission.module_id}`);
-        const mns = menuRes.data.map((m: any) => ({ value: m.id, label: m.name })));
-        setMenus(mns);     
-        const subMenuRes = await api.get(`/sub-menus?menu_id=${permission.menu_id}`);
-        const subs = subMenuRes.data.map((s: any) => ({ value: s.id, label: s.name })));
-        setSubMenus(subs);     
+        try {
+          const [modRes, menuRes, subMenuRes] = await Promise.all([
+            api.get("/modules"),
+            api.get(`/menus?module_id=${permission.module_id}`),
+            api.get(`/sub-menus?menu_id=${permission.menu_id}`),
+          ]);
+
+          setModules(
+            modRes.data.map((m: any) => ({ value: m.id, label: m.name }))
+          );
+          setMenus(
+            menuRes.data.map((m: any) => ({ value: m.id, label: m.name }))
+          );
+          setSubMenus(
+            subMenuRes.data.map((s: any) => ({ value: s.id, label: s.name }))
+          );
+        } finally {
+          setLoadingDropdowns(false);
+        }
       })();
-    } else {
-      setMenus([]);
-      setSubMenus([]);
     }
   };
 
@@ -120,14 +182,14 @@ const permissionFields = [
     setBackendErrors({});
     setIsSubmitting(false);
     setMenus([]);
-    setSubMenus([]);  
+    setSubMenus([]);
   };
 
   const handleFormSubmit = async (formData: Record<string, any>) => {
     try {
       setIsSubmitting(true);
       setBackendErrors({});
-      
+
       if (modalType === "create") {
         await api.post("/permissions", formData);
         toast.success("Permission saved successfully");
@@ -135,13 +197,12 @@ const permissionFields = [
         await api.put(`/permissions/${selectedPermission.id}`, formData);
         toast.success("Permission updated successfully");
       }
-      
+
       setIsSubmitting(false);
       closeModal();
-      
+
       // Force table to refetch by updating refreshTrigger
-      setRefreshTrigger(prev => prev + 1);
-      
+      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       setIsSubmitting(false);
       if (error.response?.status === 422) {
@@ -152,53 +213,53 @@ const permissionFields = [
     }
   };
 
-    // Delete Permission function with SweetAlert2 confirmation
- const handleDelete = async (permission: any) => {
-  const confirmed = await confirmAction({
-    title: "Are you sure?",
-    text: `You are about to delete the permission "${permission.name}".!`,
-    confirmButtonText: "Yes, delete it!",
-    cancelButtonText: "Cancel"
-  });
-
-  if (!confirmed) return;
-
-  try {
-    // Show loading
-    Swal.fire({
-      title: "Deleting...",
-      text: `Please wait while we delete the Permission`,
-      allowOutsideClick: false,
-      didOpen: () => Swal.showLoading()
+  // Delete Permission function with SweetAlert2 confirmation
+  const handleDelete = async (permission: any) => {
+    const confirmed = await confirmAction({
+      title: "Are you sure?",
+      text: `You are about to delete the permission "${permission.name}".!`,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
     });
 
-    // API call
-    await api.delete(`/permissions/${permission.id}`);
+    if (!confirmed) return;
 
-    Swal.close(); // close loading
+    try {
+      // Show loading
+      Swal.fire({
+        title: "Deleting...",
+        text: `Please wait while we delete the Permission`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
 
-    // Success message
-    Swal.fire({
-      title: "Deleted!",
-      text: `Pemission "${permission.name}" has been deleted successfully.`,
-      icon: "success",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "OK"
-    });
+      // API call
+      await api.delete(`/permissions/${permission.id}`);
 
-    // Refresh table
-    setRefreshTrigger(prev => prev + 1);
-  } catch (error: any) {
-    Swal.close();
-    Swal.fire({
-      title: "Error!",
-      text: error.response?.data?.message || "Failed to delete Permission",
-      icon: "error",
-      confirmButtonColor: "#3085d6",
-      confirmButtonText: "OK"
-    });
-  }
-};
+      Swal.close(); // close loading
+
+      // Success message
+      Swal.fire({
+        title: "Deleted!",
+        text: `Pemission "${permission.name}" has been deleted successfully.`,
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+      });
+
+      // Refresh table
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      Swal.close();
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to delete Permission",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+      });
+    }
+  };
   // Columns for DataTable
   const columns = [
     {
@@ -217,7 +278,7 @@ const permissionFields = [
       selector: (row) => row.module_name,
       sortable: true,
     },
-    
+
     {
       name: "Menu Name",
       selector: (row) => row.menu_name,
@@ -246,7 +307,7 @@ const permissionFields = [
               variant: "primary",
               size: "sm",
               tooltip: "View",
-              show: (r) => hasPermission('permission.view'),
+              show: (r) => hasPermission("permission.view"),
             },
             {
               icon: faEdit,
@@ -254,15 +315,15 @@ const permissionFields = [
               variant: "secondary",
               size: "sm",
               tooltip: "Edit",
-              show: (r) => hasPermission('permission.edit'),
+              show: (r) => hasPermission("permission.edit"),
             },
             {
               icon: faTrash,
-              onClick: (r) =>  handleDelete(r),
+              onClick: (r) => handleDelete(r),
               variant: "danger",
               size: "sm",
               tooltip: "Delete",
-              show: (r) => hasPermission('permission.delete'),
+              show: (r) => hasPermission("permission.delete"),
             },
           ]}
         />
@@ -276,13 +337,18 @@ const permissionFields = [
 
   return (
     <>
-    {/* <AccessRoute requiredPermissions={['permission.view', 'permission.create', 'permission.edit', 'permission.delete']}>  */}
-      <PageHeader title="Permissions Management" breadcrumbItems={breadcrumbItems} />
+      {/* <AccessRoute requiredPermissions={['permission.view', 'permission.create', 'permission.edit', 'permission.delete']}>  */}
+      <PageHeader
+        title="Permissions Management"
+        breadcrumbItems={breadcrumbItems}
+      />
 
       <div className="min-h-screen bg-gray-50 p-6">
         <div className="max-w-8xl mx-auto">
           <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">Permissions List</h2>
+            <h2 className="text-xl font-semibold text-gray-800">
+              Permissions List
+            </h2>
 
             <Button
               variant="primary"
@@ -290,12 +356,12 @@ const permissionFields = [
               size="md"
               className="mt-2 sm:mt-0"
               onClick={() => openModal("create")}
-              show={hasPermission('permission.create')}
+              show={hasPermission("permission.create")}
             >
               Add New
             </Button>
           </div>
-          
+
           {/* DataTable */}
           <div className="bg-white shadow overflow-hidden pt-8">
             <DynamicDataTable
@@ -323,49 +389,91 @@ const permissionFields = [
         isOpen={!!modalType}
         onClose={closeModal}
         size="lg"
-        title={modalType === "create" ? "Create Permission" : modalType === "edit" ? "Edit Permission" : "View Permission"}
+        title={
+          modalType === "create"
+            ? "Create Permission"
+            : modalType === "edit"
+            ? "Edit Permission"
+            : "View Permission"
+        }
         footer={
           modalType === "view" ? (
-            <Button variant="secondary" onClick={closeModal}>Close</Button>
+            <Button variant="secondary" onClick={closeModal}>
+              Close
+            </Button>
           ) : (
             <>
-              <Button variant="secondary" onClick={closeModal}>Cancel</Button>
+              <Button variant="secondary" onClick={closeModal}>
+                Cancel
+              </Button>
               <Button
                 variant="primary"
                 onClick={() => formRef.current?.submitForm()}
                 disabled={isSubmitting}
-                className={`${isSubmitting ? "opacity-60 cursor-not-allowed" : "opacity-100"}`}
+                className={`${
+                  isSubmitting ? "opacity-60 cursor-not-allowed" : "opacity-100"
+                }`}
               >
-                 {isSubmitting ?
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg> : ''
-                  }
+                {isSubmitting ? (
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                ) : (
+                  ""
+                )}
                 {isSubmitting
                   ? modalType === "create"
                     ? "Creating..."
                     : "Updating..."
                   : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                  ? "Create"
+                  : "Update"}
               </Button>
             </>
           )
         }
       >
-        {modalType === "view" && <DynamicViewTable data={selectedPermission} fields={permissionFields} />}
+        {modalType === "view" && (
+          <DynamicViewTable
+            data={selectedPermission}
+            fields={permissionFields}
+          />
+        )}
 
         {(modalType === "create" || modalType === "edit") && (
-          console.log('Rendering form with menus:', selectedPermission),
-          <DynamicForm
-            ref={formRef}
-            data={modalType === "edit" ? selectedPermission : null}
-            fields={permissionFields}
-            onSubmit={handleFormSubmit}
-             onChange={handleFormChange}
-            backendErrors={backendErrors}
-          />
+          <>
+            {loadingDropdowns ? (
+              <div className="p-6 text-center">
+                <FormSkeleton fields={permissionFields} mode={modalType} />
+              </div>
+            ) : (
+              <DynamicForm
+                ref={formRef}
+                data={modalType === "edit" ? selectedPermission : null}
+                fields={permissionFields}
+                onSubmit={handleFormSubmit}
+                onChange={handleFormChange}
+                backendErrors={backendErrors}
+              />
+            )}
+          </>
         )}
       </Modal>
       {/* </AccessRoute> */}
