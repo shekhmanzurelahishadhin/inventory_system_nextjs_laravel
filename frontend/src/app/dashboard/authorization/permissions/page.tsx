@@ -333,8 +333,6 @@ const Permissions = () => {
     },
   ];
 
-  if (!isMounted) return <Preloader />;
-
   return (
     <>
       <AccessRoute
