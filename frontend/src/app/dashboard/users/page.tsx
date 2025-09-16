@@ -82,7 +82,11 @@ const Users = () => {
     type: "multiselect",
     required: true,
     showOn: "both",
-    options: [], // filled dynamically from API
+    options: [
+      { label: "Admin", value: "admin" },
+      { label: "Editor", value: "editor" },
+      { label: "Viewer", value: "viewer" },
+    ] 
   },
   {
     label: "Created At",

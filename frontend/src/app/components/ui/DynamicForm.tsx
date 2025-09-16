@@ -6,6 +6,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 import { FieldConfigArray } from "../common/FieldConfig";
+import MultiSelectField from "./MultiSelectField";
 
 interface DynamicFormProps {
   data?: Record<string, any> | null;
@@ -34,7 +35,7 @@ const DynamicForm = forwardRef(
       if (Object.keys(formData).length === 0) {
         const initial: Record<string, any> = {};
         fields.forEach((f) => {
-          initial[f.key] = data?.[f.key] ?? f.defaultValue ?? "";
+          initial[f.key] = data?.[f.key] ?? f.defaultValue ?? (f.type === "checkbox" ? false : "");
         });
         setFormData(initial);
       }
@@ -116,20 +117,18 @@ const DynamicForm = forwardRef(
                   )}
                 </label>
 
+                {/* Textarea */}
                 {field.type === "textarea" ? (
                   <textarea
                     value={value}
-                    onChange={(e) =>
-                      handleChange(field.key, e.target.value)
-                    }
+                    onChange={(e) => handleChange(field.key, e.target.value)}
                     className={inputClasses(field.key)}
                   />
                 ) : field.type === "select" ? (
+                  /* Select dropdown */
                   <select
                     value={value}
-                    onChange={(e) =>
-                      handleChange(field.key, e.target.value)
-                    }
+                    onChange={(e) => handleChange(field.key, e.target.value)}
                     className={inputClasses(field.key)}
                   >
                     <option value="">
@@ -141,21 +140,54 @@ const DynamicForm = forwardRef(
                       </option>
                     ))}
                   </select>
+                ) : field.type === "multiselect" ? (
+                  /* Multi select */
+                   <MultiSelectField
+    value={formData[field.key] || []}
+    options={field.options || []}
+    onChange={(vals) => handleChange(field.key, vals)}
+    placeholder={field.placeholder || `Select ${field.label}`}
+  />
                 ) : field.type === "checkbox" ? (
+                  /* Checkbox */
                   <input
                     type="checkbox"
                     checked={!!value}
+                    onChange={(e) => handleChange(field.key, e.target.checked)}
+                  />
+                ) : field.type === "radio" ? (
+                  /* Radio group */
+                  <div className="flex gap-4">
+                    {field.options?.map((opt) => (
+                      <label key={opt.value} className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name={field.key}
+                          value={opt.value}
+                          checked={value === opt.value}
+                          onChange={(e) =>
+                            handleChange(field.key, e.target.value)
+                          }
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                ) : field.type === "file" ? (
+                  /* File input */
+                  <input
+                    type="file"
                     onChange={(e) =>
-                      handleChange(field.key, e.target.checked)
+                      handleChange(field.key, e.target.files?.[0] || null)
                     }
+                    className={inputClasses(field.key)}
                   />
                 ) : (
+                  /* Default input */
                   <input
                     type={field.type || "text"}
                     value={value}
-                    onChange={(e) =>
-                      handleChange(field.key, e.target.value)
-                    }
+                    onChange={(e) => handleChange(field.key, e.target.value)}
                     className={inputClasses(field.key)}
                   />
                 )}
