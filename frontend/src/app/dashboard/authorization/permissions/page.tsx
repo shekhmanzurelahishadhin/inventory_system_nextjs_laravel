@@ -96,7 +96,7 @@ const Permissions = () => {
       key: "module_id",
       type: "select",
       required: true,
-      showOn: "create-edit",
+      showOn: "both",
       options: modules,
     },
     {
@@ -111,7 +111,7 @@ const Permissions = () => {
       key: "menu_id",
       type: "select",
       required: true,
-      showOn: "create-edit",
+      showOn: "both",
       options: menus,
     },
     {
@@ -125,7 +125,7 @@ const Permissions = () => {
       label: "Sub Menu",
       key: "sub_menu_id",
       type: "select",
-      showOn: "create-edit",
+      showOn: "both",
       options: subMenus,
     },
     {

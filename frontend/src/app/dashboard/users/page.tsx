@@ -93,7 +93,16 @@ const Users = () => {
       key: "roles",
       type: "multiselect",
       required: true,
-      showOn: "both",
+      showOn: "create",
+      options: roles,
+    },
+    
+    {
+      label: "Roles",
+      key: "rolesName",
+      type: "multiselect",
+      required: true,
+      showOn: "view",
       options: roles,
     },
     {
