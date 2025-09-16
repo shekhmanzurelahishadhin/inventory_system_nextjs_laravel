@@ -480,6 +480,7 @@ const Permissions = () => {
                   onSubmit={handleFormSubmit}
                   onChange={handleFormChange}
                   backendErrors={backendErrors}
+                  mode={modalType}
                 />
               )}
             </>

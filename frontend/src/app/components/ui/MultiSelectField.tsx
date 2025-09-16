@@ -12,6 +12,7 @@ interface MultiSelectFieldProps {
   onChange: (values: any[]) => void;
   placeholder?: string;
   padding?: string; // optional padding prop
+  // disabled?: boolean;
 }
 
 const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
@@ -20,6 +21,7 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
   onChange,
   placeholder,
   padding = "0.5rem", // default padding
+  // disabled = false,
 }) => {
   return (
     <Select
@@ -29,6 +31,7 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
         onChange(selected.map((s: any) => s.value))
       }
       options={options}
+      // isDisabled={disabled}
       placeholder={placeholder}
       styles={{
         control: (provided) => ({

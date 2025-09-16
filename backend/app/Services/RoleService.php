@@ -8,7 +8,7 @@ use Spatie\Permission\Models\Role;
 
 class RoleService
 {
-    public function getRoles($filters = [], $perPage = 10)
+    public function getRoles($filters = [], $perPage)
     {
         $query = Role::query();
 

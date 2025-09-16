@@ -47,7 +47,7 @@ const renderValue = (field: any) => {
       <table className="min-w-full divide-y divide-gray-200">
         <tbody className="bg-white divide-y divide-gray-200">
           {fields
-            .filter((f) => f.showOn === "view" || f.showOn === "both")
+            .filter((f) => f.showOn === "view")
             .filter((f) => !f.hidden)
             .map((field) => (
               <tr key={field.key}>

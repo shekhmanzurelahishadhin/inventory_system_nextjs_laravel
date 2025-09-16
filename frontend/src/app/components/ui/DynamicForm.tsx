@@ -11,6 +11,7 @@ import MultiSelectField from "./MultiSelectField";
 interface DynamicFormProps {
   data?: Record<string, any> | null;
   fields: FieldConfigArray;
+  mode?: "create" | "edit" | "view"; // 👈 added mode
   onChange?: (updated: Record<string, any>) => void;
   onSubmit?: (formData: Record<string, any>) => Promise<void> | void;
   backendErrors?: Record<string, string[]>;
@@ -21,6 +22,7 @@ const DynamicForm = forwardRef(
     {
       data = {},
       fields,
+      mode = "create", // default
       onChange,
       onSubmit,
       backendErrors = {},
@@ -81,7 +83,7 @@ const DynamicForm = forwardRef(
     const validateAll = () => {
       const newErrors: Record<string, string> = {};
       fields.forEach((field) => {
-        if (field.showOn === "view" || field.hidden) return;
+        if (!shouldShowField(field)) return; // skip hidden fields
         const error = validateField(field, formData[field.key]);
         if (error) newErrors[field.key] = error;
       });
@@ -104,12 +106,25 @@ const DynamicForm = forwardRef(
         errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
       } focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;
 
+    // Check field visibility based on mode + showOn
+    const shouldShowField = (field: any) => {
+      if (field.hidden) return false;
+      const showOn = field.showOn || "both";
+      if (showOn === "both") return mode === "create" || mode === "edit";
+      if (showOn === "view") return mode === "view";
+      if (showOn === "create") return mode === "create";
+      if (showOn === "edit") return mode === "edit";
+      return false;
+    };
+
     return (
       <form className="my-5 space-y-4" onSubmit={(e) => e.preventDefault()}>
         {fields
-          .filter((f) => f.showOn !== "view" && !f.hidden)
+          .filter((f) => shouldShowField(f))
           .map((field) => {
             const value = formData[field.key] ?? "";
+            const isReadOnly =
+              mode === "view" || field.readOnly; // disable in view mode
 
             return (
               <div key={field.key} className={field.className || ""}>
@@ -124,13 +139,20 @@ const DynamicForm = forwardRef(
                   <textarea
                     value={value}
                     placeholder={field.placeholder || `Enter ${field.label}`}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    onChange={(e) =>
+                      !isReadOnly && handleChange(field.key, e.target.value)
+                    }
+                    readOnly={isReadOnly}
+                    disabled={isReadOnly}
                     className={inputClasses(field.key)}
                   />
                 ) : field.type === "select" ? (
                   <select
                     value={value}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    onChange={(e) =>
+                      !isReadOnly && handleChange(field.key, e.target.value)
+                    }
+                    disabled={isReadOnly}
                     className={inputClasses(field.key)}
                   >
                     <option value="">
@@ -146,14 +168,20 @@ const DynamicForm = forwardRef(
                   <MultiSelectField
                     value={formData[field.key] || []}
                     options={field.options || []}
-                    onChange={(vals) => handleChange(field.key, vals)}
+                    onChange={(vals) =>
+                      !isReadOnly && handleChange(field.key, vals)
+                    }
                     placeholder={field.placeholder || `Select ${field.label}`}
+                    disabled={isReadOnly}
                   />
                 ) : field.type === "checkbox" ? (
                   <input
                     type="checkbox"
                     checked={!!value}
-                    onChange={(e) => handleChange(field.key, e.target.checked)}
+                    onChange={(e) =>
+                      !isReadOnly && handleChange(field.key, e.target.checked)
+                    }
+                    disabled={isReadOnly}
                   />
                 ) : field.type === "radio" ? (
                   <div className="flex gap-4">
@@ -168,8 +196,10 @@ const DynamicForm = forwardRef(
                           value={opt.value}
                           checked={value === opt.value}
                           onChange={(e) =>
+                            !isReadOnly &&
                             handleChange(field.key, e.target.value)
                           }
+                          disabled={isReadOnly}
                         />
                         {opt.label}
                       </label>
@@ -179,8 +209,10 @@ const DynamicForm = forwardRef(
                   <input
                     type="file"
                     onChange={(e) =>
+                      !isReadOnly &&
                       handleChange(field.key, e.target.files?.[0] || null)
                     }
+                    disabled={isReadOnly}
                     className={inputClasses(field.key)}
                   />
                 ) : (
@@ -188,7 +220,11 @@ const DynamicForm = forwardRef(
                     type={field.type || "text"}
                     value={value}
                     placeholder={field.placeholder || `Enter ${field.label}`}
-                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    onChange={(e) =>
+                      !isReadOnly && handleChange(field.key, e.target.value)
+                    }
+                    readOnly={isReadOnly}
+                    disabled={isReadOnly}
                     className={inputClasses(field.key)}
                   />
                 )}

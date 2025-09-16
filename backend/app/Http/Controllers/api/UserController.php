@@ -51,7 +51,7 @@ class UserController extends Controller
         }
 
         // Optional pagination
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page');
         $users = $query->paginate($perPage);
 
         // Return resource collection

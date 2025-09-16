@@ -9,7 +9,7 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionService
 {
-    public function getPermission($filters = [], $perPage = 10)
+    public function getPermission($filters = [], $perPage)
     {
         $query = PermissionModel::query();
 

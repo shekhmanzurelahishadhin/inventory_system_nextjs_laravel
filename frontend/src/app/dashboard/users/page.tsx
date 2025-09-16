@@ -79,24 +79,39 @@ const Users = () => {
       key: "password",
       type: "password",
       required: true,
-      showOn: "create", // only on create
+      showOn: "both", 
     },
     {
       label: "Confirm Password",
       key: "password_confirmation",
       type: "password",
       required: true,
-      showOn: "create", // only on create
+      showOn: "both", 
     },
     {
       label: "Roles",
       key: "roles",
       type: "multiselect",
-      required: true,
-      showOn: "create",
+      required: false,
+      showOn: "both",
       options: roles,
     },
-    
+  ];
+  const userViewFields = [
+      {
+      label: "Name",
+      key: "name",
+      type: "text",
+      required: true,
+      showOn: "view",
+    },
+    {
+      label: "Email",
+      key: "email",
+      type: "email",
+      required: true,
+      showOn: "view",
+    },
     {
       label: "Roles",
       key: "rolesName",
@@ -105,13 +120,8 @@ const Users = () => {
       showOn: "view",
       options: roles,
     },
-    {
-      label: "Created At",
-      key: "created_at",
-      type: "date",
-      readOnly: true,
-      showOn: "view",
-    },
+    { label: "Created At", key: "created_at", type: "date", showOn: "view" },
+    { label: "Updated At", key: "updated_at", type: "date", showOn: "view" },
   ];
   // Fields for DynamicForm and DynamicViewTable
 
@@ -406,7 +416,7 @@ const Users = () => {
           }
         >
           {modalType === "view" && (
-            <DynamicViewTable data={selectedUser} fields={userFields} />
+            <DynamicViewTable data={selectedUser} fields={userViewFields} />
           )}
 
           {(modalType === "create" || modalType === "edit") && (
@@ -416,6 +426,7 @@ const Users = () => {
               fields={userFields}
               onSubmit={handleFormSubmit}
               backendErrors={backendErrors}
+              mode={modalType}
             />
           )}
         </Modal>

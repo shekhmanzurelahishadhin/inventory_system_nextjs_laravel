@@ -357,6 +357,7 @@ const Roles = () => {
               fields={roleFields}
               onSubmit={handleFormSubmit}
               backendErrors={backendErrors}
+              mode={modalType}
             />
           )}
         </Modal>
