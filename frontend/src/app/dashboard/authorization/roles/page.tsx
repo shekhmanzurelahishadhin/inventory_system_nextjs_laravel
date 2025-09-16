@@ -53,7 +53,7 @@ const Roles = () => {
       key: "name",
       type: "text",
       required: true,
-      showOn: "both",
+      showOn: "all",
     },
     {
       label: "Guard Name",

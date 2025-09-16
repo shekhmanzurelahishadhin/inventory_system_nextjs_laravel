@@ -65,28 +65,28 @@ const Users = () => {
       key: "name",
       type: "text",
       required: true,
-      showOn: "both",
+      showOn: "all", // both create/edit and view
     },
     {
       label: "Email",
       key: "email",
       type: "email",
       required: true,
-      showOn: "both",
+      showOn: "all", // both create/edit and view
     },
     {
       label: "Password",
       key: "password",
       type: "password",
       required: true,
-      showOn: "both", 
+      showOn: "both", // create and edit only
     },
     {
       label: "Confirm Password",
       key: "password_confirmation",
       type: "password",
       required: true,
-      showOn: "both", 
+      showOn: "both", // create and edit only
     },
     {
       label: "Roles",
@@ -96,28 +96,12 @@ const Users = () => {
       showOn: "both",
       options: roles,
     },
-  ];
-  const userViewFields = [
-      {
-      label: "Name",
-      key: "name",
-      type: "text",
-      required: true,
-      showOn: "view",
-    },
-    {
-      label: "Email",
-      key: "email",
-      type: "email",
-      required: true,
-      showOn: "view",
-    },
-    {
+        {
       label: "Roles",
       key: "rolesName",
       type: "multiselect",
       required: true,
-      showOn: "view",
+      showOn: "view", // view only
       options: roles,
     },
     { label: "Created At", key: "created_at", type: "date", showOn: "view" },
@@ -416,7 +400,7 @@ const Users = () => {
           }
         >
           {modalType === "view" && (
-            <DynamicViewTable data={selectedUser} fields={userViewFields} />
+            <DynamicViewTable data={selectedUser} fields={userFields} />
           )}
 
           {(modalType === "create" || modalType === "edit") && (

@@ -11,7 +11,7 @@ import MultiSelectField from "./MultiSelectField";
 interface DynamicFormProps {
   data?: Record<string, any> | null;
   fields: FieldConfigArray;
-  mode?: "create" | "edit" | "view"; // 👈 added mode
+  mode?: "create" | "edit" | "view" ; // 👈 added mode
   onChange?: (updated: Record<string, any>) => void;
   onSubmit?: (formData: Record<string, any>) => Promise<void> | void;
   backendErrors?: Record<string, string[]>;
@@ -110,6 +110,7 @@ const DynamicForm = forwardRef(
     const shouldShowField = (field: any) => {
       if (field.hidden) return false;
       const showOn = field.showOn || "both";
+      if (showOn === "all") return mode === "create" || mode === "edit" || mode === "view";
       if (showOn === "both") return mode === "create" || mode === "edit";
       if (showOn === "view") return mode === "view";
       if (showOn === "create") return mode === "create";
