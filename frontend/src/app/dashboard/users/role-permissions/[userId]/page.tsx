@@ -31,7 +31,7 @@ const UserPermissionsPage = () => {
   const [user, setUser] = useState<any>(null);
   const [permissions, setPermissions] = useState<any[]>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const { hasPermission,refreshUser, user:currentUser } = useAuth();
   
@@ -54,6 +54,7 @@ const UserPermissionsPage = () => {
   ];
 
   useEffect(() => {
+    setLoading(true);
     const fetchData = async () => {
       try {
         const [userRes, permissionsRes] = await Promise.all([
