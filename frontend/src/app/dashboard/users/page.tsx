@@ -37,6 +37,12 @@ const Users = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [roles, setRoles] = useState<any[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // refresh trigger for DataTable
+ const [perPage, setPerPage] = useState(10);
+    const [pagination, setPagination] = useState({
+      page: 1,
+      perPage: 10
+    });
+
   const { hasPermission } = useAuth(); // Access control
 
   const formRef = useRef<any>(null); // Ref for DynamicForm
@@ -56,7 +62,6 @@ const Users = () => {
       );
     };
     fetchRoles();
-    console.log("Role fetched");
   }, []);
 
   const userFields = [
@@ -208,9 +213,9 @@ const Users = () => {
   };
   // Columns for DataTable
   const columns = [
-    {
+        {
       name: "#",
-      cell: (row, index) => index + 1,
+      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -323,9 +328,10 @@ const Users = () => {
                 ]}
                 exportFileName="users"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
-                defaultPerPage={10}
+                defaultPerPage={perPage}
                 searchPlaceholder="Search users..."
                 refreshTrigger={refreshTrigger}
+                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
               />
             </div>
           </div>

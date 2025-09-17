@@ -19,7 +19,8 @@ interface Props<T> {
   exportFileName?: string;
   paginationRowsPerPageOptions?: number[];
   defaultPerPage?: number;
-  refreshTrigger?: number; // Add this prop
+  refreshTrigger?: number; 
+  onPaginationChange?: (page: number, perPage: number) => void; 
 }
 
 const DynamicDataTable = <T extends any>({
@@ -30,7 +31,8 @@ const DynamicDataTable = <T extends any>({
   exportFileName = "export",
   paginationRowsPerPageOptions = [5, 10, 25, 50, 100],
   defaultPerPage = 10,
-  refreshTrigger = 0, // Add this with default value
+  refreshTrigger = 0, 
+  onPaginationChange,
 }: Props<T>) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [perPage, setPerPage] = useState(defaultPerPage);
@@ -51,6 +53,12 @@ const DynamicDataTable = <T extends any>({
       refetch();
     }
   }, [refreshTrigger]);
+
+  useEffect(() => {
+    if (onPaginationChange) {
+      onPaginationChange(currentPage, perPage);
+    }
+  }, [currentPage, perPage]);
 
   return (
     <div>

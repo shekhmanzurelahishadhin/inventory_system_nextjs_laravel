@@ -40,6 +40,11 @@ const Roles = () => {
 
   const formRef = useRef<any>(null); // Ref for DynamicForm
   const router = useRouter(); // Next.js router
+const [perPage, setPerPage] = useState(10);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    perPage: 10
+  });
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -171,9 +176,9 @@ const Roles = () => {
   };
   // Columns for DataTable
   const columns = [
-    {
+     {
       name: "#",
-      cell: (row, index) => index + 1,
+      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -288,9 +293,10 @@ const Roles = () => {
                 ]}
                 exportFileName="roles"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
-                defaultPerPage={10}
+                defaultPerPage={perPage}
                 searchPlaceholder="Search roles..."
                 refreshTrigger={refreshTrigger}
+                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
               />
             </div>
           </div>

@@ -46,13 +46,18 @@ const Permissions = () => {
   const [menus, setMenus] = useState<any[]>([]);
   const [subMenus, setSubMenus] = useState<any[]>([]);
 
+  const [perPage, setPerPage] = useState(10);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    perPage: 10
+  });
+
   useEffect(() => {
     const fetchModules = async () => {
       const res = await api.get("/modules");
       setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
     };
     fetchModules();
-    console.log("Modules fetched");
   }, []);
 
   // When form changes
@@ -263,9 +268,9 @@ const Permissions = () => {
   };
   // Columns for DataTable
   const columns = [
-    {
+      {
       name: "#",
-      cell: (row, index) => index + 1,
+      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -382,9 +387,10 @@ const Permissions = () => {
                 ]}
                 exportFileName="Permissions"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
-                defaultPerPage={10}
+                defaultPerPage={perPage}
                 searchPlaceholder="Search permission..."
                 refreshTrigger={refreshTrigger} // Add this prop
+                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
               />
             </div>
           </div>
