@@ -20,7 +20,6 @@ import Preloader from "@/app/components/ui/Preloader";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import { confirmAction } from "@/app/components/common/confirmAction";
-import { permission } from "process";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import FormSkeleton from "@/app/components/ui/FormSkeleton";
