@@ -101,6 +101,30 @@ class UserService
             ];
         }
     }
+    public function delete(User $user)
+    {
+        DB::beginTransaction();
 
+        try {
+             $user->syncRoles([]);
+
+            $user->delete();
+
+            DB::commit();
+
+            return [
+                'success' => true,
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return [
+                'success' => false,
+                'message' => 'Failed to delete user',
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
 
 }

@@ -94,6 +94,21 @@ class UserController extends Controller
             'permissions' => $user->getDirectPermissions()->pluck('name')
         ]);
     }
+    public function delete(User $user, UserService $userService)
+    {
+        $result = $userService->delete($user);
+
+        if ($result['success']) {
+            return response()->json([
+                'message' => 'User deleted successfully',
+            ]);
+        }
+
+        return response()->json([
+            'message' => $result['message'],
+            'error' => $result['error'] ?? null,
+        ], 500);
+    }
 
     /**
      * Assign direct permissions to user
