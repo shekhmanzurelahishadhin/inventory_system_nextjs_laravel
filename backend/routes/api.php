@@ -15,13 +15,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'user']);
 
 //    //user manage routes
-//    Route::get('/users', [UserController::class, 'index']);
-//    Route::post('/users', [UserController::class, 'store']);
-//    Route::put('/users/{user}', [UserController::class, 'update']);
-//    Route::delete('/users/{user}', [UserController::class, 'delete']);
-//    // User permissions routes
-//    Route::get('/users/{user}/permissions', [UserController::class, 'getUserPermissions']);
-//    Route::post('/users/{user}/permissions', [UserController::class, 'assignPermissions']);
 
     Route::prefix('users')->group(function () {
         // User management
@@ -49,10 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     //Permission manage routes
-//    Route::get('/permissions', [PermissionController::class, 'index']);
-//    Route::post('/permissions', [PermissionController::class, 'store']);
-//    Route::put('/permissions/{permission}', [PermissionController::class, 'update']);
-//    Route::delete('/permissions/{permission}', [PermissionController::class, 'destroy']);
 
     Route::prefix('permissions')->group(function () {
         Route::get('/', [PermissionController::class, 'index']);

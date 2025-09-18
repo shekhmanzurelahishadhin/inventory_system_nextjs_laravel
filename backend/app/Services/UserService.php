@@ -106,7 +106,11 @@ class UserService
         DB::beginTransaction();
 
         try {
-             $user->syncRoles([]);
+            // Remove roles
+            $user->syncRoles([]);
+
+            // Remove direct permissions
+            $user->syncPermissions([]);
 
             $user->delete();
 

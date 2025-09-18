@@ -97,7 +97,7 @@ const Users = () => {
       label: "Roles",
       key: "roles",
       type: "multiselect",
-      required: false,
+      required: true,
       showOn: "both",
       options: roles,
     },
