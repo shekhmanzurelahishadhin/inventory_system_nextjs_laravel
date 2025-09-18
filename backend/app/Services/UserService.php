@@ -65,5 +65,42 @@ class UserService
         }
     }
 
+    public function update(User $user, array $data)
+    {
+        DB::beginTransaction();
+
+        try {
+            $user->name = $data['name'] ?? $user->name;
+            $user->email = $data['email'] ?? $user->email;
+
+            if (!empty($data['password'])) {
+                $user->password = Hash::make($data['password']);
+            }
+
+            $user->save();
+
+
+            if (!empty($data['roles'])) {
+                $user->syncRoles($data['roles']); // Spatie
+            }
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'user' => $user->load('roles'),
+            ];
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return [
+                'success' => false,
+                'message' => 'Failed to update user',
+                'error'   => $e->getMessage(),
+            ];
+        }
+    }
+
 
 }
