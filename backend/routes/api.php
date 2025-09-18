@@ -16,6 +16,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //user manage routes
     Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
     // User permissions routes
     Route::get('/users/{user}/permissions', [UserController::class, 'getUserPermissions']);
     Route::post('/users/{user}/permissions', [UserController::class, 'assignPermissions']);

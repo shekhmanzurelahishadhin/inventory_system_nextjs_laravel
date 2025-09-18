@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\users\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
@@ -48,6 +49,24 @@ class UserController extends Controller
             'per_page' => $users->perPage(),
         ]);
     }
+
+    public function store(StoreUserRequest $request, UserService $userService)
+    {
+        $result = $userService->store($request->validated());
+
+        if ($result['success']) {
+            return response()->json([
+                'message' => 'User created successfully',
+                'data'    => new UserResource($result['user']),
+            ], 201);
+        }
+
+        return response()->json([
+            'message' => $result['message'],
+            'error'   => $result['error'], // optional
+        ], 500);
+    }
+
 
     public function getUserPermissions(User $user)
     {

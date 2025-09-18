@@ -4,7 +4,12 @@
 namespace App\Services;
 
 
+use App\Models\Role\UserHasRole;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB as FacadesDB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Hash as FacadesHash;
 
 class UserService
 {
@@ -26,5 +31,39 @@ class UserService
 
         return $query->with(['roles:id,name'])->orderBy('id','desc')->paginate($perPage);
     }
+
+
+    public function store(array $data)
+    {
+        DB::beginTransaction();
+
+        try {
+            $user = User::create([
+                'name'     => $data['name'],
+                'email'    => $data['email'],
+                'password' => Hash::make($data['password']),
+            ]);
+
+            if (!empty($data['roles'])) {
+                $user->syncRoles($data['roles']); // or roles()->sync()
+            }
+
+            DB::commit();
+
+            return [
+                'success' => true,
+                'user'    => $user->load('roles'),
+            ];
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return [
+                'success' => false,
+                'message' => 'Failed to create user',
+                'error'   => $e->getMessage(), // optional for debugging
+            ];
+        }
+    }
+
 
 }
