@@ -94,7 +94,7 @@ class UserController extends Controller
             'permissions' => $user->getDirectPermissions()->pluck('name')
         ]);
     }
-    public function delete(User $user, UserService $userService)
+    public function destroy(User $user, UserService $userService)
     {
         $result = $userService->delete($user);
 
