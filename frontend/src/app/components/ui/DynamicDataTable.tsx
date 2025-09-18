@@ -72,8 +72,8 @@ const DynamicDataTable = <T extends any>({
           columns={columns}
           data={data}
           // progressPending={loading}
-          pagination
-          paginationServer
+          pagination // Enable pagination
+          paginationServer // Server-side pagination
           paginationTotalRows={totalRows}
           paginationPerPage={perPage}
           paginationRowsPerPageOptions={paginationRowsPerPageOptions}
