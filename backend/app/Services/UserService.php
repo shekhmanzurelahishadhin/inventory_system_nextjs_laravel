@@ -81,7 +81,7 @@ class UserService
 
 
             if (!empty($data['roles'])) {
-                $user->syncRoles($data['roles']); // Spatie
+                $user->syncRoles($data['roles']);
             }
 
             DB::commit();

@@ -14,8 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [UserController::class, 'user']);
 
-//    //user manage routes
-
+    //user manage routes
     Route::prefix('users')->group(function () {
         // User management
         Route::get('/', [UserController::class, 'index']);
@@ -30,19 +29,18 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Roles manage routes
     Route::prefix('roles')->group(function () {
-        // CRUD
+        // Role Management
         Route::get('/', [RoleController::class, 'index']);       // list roles
         Route::post('/', [RoleController::class, 'store']);      // create role
         Route::put('/{role}', [RoleController::class, 'update']); // update role
         Route::delete('/{role}', [RoleController::class, 'destroy']); // delete role
 
-        // Extra
+        // Role permission
         Route::get('/{role}/permissions', [RoleController::class, 'getPermissions']); // fetch assigned
         Route::post('/{role}/permissions', [RoleController::class, 'assignPermissions']); // assign/update
     });
 
     //Permission manage routes
-
     Route::prefix('permissions')->group(function () {
         Route::get('/', [PermissionController::class, 'index']);
         Route::post('/', [PermissionController::class, 'store']);
@@ -50,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{permission}', [PermissionController::class, 'destroy']);
     });
 
+    // Permission Module, Menu and Sub Menu
     Route::get('/modules', [PermissionController::class, 'modules']);
     Route::get('/menus', [PermissionController::class, 'menus']);
     Route::get('/sub-menus', [PermissionController::class, 'subMenus']);
