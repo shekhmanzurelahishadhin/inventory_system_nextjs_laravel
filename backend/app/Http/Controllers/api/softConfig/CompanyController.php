@@ -4,7 +4,9 @@ namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\softConfig\company\CreateCompanyRequest;
+use App\Http\Requests\softConfig\company\UpdateCompanyRequest;
 use App\Http\Resources\softConfig\company\CompanyResource;
+use App\Models\softConfig\Company;
 use App\Services\CompanyService;
 use Illuminate\Http\Request;
 
@@ -52,16 +54,54 @@ class CompanyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCompanyRequest $request, CompanyService $companyService, Company $company)
     {
-        //
+        $company = $companyService->updateCompany($company, $request->validated());
+
+        return response()->json([
+            'message' => 'Company updated successfully',
+            'data' => new CompanyResource($company),
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+
+    // Soft delete (move to trash)
+    public function trash(Company $company, CompanyService $companyService)
     {
-        //
+        $companyService->softDeleteCompany($company);
+
+        return response()->json([
+            'message' => 'Company moved to trash successfully',
+        ]);
+    }
+
+    // Restore soft-deleted company
+    public function restore(Company $company, CompanyService $companyService)
+    {
+        $company = $companyService->restoreCompany($company);
+
+        return response()->json([
+            'message' => 'Company restored successfully',
+            'data' => $company,
+        ]);
+    }
+
+    // Force delete permanently
+    public function destroy(Company $company, CompanyService $companyService)
+    {
+        $deleted = $companyService->forceDeleteCompany($company);
+
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Company permanently deleted',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Company is not in trash',
+        ], 400);
     }
 }

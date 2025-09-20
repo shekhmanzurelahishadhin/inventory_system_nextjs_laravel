@@ -10,7 +10,7 @@ class CompanyService
 {
     public function getCompanies($filters = [], $perPage)
     {
-        $query = Company::query();
+        $query = Company::withTrashed();;
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
@@ -23,5 +23,33 @@ class CompanyService
     public function createCompany(array $data)
     {
         return Company::create($data);
+    }
+
+    public function updateCompany(Company $company, array $data)
+    {
+        return $company->update($data);
+    }
+
+
+    public function softDeleteCompany(Company $company)
+    {
+        $company->delete();
+    }
+
+    public function restoreCompany(Company $company)
+    {
+        if ($company->trashed()) {
+            $company->restore();
+        }
+        return $company;
+    }
+
+    public function forceDeleteCompany(Company $company)
+    {
+        if ($company->trashed()) {
+            $company->forceDelete();
+            return true;
+        }
+        return false;
     }
 }

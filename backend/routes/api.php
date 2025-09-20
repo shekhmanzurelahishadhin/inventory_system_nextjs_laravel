@@ -6,6 +6,7 @@ use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\authorization\RoleController;
 use App\Http\Controllers\api\authorization\PermissionController;
+use App\Http\Controllers\api\softConfig\CompanyController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -52,6 +53,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/modules', [PermissionController::class, 'modules']);
     Route::get('/menus', [PermissionController::class, 'menus']);
     Route::get('/sub-menus', [PermissionController::class, 'subMenus']);
+
+
+    Route::prefix('companies')->group(function () {
+        Route::get('/', [CompanyController::class, 'index']);
+        Route::post('/', [CompanyController::class, 'store']);
+        Route::get('/{company}', [CompanyController::class, 'show']);
+        Route::put('/{company}', [CompanyController::class, 'update']);
+        Route::post('trash/{company}', [CompanyController::class, 'trash']); // soft delete
+        Route::post('/restore/{company}', [CompanyController::class, 'restore']);
+        Route::delete('/{company}', [CompanyController::class, 'destroy']);
+    });
 });
 
 Route::get('/test-cors', function () {
