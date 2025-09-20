@@ -18,7 +18,10 @@ class RoleService
                 ->orWhere('guard_name', 'like', "%{$search}%");
         }
 
-        return $query->orderBy('id','desc')->paginate($perPage);
+        $query->orderBy('id', 'desc');
+
+        // Return paginated if perPage is provided, else all
+        return $perPage ? $query->paginate($perPage) : $query->get();
     }
 
     public function createRole(array $data)

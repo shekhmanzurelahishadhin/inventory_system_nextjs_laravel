@@ -22,11 +22,22 @@ class CompanyController extends Controller
 
         $companies = $companyService->getCompanies($filters, $perPage);
 
+        if ($companies instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            // Paginated response
+            return response()->json([
+                'data' => $companies->items(),
+                'total' => $companies->total(),
+                'current_page' => $companies->currentPage(),
+                'per_page' => $companies->perPage(),
+            ]);
+        }
+
+        // Collection response (no pagination)
         return response()->json([
-            'data' => CompanyResource::collection($companies),
-            'total' => $companies->total(),
-            'current_page' => $companies->currentPage(),
-            'per_page' => $companies->perPage(),
+            'data' => $companies,
+            'total' => $companies->count(),
+            'current_page' => 1,
+            'per_page' => $companies->count(),
         ]);
     }
 

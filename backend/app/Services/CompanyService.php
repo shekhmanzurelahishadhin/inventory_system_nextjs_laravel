@@ -18,7 +18,8 @@ class CompanyService
                 ->orWhere('code', 'like', "%{$search}%");
         }
 
-        return $query->orderBy('id','desc')->paginate($perPage);
+        $query->orderBy('id','desc');
+        return $perPage ? $query->paginate($perPage) : $query->get();
     }
     public function createCompany(array $data)
     {

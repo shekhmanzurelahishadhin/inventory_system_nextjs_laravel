@@ -28,9 +28,11 @@ class PermissionService
                 });
         }
 
-        return $query->with(['module:id,name','menu:id,name','subMenu:id,name'])
-            ->orderBy('id','desc')
-            ->paginate($perPage);
+        $query->with(['module:id,name','menu:id,name','subMenu:id,name'])
+            ->orderBy('id', 'desc');
+
+        // If perPage is provided, paginate; otherwise return all
+        return $perPage ? $query->paginate($perPage) : $query->get();
     }
 
     public function createPermission(array $data)

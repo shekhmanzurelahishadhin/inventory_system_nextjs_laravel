@@ -26,18 +26,30 @@ class PermissionController extends Controller
 
     public function index(Request $request, PermissionService $permissionService)
     {
-        $perPage = $request->get('per_page');
+        $perPage = $request->get('per_page'); // can be null
         $filters = $request->only('search');
 
         $permissions = $permissionService->getPermission($filters, $perPage);
 
+        // Check if paginated
+        if ($permissions instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            return response()->json([
+                'data' => PermissionRecource::collection($permissions),
+                'total' => $permissions->total(),
+                'current_page' => $permissions->currentPage(),
+                'per_page' => $permissions->perPage(),
+            ]);
+        }
+
+        // Not paginated, return all
         return response()->json([
             'data' => PermissionRecource::collection($permissions),
-            'total' => $permissions->total(),
-            'current_page' => $permissions->currentPage(),
-            'per_page' => $permissions->perPage(),
+            'total' => $permissions->count(),
+            'current_page' => 1,
+            'per_page' => $permissions->count(),
         ]);
     }
+
     public function store(CreatePermissionRequest $request,  PermissionService $permissionService)
     {
         $permission = $permissionService->createPermission($request->validated());

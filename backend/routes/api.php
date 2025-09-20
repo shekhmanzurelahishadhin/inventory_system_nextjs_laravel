@@ -55,14 +55,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sub-menus', [PermissionController::class, 'subMenus']);
 
 
-    Route::prefix('companies')->group(function () {
-        Route::get('/', [CompanyController::class, 'index']);
-        Route::post('/', [CompanyController::class, 'store']);
-        Route::get('/{company}', [CompanyController::class, 'show']);
-        Route::put('/{company}', [CompanyController::class, 'update']);
-        Route::post('trash/{company}', [CompanyController::class, 'trash']); // soft delete
-        Route::post('/restore/{company}', [CompanyController::class, 'restore']);
-        Route::delete('/{company}', [CompanyController::class, 'destroy']);
+    Route::prefix('soft-config')->group(function () {
+        Route::prefix('companies')->group(function () {
+            Route::get('/', [CompanyController::class, 'index']);
+            Route::post('/', [CompanyController::class, 'store']);
+            Route::get('/{company}', [CompanyController::class, 'show']);
+            Route::put('/{company}', [CompanyController::class, 'update']);
+            Route::post('trash/{company}', [CompanyController::class, 'trash']); // soft delete
+            Route::post('/restore/{company}', [CompanyController::class, 'restore']);
+            Route::delete('/{company}', [CompanyController::class, 'destroy']); // force delete
+        });
     });
 });
 

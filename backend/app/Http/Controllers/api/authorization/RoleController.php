@@ -23,20 +23,30 @@ class RoleController extends Controller
 
     public function index(Request $request, RoleService $roleService)
     {
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
-
-        $perPage = $request->get('per_page', 10);
+        $perPage = $request->get('per_page'); // can be null
         $filters = $request->only('search');
 
         $roles = $roleService->getRoles($filters, $perPage);
 
+        // Check if paginated
+        if ($roles instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            return response()->json([
+                'data' => RoleResource::collection($roles),
+                'total' => $roles->total(),
+                'current_page' => $roles->currentPage(),
+                'per_page' => $roles->perPage(),
+            ]);
+        }
+
+        // Not paginated, return all
         return response()->json([
             'data' => RoleResource::collection($roles),
-            'total' => $roles->total(),
-            'current_page' => $roles->currentPage(),
-            'per_page' => $roles->perPage(),
+            'total' => $roles->count(),
+            'current_page' => 1,
+            'per_page' => $roles->count(),
         ]);
     }
+
 
     public function store(CreateRoleRequest $request,  RoleService $roleService)
     {

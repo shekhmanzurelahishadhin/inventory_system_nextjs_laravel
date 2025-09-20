@@ -36,20 +36,33 @@ class UserController extends Controller
             'permissions' => $user->getAllPermissions()->pluck('name'), // returns array of permission names
         ]);
     }
+
     public function index(Request $request, UserService $userService)
     {
-        $perPage = $request->get('per_page');
+        $perPage = $request->get('per_page'); // may be null
         $filters = $request->only('search');
 
         $users = $userService->getUsers($filters, $perPage);
 
+        // Check if paginated
+        if ($users instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            return response()->json([
+                'data' => UserResource::collection($users),
+                'total' => $users->total(),
+                'current_page' => $users->currentPage(),
+                'per_page' => $users->perPage(),
+            ]);
+        }
+
+        // Not paginated, return all
         return response()->json([
             'data' => UserResource::collection($users),
-            'total' => $users->total(),
-            'current_page' => $users->currentPage(),
-            'per_page' => $users->perPage(),
+            'total' => $users->count(),
+            'current_page' => 1,
+            'per_page' => $users->count(),
         ]);
     }
+
 
     public function store(StoreUserRequest $request, UserService $userService)
     {
