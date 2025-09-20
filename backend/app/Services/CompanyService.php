@@ -23,6 +23,9 @@ class CompanyService
     }
     public function createCompany(array $data)
     {
+        if (empty($data['code'])) {
+            $data['code'] = generateCode('CMP', 'companies', 'code');
+        }
         return Company::create($data);
     }
 
