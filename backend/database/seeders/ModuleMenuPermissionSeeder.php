@@ -160,5 +160,316 @@ class ModuleMenuPermissionSeeder extends Seeder
                 'sub_menu_id' => null,
             ]
         );
+
+        // Soft Config module
+        $softConfigModule = Module::updateOrCreate(
+            ['name' => 'Soft Config'],
+            ['slug' => 'soft-config']
+        );
+        $companyMenu = Menu::updateOrCreate(
+            ['name' => 'Company', 'module_id' => $softConfigModule->id],
+            ['slug' => 'company']
+        );
+
+        // Company
+        Permission::updateOrCreate(
+            ['name' => 'company.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $companyMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'company.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $companyMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'company.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $companyMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'company.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $companyMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+        // Category
+        $categoryMenu = Menu::updateOrCreate(
+            ['name' => 'Category', 'module_id' => $softConfigModule->id],
+            ['slug' => 'category']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'category.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $categoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'category.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $categoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'category.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $categoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'category.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $categoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+        // sub-category
+        $subCategoryMenu = Menu::updateOrCreate(
+            ['name' => 'Sub Category', 'module_id' => $softConfigModule->id],
+            ['slug' => 'sub-category']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'sub-category.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $subCategoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'sub-category.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $subCategoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'sub-category.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $subCategoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'sub-category.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $subCategoryMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+        // brand
+        $brandMenu = Menu::updateOrCreate(
+            ['name' => 'Brand', 'module_id' => $softConfigModule->id],
+            ['slug' => 'brand']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'brand.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $brandMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'brand.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $brandMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'brand.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $brandMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'brand.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $brandMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+
+        // Model
+        $modelMenu = Menu::updateOrCreate(
+            ['name' => 'Model', 'module_id' => $softConfigModule->id],
+            ['slug' => 'model']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'model.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $modelMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'model.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $modelMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'model.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $modelMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'model.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $modelMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+        // Unit
+        $unitMenu = Menu::updateOrCreate(
+            ['name' => 'Unit', 'module_id' => $softConfigModule->id],
+            ['slug' => 'unit']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'unit.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $unitMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'unit.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $unitMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'unit.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $unitMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'unit.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $unitMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+        // Store
+        $storeMenu = Menu::updateOrCreate(
+            ['name' => 'Store', 'module_id' => $softConfigModule->id],
+            ['slug' => 'store']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'store.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $storeMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'store.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $storeMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'store.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $storeMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'store.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $storeMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+        // Location
+        $locationMenu = Menu::updateOrCreate(
+            ['name' => 'Location', 'module_id' => $softConfigModule->id],
+            ['slug' => 'location']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'location.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $locationMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'location.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $locationMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'location.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $locationMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'location.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $locationMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
     }
 }

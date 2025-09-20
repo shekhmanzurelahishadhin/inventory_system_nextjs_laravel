@@ -55,7 +55,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/sub-menus', [PermissionController::class, 'subMenus']);
 
 
+    // Soft Config Route
     Route::prefix('soft-config')->group(function () {
+
+        // Companies Route
         Route::prefix('companies')->group(function () {
             Route::get('/', [CompanyController::class, 'index']);
             Route::post('/', [CompanyController::class, 'store']);

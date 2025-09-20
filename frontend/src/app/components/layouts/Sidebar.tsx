@@ -107,6 +107,101 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
       ],
     },
+     {
+    name: "Soft Config",
+    href: "#",
+    icon: solidIcons.faCogs,
+    children: [
+      {
+        name: "Company",
+        href: "/dashboard/softconfig/companies",
+        icon: solidIcons.faBuilding,
+        requiredPermissions: [
+          "company.view",
+          "company.create",
+          "company.edit",
+          "company.delete",
+        ],
+      },
+      {
+        name: "Category",
+        href: "/dashboard/softconfig/categories",
+        icon: solidIcons.faTags,
+        requiredPermissions: [
+          "category.view",
+          "category.create",
+          "category.edit",
+          "category.delete",
+        ],
+      },
+      {
+        name: "Sub Category",
+        href: "/dashboard/softconfig/sub-categories",
+        icon: solidIcons.faLayerGroup,
+        requiredPermissions: [
+          "subcategory.view",
+          "subcategory.create",
+          "subcategory.edit",
+          "subcategory.delete",
+        ],
+      },
+      {
+        name: "Brand",
+        href: "/dashboard/softconfig/brands",
+        icon: solidIcons.faTrademark,
+        requiredPermissions: [
+          "brand.view",
+          "brand.create",
+          "brand.edit",
+          "brand.delete",
+        ],
+      },
+      {
+        name: "Model",
+        href: "/dashboard/softconfig/models",
+        icon: solidIcons.faCubes,
+        requiredPermissions: [
+          "model.view",
+          "model.create",
+          "model.edit",
+          "model.delete",
+        ],
+      },
+      {
+        name: "Unit",
+        href: "/dashboard/softconfig/units",
+        icon: solidIcons.faRuler,
+        requiredPermissions: [
+          "unit.view",
+          "unit.create",
+          "unit.edit",
+          "unit.delete",
+        ],
+      },
+      {
+        name: "Store",
+        href: "/dashboard/softconfig/stores",
+        icon: solidIcons.faStore,
+        requiredPermissions: [
+          "store.view",
+          "store.create",
+          "store.edit",
+          "store.delete",
+        ],
+      },
+      {
+        name: "Location",
+        href: "/dashboard/softconfig/locations",
+        icon: solidIcons.faMapMarkerAlt,
+        requiredPermissions: [
+          "location.view",
+          "location.create",
+          "location.edit",
+          "location.delete",
+        ],
+      },
+    ],
+  },
     {
       name: "Apps",
       href: "#",
