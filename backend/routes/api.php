@@ -62,8 +62,8 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::get('/{company}', [CompanyController::class, 'show']);
             Route::put('/{company}', [CompanyController::class, 'update']);
             Route::post('trash/{company}', [CompanyController::class, 'trash']); // soft delete
-            Route::post('/restore/{company}', [CompanyController::class, 'restore']);
-            Route::delete('/{company}', [CompanyController::class, 'destroy']); // force delete
+            Route::post('/restore/{id}', [CompanyController::class, 'restore']);
+            Route::delete('/{id}', [CompanyController::class, 'destroy']); // force delete
         });
     });
 });

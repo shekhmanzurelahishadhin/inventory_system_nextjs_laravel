@@ -90,8 +90,10 @@ class CompanyController extends Controller
     }
 
     // Restore soft-deleted company
-    public function restore(Company $company, CompanyService $companyService)
+    public function restore($id, CompanyService $companyService)
     {
+        $company = Company::withTrashed()->findOrFail($id);
+
         $company = $companyService->restoreCompany($company);
 
         return response()->json([
@@ -101,8 +103,9 @@ class CompanyController extends Controller
     }
 
     // Force delete permanently
-    public function destroy(Company $company, CompanyService $companyService)
+    public function destroy($id, CompanyService $companyService)
     {
+        $company = Company::withTrashed()->findOrFail($id);
         $deleted = $companyService->forceDeleteCompany($company);
 
         if ($deleted) {

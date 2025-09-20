@@ -31,7 +31,8 @@ class CompanyService
 
     public function updateCompany(Company $company, array $data)
     {
-        return $company->update($data);
+        $company->update($data); // updates the model
+        return $company;         // return the model itself
     }
 
 
