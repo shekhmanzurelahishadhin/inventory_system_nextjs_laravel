@@ -5,6 +5,7 @@ import ExportButtons from "./ExportButton";
 import { usePaginatedData } from "@/app/hooks/usePaginatedData";
 import Preloader from "./Preloader";
 import DatatableLoader from "./DatatableLoader";
+import { api } from "@/app/lib/api";
 
 interface ExportColumn<T> {
   name: string;
@@ -21,6 +22,7 @@ interface Props<T> {
   defaultPerPage?: number;
   refreshTrigger?: number; 
   onPaginationChange?: (page: number, perPage: number) => void; 
+   allowExportAll?: boolean; //allow export all data
 }
 
 const DynamicDataTable = <T extends any>({
@@ -33,6 +35,7 @@ const DynamicDataTable = <T extends any>({
   defaultPerPage = 10,
   refreshTrigger = 0, 
   onPaginationChange,
+  allowExportAll = false,
 }: Props<T>) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [perPage, setPerPage] = useState(defaultPerPage);
@@ -59,6 +62,21 @@ const DynamicDataTable = <T extends any>({
       onPaginationChange(currentPage, perPage);
     }
   }, [currentPage, perPage]);
+
+
+// inside DynamicDataTable component
+const fetchAllData = async (): Promise<T[]> => {
+  try {
+    // no params sent at all (backend returns all)
+    const response = await api.get(apiEndpoint);
+    // handle both paginate & non-paginate responses
+    return response.data.data ?? response.data;
+  } catch (error) {
+    console.error("Failed to fetch all data", error);
+    return [];
+  }
+};
+
 
   return (
     <div>
@@ -92,6 +110,7 @@ const DynamicDataTable = <T extends any>({
                   data={data}
                   fileName={exportFileName}
                   columns={exportColumns}
+                  fetchAllData={allowExportAll ? fetchAllData : undefined} // only pass fetchAllData if allowed
                 />
               )}
               <input

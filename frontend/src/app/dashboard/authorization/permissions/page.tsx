@@ -390,6 +390,7 @@ const Permissions = () => {
                 searchPlaceholder="Search permission..."
                 refreshTrigger={refreshTrigger} // Add this prop
                 onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
+                allowExportAll={true} // allow export all data
               />
             </div>
           </div>
