@@ -20,7 +20,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [UserController::class, 'index']);
         Route::post('/', [UserController::class, 'store']);
         Route::put('/{user}', [UserController::class, 'update']);
-        Route::delete('/{user}', [UserController::class, 'destroy']); // rename to destroy for convention
+        Route::delete('/{user}', [UserController::class, 'destroy']);
 
         // User permissions
         Route::get('/{user}/permissions', [UserController::class, 'getUserPermissions']);
