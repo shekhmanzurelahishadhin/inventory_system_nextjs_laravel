@@ -6,7 +6,7 @@ interface LoaderProps {
   onHide?: () => void; // optional callback
 }
 
-export default function DatatableLoader({ duration = 10000, onHide }: LoaderProps) {
+export default function DatatableLoader({ duration = 5000, onHide }: LoaderProps) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
