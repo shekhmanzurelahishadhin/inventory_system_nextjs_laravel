@@ -24,6 +24,7 @@ import { confirmAction } from "@/app/components/common/confirmAction";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { DateFomant } from "@/app/components/utilities/DateFormat";
 
 const Users = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -37,11 +38,11 @@ const Users = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [roles, setRoles] = useState<any[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // refresh trigger for DataTable
- const [perPage, setPerPage] = useState(10);
-    const [pagination, setPagination] = useState({
-      page: 1,
-      perPage: 10
-    });
+  const [perPage, setPerPage] = useState(10);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    perPage: 10,
+  });
 
   const { hasPermission } = useAuth(); // Access control
 
@@ -101,7 +102,7 @@ const Users = () => {
       showOn: "both",
       options: roles,
     },
-        {
+    {
       label: "Roles",
       key: "rolesName",
       type: "multiselect",
@@ -213,9 +214,10 @@ const Users = () => {
   };
   // Columns for DataTable
   const columns = [
-        {
+    {
       name: "#",
-      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
+      cell: (row, index) =>
+        (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -232,6 +234,11 @@ const Users = () => {
     {
       name: "Roles",
       selector: (row) => row.rolesName,
+      sortable: true,
+    },
+    {
+      name: "Created At",
+      selector: (row) => DateFomant(row.created_at),
       sortable: true,
     },
     {
@@ -331,7 +338,9 @@ const Users = () => {
                 defaultPerPage={perPage}
                 searchPlaceholder="Search users..."
                 refreshTrigger={refreshTrigger}
-                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
+                onPaginationChange={(page, perPage) =>
+                  setPagination({ page, perPage })
+                }
               />
             </div>
           </div>

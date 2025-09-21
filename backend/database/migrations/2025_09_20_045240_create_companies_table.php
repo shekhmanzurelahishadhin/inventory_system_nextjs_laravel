@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('logo_path')->nullable();
             $table->string('default_currency')->nullable();
             $table->string('timezone')->default('UTC');
-            $table->boolean('is_active')->default(true);
+            $table->boolean('status')->default(true);
 
             // Auditing columns
             $table->unsignedBigInteger('created_by')->nullable();

@@ -6,7 +6,7 @@ import {
   faEdit,
   faTrash,
   faEye,
-  faUserTag,
+  faKey,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -24,95 +24,59 @@ import { confirmAction } from "@/app/components/common/confirmAction";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { formatStatusBadge } from "@/app/components/utilities/StatusFormat";
+import { DateFomant } from "@/app/components/utilities/DateFormat";
 
-const Users = () => {
+const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
     null
   );
-  const [selectedUser, setSelectedUser] = useState<any>(null); // Selected user for view/edit
+  const [selectedRole, setSelectedRole] = useState<any>(null); // Selected role for view/edit
   const [isMounted, setIsMounted] = useState(false); // To ensure client-side rendering
   const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>(
     {}
   ); // Backend validation errors
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [roles, setRoles] = useState<any[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // refresh trigger for DataTable
- const [perPage, setPerPage] = useState(10);
-    const [pagination, setPagination] = useState({
-      page: 1,
-      perPage: 10
-    });
-
   const { hasPermission } = useAuth(); // Access control
 
   const formRef = useRef<any>(null); // Ref for DynamicForm
   const router = useRouter(); // Next.js router
+  const [perPage, setPerPage] = useState(10);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    perPage: 10,
+  });
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: "User Role", href: "#" },
-    { label: "User", href: "#" },
+    { label: "Soft Config", href: "#" },
+    { label: "Company", href: "#" },
   ];
 
-  useEffect(() => {
-    const fetchRoles = async () => {
-      const res = await api.get("/roles");
-      setRoles(
-        res.data.data.map((role: any) => ({ value: role.id, label: role.name }))
-      );
-    };
-    fetchRoles();
-  }, []);
-
-  const userFields = [
+  const roleFields = [
     {
       label: "Name",
       key: "name",
       type: "text",
       required: true,
-      showOn: "all", // both create/edit and view
+      showOn: "all",
     },
     {
-      label: "Email",
-      key: "email",
-      type: "email",
-      required: true,
-      showOn: "all", // both create/edit and view
+      label: "Guard Name",
+      key: "guard_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
     },
     {
-      label: "Password",
-      key: "password",
-      type: "password",
-      required: true,
-      showOn: "both", // create and edit only
+      label: "Created At",
+      key: "created_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
     },
-    {
-      label: "Confirm Password",
-      key: "password_confirmation",
-      type: "password",
-      required: true,
-      showOn: "both", // create and edit only
-    },
-    {
-      label: "Roles",
-      key: "roles",
-      type: "multiselect",
-      required: true,
-      showOn: "both",
-      options: roles,
-    },
-        {
-      label: "Roles",
-      key: "rolesName",
-      type: "multiselect",
-      required: true,
-      showOn: "view", // view only
-      options: roles,
-    },
-    { label: "Created At", key: "created_at", type: "date", showOn: "view" },
-    { label: "Updated At", key: "updated_at", type: "date", showOn: "view" },
-  ];
-  // Fields for DynamicForm and DynamicViewTable
+  ]; // Fields for DynamicForm and DynamicViewTable
 
   // Ensure component is mounted (for client-side rendering)
   useEffect(() => {
@@ -120,9 +84,9 @@ const Users = () => {
   }, []);
 
   // Open modal function
-  const openModal = (type: "create" | "edit" | "view", user: any = null) => {
+  const openModal = (type: "create" | "edit" | "view", role: any = null) => {
     setModalType(type);
-    setSelectedUser(user);
+    setSelectedRole(role);
     setBackendErrors({});
     setIsSubmitting(false);
   };
@@ -130,7 +94,7 @@ const Users = () => {
   // Close modal function
   const closeModal = () => {
     setModalType(null);
-    setSelectedUser(null);
+    setSelectedRole(null);
     setBackendErrors({});
     setIsSubmitting(false);
   };
@@ -142,11 +106,11 @@ const Users = () => {
       setBackendErrors({});
 
       if (modalType === "create") {
-        await api.post("/users", formData);
-        toast.success("User saved successfully");
-      } else if (modalType === "edit" && selectedUser?.id) {
-        await api.put(`/users/${selectedUser.id}`, formData);
-        toast.success("User updated successfully");
+        await api.post("/roles", formData);
+        toast.success("Role saved successfully");
+      } else if (modalType === "edit" && selectedRole?.id) {
+        await api.put(`/roles/${selectedRole.id}`, formData);
+        toast.success("Role updated successfully");
       }
 
       setIsSubmitting(false);
@@ -164,11 +128,11 @@ const Users = () => {
     }
   };
 
-  // Delete user function with SweetAlert2 confirmation
-  const handleDeleteUser = async (user: any) => {
+  // Delete role function with SweetAlert2 confirmation
+  const handleDeleteRole = async (role: any) => {
     const confirmed = await confirmAction({
       title: "Are you sure?",
-      text: `You are about to delete the user "${user.name}".!`,
+      text: `You are about to delete the role "${role.name}".!`,
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
     });
@@ -179,20 +143,20 @@ const Users = () => {
       // Show loading
       Swal.fire({
         title: "Deleting...",
-        text: `Please wait while we delete the user`,
+        text: `Please wait while we delete the role`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
 
       // API call
-      await api.delete(`/users/${user.id}`);
+      await api.delete(`/roles/${role.id}`);
 
       Swal.close(); // close loading
 
       // Success message
       Swal.fire({
         title: "Deleted!",
-        text: `User "${user.name}" has been deleted successfully.`,
+        text: `Role "${role.name}" has been deleted successfully.`,
         icon: "success",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
@@ -204,7 +168,7 @@ const Users = () => {
       Swal.close();
       Swal.fire({
         title: "Error!",
-        text: error.response?.data?.message || "Failed to delete user",
+        text: error.response?.data?.message || "Failed to delete role",
         icon: "error",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
@@ -213,9 +177,10 @@ const Users = () => {
   };
   // Columns for DataTable
   const columns = [
-        {
+    {
       name: "#",
-      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
+      cell: (row, index) =>
+        (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -225,13 +190,25 @@ const Users = () => {
       sortable: true,
     },
     {
-      name: "Email",
-      selector: (row) => row.email,
+      name: "Code",
+      selector: (row) => row.code,
+      sortable: true,
+    },
+
+    {
+      name: "Address",
+      selector: (row) => row.address,
       sortable: true,
     },
     {
-      name: "Roles",
-      selector: (row) => row.rolesName,
+      name: "Status",
+      selector: (row) =>
+        formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
+      sortable: true,
+    },
+    {
+      name: "Created At",
+      selector: (row) => DateFomant(row.created_at),
       sortable: true,
     },
     {
@@ -242,41 +219,42 @@ const Users = () => {
           buttons={[
             {
               icon: faEye,
-              onClick: (user) => openModal("view", user),
+              onClick: (r) => openModal("view", r),
               variant: "primary",
               size: "sm",
-              show: (user) => hasPermission("user.view"),
+              show: (r) => hasPermission("role.view"),
               tooltip: "View",
             },
             {
-              icon: faUserTag,
-              onClick: (user) =>
-                router.push(`/dashboard/users/role-permissions/${user.id}`),
-              variant: "info",
+              icon: faKey,
+              onClick: (r) =>
+                router.push(
+                  `/dashboard/authorization/roles/role-permissions/${r.id}`
+                ),
+              variant: "success",
               size: "sm",
-              show: (user) =>
-                !user.rolesName?.includes("Super Admin") &&
-                hasPermission("user.assign-permissions"),
+              show: (r) =>
+                !r.name?.includes("Super Admin") &&
+                hasPermission("role.assign-permissions"),
               tooltip: "Assign Permissions",
             },
             {
               icon: faEdit,
-              onClick: (user) => openModal("edit", user),
+              onClick: (r) => openModal("edit", r),
               variant: "secondary",
               size: "sm",
-              show: (user) =>
-                !user.rolesName?.includes("Super Admin") &&
-                hasPermission("user.edit"),
+              show: (r) =>
+                !r.name?.includes("Super Admin") && hasPermission("role.edit"),
               tooltip: "Edit",
             },
             {
               icon: faTrash,
-              onClick: (user) => handleDeleteUser(user),
+              onClick: (r) => handleDeleteRole(r),
               variant: "danger",
               size: "sm",
-              show: (user) =>
-                !user.rolesName?.includes("Super Admin") &&
-                hasPermission("user.delete"),
+              show: (r) =>
+                !r.name?.includes("Super Admin") &&
+                hasPermission("role.delete"),
               tooltip: "Delete",
             },
           ]}
@@ -291,18 +269,23 @@ const Users = () => {
     <>
       <AccessRoute
         requiredPermissions={[
-          "user.view",
-          "user.create",
-          "user.edit",
-          "user.delete",
+          "role.view",
+          "role.create",
+          "role.edit",
+          "role.delete",
         ]}
       >
-        <PageHeader title="User Management" breadcrumbItems={breadcrumbItems} />
+        <PageHeader
+          title="Company Management"
+          breadcrumbItems={breadcrumbItems}
+        />
 
         <div className="min-h-screen bg-gray-50 p-6">
           <div className="max-w-8xl mx-auto">
             <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">User List</h2>
+              <h2 className="text-xl font-semibold text-gray-800">
+                Company List
+              </h2>
 
               <Button
                 variant="primary"
@@ -310,7 +293,7 @@ const Users = () => {
                 size="md"
                 className="mt-2 sm:mt-0"
                 onClick={() => openModal("create")}
-                show={hasPermission("user.create")}
+                show={hasPermission("role.create")}
               >
                 Add New
               </Button>
@@ -320,18 +303,20 @@ const Users = () => {
             <div className="bg-white shadow overflow-hidden pt-8">
               <DynamicDataTable
                 columns={columns}
-                apiEndpoint="/users"
+                apiEndpoint="/soft-config/companies"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "Email", selector: "email" },
-                  { name: "Roles", selector: "rolesName" },
+                  { name: "Guard Name", selector: "guard_name" },
+                  { name: "Created at", selector: "created_at" },
                 ]}
-                exportFileName="users"
+                exportFileName="roles"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search users..."
+                searchPlaceholder="Search roles..."
                 refreshTrigger={refreshTrigger}
-                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
+                onPaginationChange={(page, perPage) =>
+                  setPagination({ page, perPage })
+                }
               />
             </div>
           </div>
@@ -344,10 +329,10 @@ const Users = () => {
           size="lg"
           title={
             modalType === "create"
-              ? "Create User"
+              ? "Create Role"
               : modalType === "edit"
-              ? "Edit User"
-              : "View User"
+              ? "Edit Role"
+              : "View Role"
           }
           footer={
             modalType === "view" ? (
@@ -406,14 +391,14 @@ const Users = () => {
           }
         >
           {modalType === "view" && (
-            <DynamicViewTable data={selectedUser} fields={userFields} />
+            <DynamicViewTable data={selectedRole} fields={roleFields} />
           )}
 
           {(modalType === "create" || modalType === "edit") && (
             <DynamicForm
               ref={formRef}
-              data={modalType === "edit" ? selectedUser : null}
-              fields={userFields}
+              data={modalType === "edit" ? selectedRole : null}
+              fields={roleFields}
               onSubmit={handleFormSubmit}
               backendErrors={backendErrors}
               mode={modalType}
@@ -425,4 +410,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Roles;

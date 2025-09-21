@@ -24,6 +24,7 @@ import { confirmAction } from "@/app/components/common/confirmAction";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { DateFomant } from "@/app/components/utilities/DateFormat";
 
 const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -194,7 +195,7 @@ const [perPage, setPerPage] = useState(10);
     },
     {
       name: "Created At",
-      selector: (row) => row.created_at,
+      selector: (row) => DateFomant(row.created_at),
       sortable: true,
     },
     {
