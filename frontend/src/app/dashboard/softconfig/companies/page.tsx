@@ -24,7 +24,7 @@ import { confirmAction } from "@/app/components/common/confirmAction";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { formatStatusBadge } from "@/app/components/utilities/StatusFormat";
+import { formatStatusBadge } from "@/app/components/utilities/statusFormat";
 import { DateFomant } from "@/app/components/utilities/DateFormat";
 
 const Roles = () => {
