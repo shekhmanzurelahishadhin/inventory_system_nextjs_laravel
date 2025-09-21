@@ -24,7 +24,7 @@ import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import FormSkeleton from "@/app/components/ui/FormSkeleton";
 import DatatableLoader from "@/app/components/ui/DatatableLoader";
-import { formatDateTime } from "@/app/components/utilities/dateFormat";
+import { formatDateTime } from "@/app/components/common/DateFormat";
 
 const Permissions = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(

@@ -29,5 +29,16 @@ export const formatDateTime = (dateString: string): string => {
   else if (diffHours < 24) humanDiff = `${diffHours}h ago`;
   else humanDiff = `${diffDays}d ago`;
 
-  return `${formattedDate} (${humanDiff})`;
+  return (
+    <div className="flex flex-col gap-1 font-sans">
+      <span className="text-xs text-gray-800 ">
+        {formattedDate}
+      </span>
+      <span className="text-xs text-gray-500 bg-indigo-100 px-1 py-0.5 rounded w-fit">
+        {humanDiff}
+      </span>
+
+    </div>
+  );
+
 };

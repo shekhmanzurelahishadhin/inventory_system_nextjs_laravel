@@ -24,7 +24,7 @@ import { confirmAction } from "@/app/components/common/confirmAction";
 import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { formatDateTime } from "@/app/components/utilities/dateFormat";
+import { formatDateTime } from "@/app/components/common/DateFormat";
 
 const Users = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(

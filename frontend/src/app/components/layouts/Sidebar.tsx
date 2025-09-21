@@ -107,101 +107,101 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
       ],
     },
-     {
-    name: "Soft Config",
-    href: "#",
-    icon: solidIcons.faCogs,
-    children: [
-      {
-        name: "Company",
-        href: "/dashboard/softconfig/companies",
-        icon: solidIcons.faBuilding,
-        requiredPermissions: [
-          "company.view",
-          "company.create",
-          "company.edit",
-          "company.delete",
-        ],
-      },
-      {
-        name: "Category",
-        href: "/dashboard/softconfig/categories",
-        icon: solidIcons.faTags,
-        requiredPermissions: [
-          "category.view",
-          "category.create",
-          "category.edit",
-          "category.delete",
-        ],
-      },
-      {
-        name: "Sub Category",
-        href: "/dashboard/softconfig/sub-categories",
-        icon: solidIcons.faLayerGroup,
-        requiredPermissions: [
-          "subcategory.view",
-          "subcategory.create",
-          "subcategory.edit",
-          "subcategory.delete",
-        ],
-      },
-      {
-        name: "Brand",
-        href: "/dashboard/softconfig/brands",
-        icon: solidIcons.faTrademark,
-        requiredPermissions: [
-          "brand.view",
-          "brand.create",
-          "brand.edit",
-          "brand.delete",
-        ],
-      },
-      {
-        name: "Model",
-        href: "/dashboard/softconfig/models",
-        icon: solidIcons.faCubes,
-        requiredPermissions: [
-          "model.view",
-          "model.create",
-          "model.edit",
-          "model.delete",
-        ],
-      },
-      {
-        name: "Unit",
-        href: "/dashboard/softconfig/units",
-        icon: solidIcons.faRuler,
-        requiredPermissions: [
-          "unit.view",
-          "unit.create",
-          "unit.edit",
-          "unit.delete",
-        ],
-      },
-      {
-        name: "Store",
-        href: "/dashboard/softconfig/stores",
-        icon: solidIcons.faStore,
-        requiredPermissions: [
-          "store.view",
-          "store.create",
-          "store.edit",
-          "store.delete",
-        ],
-      },
-      {
-        name: "Location",
-        href: "/dashboard/softconfig/locations",
-        icon: solidIcons.faMapMarkerAlt,
-        requiredPermissions: [
-          "location.view",
-          "location.create",
-          "location.edit",
-          "location.delete",
-        ],
-      },
-    ],
-  },
+    {
+      name: "Soft Config",
+      href: "#",
+      icon: solidIcons.faCogs,
+      children: [
+        {
+          name: "Company",
+          href: "/dashboard/softconfig/companies",
+          icon: solidIcons.faBuilding,
+          requiredPermissions: [
+            "company.view",
+            "company.create",
+            "company.edit",
+            "company.delete",
+          ],
+        },
+        {
+          name: "Category",
+          href: "/dashboard/softconfig/categories",
+          icon: solidIcons.faTags,
+          requiredPermissions: [
+            "category.view",
+            "category.create",
+            "category.edit",
+            "category.delete",
+          ],
+        },
+        {
+          name: "Sub Category",
+          href: "/dashboard/softconfig/sub-categories",
+          icon: solidIcons.faLayerGroup,
+          requiredPermissions: [
+            "subcategory.view",
+            "subcategory.create",
+            "subcategory.edit",
+            "subcategory.delete",
+          ],
+        },
+        {
+          name: "Brand",
+          href: "/dashboard/softconfig/brands",
+          icon: solidIcons.faTrademark,
+          requiredPermissions: [
+            "brand.view",
+            "brand.create",
+            "brand.edit",
+            "brand.delete",
+          ],
+        },
+        {
+          name: "Model",
+          href: "/dashboard/softconfig/models",
+          icon: solidIcons.faCubes,
+          requiredPermissions: [
+            "model.view",
+            "model.create",
+            "model.edit",
+            "model.delete",
+          ],
+        },
+        {
+          name: "Unit",
+          href: "/dashboard/softconfig/units",
+          icon: solidIcons.faRuler,
+          requiredPermissions: [
+            "unit.view",
+            "unit.create",
+            "unit.edit",
+            "unit.delete",
+          ],
+        },
+        {
+          name: "Store",
+          href: "/dashboard/softconfig/stores",
+          icon: solidIcons.faStore,
+          requiredPermissions: [
+            "store.view",
+            "store.create",
+            "store.edit",
+            "store.delete",
+          ],
+        },
+        {
+          name: "Location",
+          href: "/dashboard/softconfig/locations",
+          icon: solidIcons.faMapMarkerAlt,
+          requiredPermissions: [
+            "location.view",
+            "location.create",
+            "location.edit",
+            "location.delete",
+          ],
+        },
+      ],
+    },
     {
       name: "Apps",
       href: "#",
@@ -264,88 +264,119 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
     },
   ];
 
-  const renderMenuItems = (items: MenuItem[], level = 0) => {
-    return items
-      .filter(item => {
-        if (item.requiredRoles && !item.requiredRoles.some(r => hasRole(r))) return false;
-        if (item.requiredPermissions && !item.requiredPermissions.some(p => hasPermission(p))) return false;
-        return true;
-      })
-      .map(item => {
-        const isActive = pathname === item.href;
-        const hasChildren = !!item.children;
+const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
+  return items
+    .map(item => {
+      const hasChildren = Array.isArray(item.children) && item.children.length > 0;
 
-        const content = (
-          <>
-            {item.icon && (
-              <FontAwesomeIcon 
-                icon={item.icon} 
-                className={`transition-all duration-200 ${isCollapsed && level === 0 ? 'mx-auto text-lg' : 'text-base'} ${isActive ? 'text-blue-400' : 'text-gray-400'}`} 
-              />
-            )}
-            {!isCollapsed && (
-              <>
-                <span className={`flex-1 transition-all duration-200 text-sm ml-3 ${isActive ? 'text-white font-medium' : 'text-gray-300'}`}>
-                  {item.name}
-                </span>
-                {hasChildren && (
-                  <FontAwesomeIcon 
-                    icon={expandedMenus[item.name] ? solidIcons.faChevronDown : solidIcons.faChevronRight} 
-                    className={`w-3 h-3 transition-transform duration-200 ${isActive ? 'text-blue-400' : 'text-gray-400'}`} 
-                  />
-                )}
-              </>
-            )}
-          </>
-        );
+      // Recursively filter children first
+      const allowedChildren = hasChildren ? renderMenuItems(item.children, level + 1) : [];
 
-        const wrapperClass = `
-          flex items-center p-3 rounded-lg mx-2 my-1 transition-all duration-200
-          ${isActive ? 'bg-blue-900/30 text-white' : 'text-gray-300 hover:bg-gray-800'}
-          ${level > 0 ? 'pl-8' : ''}
-        `;
+      // Check parent permissions
+      const hasRequiredRoles =
+        !item.requiredRoles || item.requiredRoles.some(r => hasRole(r));
+      const hasRequiredPermissions =
+        !item.requiredPermissions || item.requiredPermissions.some(p => hasPermission(p));
 
-        return (
-          <div key={item.name}>
-            {item.href && item.href !== "#" ? (
-              <Link 
-                href={item.href} 
-                className={wrapperClass}
-                onClick={() => !hasChildren && setOpen(false)}
+      // Hide parent if no permission
+      if (!hasRequiredRoles || !hasRequiredPermissions) {
+        return null;
+      }
+
+      // Hide parent if children exist but none allowed
+      if (hasChildren && allowedChildren.length === 0) {
+        return null;
+      }
+
+      const isActive = pathname === item.href;
+
+      const content = (
+        <>
+          {item.icon && (
+            <FontAwesomeIcon
+              icon={item.icon}
+              className={`transition-all duration-200 ${
+                isCollapsed && level === 0 ? 'mx-auto text-lg' : 'text-base'
+              } ${isActive ? 'text-blue-400' : 'text-gray-400'}`}
+            />
+          )}
+          {!isCollapsed && (
+            <>
+              <span
+                className={`flex-1 transition-all duration-200 text-sm ml-3 ${
+                  isActive ? 'text-white font-medium' : 'text-gray-300'
+                }`}
               >
-                {content}
-              </Link>
-            ) : (
-              <div 
-                className={`${wrapperClass} cursor-pointer`}
-                onClick={() => hasChildren ? toggleMenu(item.name) : setOpen(false)}
-              >
-                {content}
-              </div>
-            )}
+                {item.name}
+              </span>
+              {hasChildren && (
+                <FontAwesomeIcon
+                  icon={
+                    expandedMenus[item.name]
+                      ? solidIcons.faChevronDown
+                      : solidIcons.faChevronRight
+                  }
+                  className={`w-3 h-3 transition-transform duration-200 ${
+                    isActive ? 'text-blue-400' : 'text-gray-400'
+                  }`}
+                />
+              )}
+            </>
+          )}
+        </>
+      );
 
-            {hasChildren && !isCollapsed && (
-              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${expandedMenus[item.name] ? 'max-h-96' : 'max-h-0'}`}>
-                <div className="ml-2">
-                  {item.children && renderMenuItems(item.children, level + 1)}
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      });
-  };
+      const wrapperClass = `
+        flex items-center p-3 rounded-lg mx-2 my-1 transition-all duration-200
+        ${isActive ? 'bg-blue-900/30 text-white' : 'text-gray-300 hover:bg-gray-800'}
+        ${level > 0 ? 'pl-8' : ''}
+      `;
+
+      return (
+        <div key={item.name}>
+          {item.href && item.href !== '#' ? (
+            <Link
+              href={item.href}
+              className={wrapperClass}
+              onClick={() => !hasChildren && setOpen(false)}
+            >
+              {content}
+            </Link>
+          ) : (
+            <div
+              className={`${wrapperClass} cursor-pointer`}
+              onClick={() => (hasChildren ? toggleMenu(item.name) : setOpen(false))}
+            >
+              {content}
+            </div>
+          )}
+
+          {hasChildren && !isCollapsed && allowedChildren.length > 0 && (
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                expandedMenus[item.name] ? 'max-h-96' : 'max-h-0'
+              }`}
+            >
+              <div className="ml-2">{allowedChildren}</div>
+            </div>
+          )}
+        </div>
+      );
+    })
+    .filter(Boolean) as JSX.Element[];
+};
+
 
   return (
     <>
       {open && (
-        <div 
+        <div
           style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
           className="fixed inset-0 bg-opacity-50 z-30 lg:hidden transition-opacity duration-300 backdrop-blur-sm"
           onClick={() => setOpen(false)}
         />
       )}
-      
+
       <div className={`fixed inset-y-0 left-0 z-40 bg-gray-900 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 lg:z-auto flex flex-col ${open ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-16' : 'w-64'} border-r border-gray-800 shadow-xl`}>
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-blue-900/30 to-gray-900 border-b border-gray-800">
@@ -384,7 +415,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
                   <p className="text-xs font-medium text-gray-400">Administrator</p>
                 </div>
               </div>
-              <button 
+              <button
                 className="text-gray-400 hover:text-gray-300 transition-colors duration-200 p-1 rounded hover:bg-gray-700"
                 onClick={() => setIsCollapsed(true)}
                 aria-label="Collapse sidebar"
@@ -397,7 +428,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
               <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white shadow-md">
                 {getInitials(user?.name)}
               </div>
-              <button 
+              <button
                 className="text-gray-400 hover:text-gray-300 transition-colors duration-200 p-1 rounded hover:bg-gray-700"
                 onClick={() => setIsCollapsed(false)}
                 aria-label="Expand sidebar"
