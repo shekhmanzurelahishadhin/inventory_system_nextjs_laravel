@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react'
 
 interface LoaderProps {
-  duration?: number; // কত সময় দেখাতে হবে, milliseconds
+  duration?: number; // milliseconds
   onHide?: () => void; // optional callback
 }
 
