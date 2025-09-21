@@ -86,6 +86,7 @@ const fetchAllData = async (): Promise<T[]> => {
         </div>
       )}
       <div className="relative">
+         {(data.length === 0 && !loading) && <DatatableLoader />}
         <DataTable
           columns={columns}
           data={data}
