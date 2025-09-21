@@ -24,7 +24,7 @@ import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import FormSkeleton from "@/app/components/ui/FormSkeleton";
 import DatatableLoader from "@/app/components/ui/DatatableLoader";
-import { DateFomant } from "@/app/components/utilities/DateFormat";
+import { formatDateTime } from "@/app/components/utilities/dateFormat";
 
 const Permissions = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -298,7 +298,7 @@ const Permissions = () => {
     },
     {
       name: "Created At",
-      selector: (row) => DateFomant(row.created_at),
+      selector: (row) => formatDateTime(row.created_at),
       sortable: true,
     },
     {

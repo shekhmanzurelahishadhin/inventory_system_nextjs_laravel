@@ -1,16 +1,11 @@
-// utils/dateFormat.tsx
-import React from "react";
-
-interface DateBadgeProps {
-  dateString: string;
-}
-
-export const DateFomant: React.FC<DateBadgeProps> = ({ dateString }) => {
-  if (!dateString) return <span className="text-xs text-gray-400">-</span>;
+// utils/dateFormat.ts
+export const formatDateTime = (dateString: string): string => {
+  if (!dateString) return "-";
 
   const date = new Date(dateString);
+  if (isNaN(date.getTime())) return "Invalid date";
 
-  // Formatted date (small)
+  // Formatted date
   const formattedDate = date.toLocaleString("en-GB", {
     day: "2-digit",
     month: "2-digit",
@@ -34,10 +29,5 @@ export const DateFomant: React.FC<DateBadgeProps> = ({ dateString }) => {
   else if (diffHours < 24) humanDiff = `${diffHours}h ago`;
   else humanDiff = `${diffDays}d ago`;
 
-  return (
-    <div className="flex flex-col text-xs">
-      <span className="text-gray-700 font-medium">{formattedDate}</span>
-      <span className="text-gray-400">{humanDiff}</span>
-    </div>
-  );
+  return `${formattedDate} (${humanDiff})`;
 };
