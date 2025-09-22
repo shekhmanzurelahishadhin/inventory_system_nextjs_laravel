@@ -5,9 +5,12 @@ namespace App\Services;
 
 
 use App\Models\softConfig\Company;
+use App\Traits\FileUploader;
 
 class CompanyService
 {
+    use FileUploader;
+
     public function getCompanies($filters = [], $perPage)
     {
         $query = Company::withTrashed();;
@@ -23,14 +26,27 @@ class CompanyService
     }
     public function createCompany(array $data)
     {
+        // generate logo upload if present
         if (empty($data['code'])) {
             $data['code'] = generateCode('CMP', 'companies', 'code');
         }
+        // handle logo upload if present
+        if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
+            $data['logo'] = $this->fileUpload($data['logo'], 'companyLogos');
+            unset($data['logo']);
+        }
+
         return Company::create($data);
     }
 
     public function updateCompany(Company $company, array $data)
     {
+        // handle logo replacement
+        if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
+            $data['logo'] = $this->fileUpload($data['logo'], 'logos', $company->logo_path);
+            unset($data['logo']);
+        }
+
         $company->update($data); // updates the model
         return $company;         // return the model itself
     }
@@ -52,6 +68,9 @@ class CompanyService
     public function forceDeleteCompany(Company $company)
     {
         if ($company->trashed()) {
+            // delete logo from storage
+            $this->unlink($company->logo);
+
             $company->forceDelete();
             return true;
         }
