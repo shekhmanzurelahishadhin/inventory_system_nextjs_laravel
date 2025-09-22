@@ -267,7 +267,8 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
 const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
   return items
     .map(item => {
-      const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+      // Check if item has children
+      const hasChildren = Array.isArray(item.children) && item.children.length > 0; 
 
       // Recursively filter children first
       const allowedChildren = hasChildren ? renderMenuItems(item.children, level + 1) : [];
@@ -288,11 +289,13 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
         return null;
       }
 
+      // Determine if the item is active
       const isActive = pathname === item.href;
 
       const content = (
         <>
           {item.icon && (
+            // Icon size and alignment based on collapse state and level
             <FontAwesomeIcon
               icon={item.icon}
               className={`transition-all duration-200 ${
@@ -310,6 +313,7 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
                 {item.name}
               </span>
               {hasChildren && (
+                // Expand/collapse icon
                 <FontAwesomeIcon
                   icon={
                     expandedMenus[item.name]
@@ -326,15 +330,18 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
         </>
       );
 
+      // Wrapper classes based on state and level for indentation and styling
       const wrapperClass = `
         flex items-center p-3 rounded-lg mx-2 my-1 transition-all duration-200
         ${isActive ? 'bg-blue-900/30 text-white' : 'text-gray-300 hover:bg-gray-800'}
         ${level > 0 ? 'pl-8' : ''}
       `;
-
+      // Render link or div based on href validity
       return (
+        // Each menu item container with key
         <div key={item.name}>
           {item.href && item.href !== '#' ? (
+            // Link for items with valid href
             <Link
               href={item.href}
               className={wrapperClass}
@@ -366,7 +373,7 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
     .filter(Boolean) as JSX.Element[];
 };
 
-
+ // Main return with overlay, sidebar structure, header, navigation, and user section
   return (
     <>
       {open && (
