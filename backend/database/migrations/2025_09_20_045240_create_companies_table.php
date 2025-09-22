@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
-            $table->string('logo_path')->nullable();
+            $table->string('logo')->nullable();
             $table->string('default_currency')->nullable();
             $table->string('timezone')->default('UTC');
             $table->boolean('status')->default(true);

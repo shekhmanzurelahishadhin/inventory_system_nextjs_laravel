@@ -31,6 +31,7 @@ class CreateCompanyRequest extends FormRequest
             'default_currency' => 'nullable|string|max:10',
             'timezone' => 'nullable|string|max:50',
             'is_active' => 'boolean',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // max 2MB
         ];
     }
 }
