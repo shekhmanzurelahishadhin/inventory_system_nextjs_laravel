@@ -33,7 +33,6 @@ class CompanyService
         // handle logo upload if present
         if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
             $data['logo'] = $this->fileUpload($data['logo'], 'companyLogos');
-            unset($data['logo']);
         }
 
         return Company::create($data);

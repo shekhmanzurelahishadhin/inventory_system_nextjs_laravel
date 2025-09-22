@@ -22,7 +22,7 @@ class CompanyResource extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'address' => $this->address,
-            'logo' => $this->logo_path ? asset('storage/' . $this->logo_path) : null,
+            'logo' => $this->logo ? asset('storage/' . $this->logo) : null,
             'default_currency' => $this->default_currency,
             'timezone' => $this->timezone,
             'is_active' => $this->is_active,
