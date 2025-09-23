@@ -46,7 +46,9 @@ class CompanyController extends Controller
      */
     public function store(CreateCompanyRequest $request, CompanyService $companyService)
     {
-        $company = $companyService->createCompany($request->validated());
+        $validatedData = $request->validated();
+
+        $company = $companyService->createCompany($validatedData);
 
         return response()->json([
             'message' => 'Company created successfully',

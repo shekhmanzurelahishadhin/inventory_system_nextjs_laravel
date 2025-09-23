@@ -24,12 +24,9 @@ class CompanyService
         $query->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
     public function createCompany(array $data)
     {
-        // generate logo upload if present
-        if (empty($data['code'])) {
-            $data['code'] = generateCode('CMP', 'companies', 'code');
-        }
         // handle logo upload if present
         if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
             $data['logo'] = $this->fileUpload($data['logo'], 'companyLogos');

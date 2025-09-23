@@ -3,6 +3,7 @@
 namespace App\Http\Requests\softConfig\company;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class CreateCompanyRequest extends FormRequest
 {
@@ -14,6 +15,22 @@ class CreateCompanyRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        // auto-generate code if missing
+        if (!$this->filled('code')) {
+            $this->merge([
+                'code' => generateCode('CMP', 'companies', 'code'),
+            ]);
+        }
+
+        // auto-generate slug from name if missing
+        if (!$this->filled('slug') && $this->filled('name')) {
+            $this->merge([
+                'slug' => Str::slug($this->input('name')),
+            ]);
+        }
+    }
     /**
      * Get the validation rules that apply to the request.
      *
@@ -23,8 +40,8 @@ class CreateCompanyRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:companies,slug',
-            'code' => 'nullable|string|max:50|unique:companies,code',
+            'slug' => 'required|string|max:255|unique:companies,slug',
+            'code' => 'required|string|max:50|unique:companies,code',
             'email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:50',
             'address' => 'nullable|string|max:500',
@@ -42,9 +59,11 @@ class CreateCompanyRequest extends FormRequest
             'name.string'   => 'The company name must be a valid string.',
             'name.max'      => 'The company name cannot exceed 255 characters.',
 
+            'slug.required'   => 'This slug is required.',
             'slug.unique'   => 'This company slug is already in use.',
             'slug.max'      => 'The slug cannot exceed 255 characters.',
 
+            'code.required'   => 'This code is required.',
             'code.unique'   => 'This company code is already taken.',
             'code.max'      => 'The company code cannot exceed 50 characters.',
 
