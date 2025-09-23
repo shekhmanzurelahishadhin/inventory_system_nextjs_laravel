@@ -194,6 +194,8 @@ const Roles = () => {
             src={`${API_BASE_URL}/storage/${row.logo}`} // make sure row.logo is the URL/path to the image
             alt={row.name}
             style={{
+              width: "100%",
+              height: "40px",
               borderRadius: "4px",
             }}
           />
