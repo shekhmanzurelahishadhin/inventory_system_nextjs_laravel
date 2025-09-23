@@ -47,6 +47,8 @@ const Roles = () => {
     page: 1,
     perPage: 10,
   });
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -184,6 +186,24 @@ const Roles = () => {
       width: "5%",
       grow: 0,
     },
+    {
+      name: "Logo",
+      cell: (row) =>
+        row.logo ? (
+          <img
+            src={`${API_BASE_URL}/storage/${row.logo}`} // make sure row.logo is the URL/path to the image
+            alt={row.name}
+            style={{
+              borderRadius: "4px",
+            }}
+          />
+        ) : (
+          <span className="text-gray-400">No Logo</span>
+        ),
+      width: "10%", // optional width
+      grow: 0,
+    },
+
     {
       name: "Name",
       selector: (row) => row.name,
