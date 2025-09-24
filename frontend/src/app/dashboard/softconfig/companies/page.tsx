@@ -7,6 +7,7 @@ import {
   faTrash,
   faEye,
   faKey,
+  faTrashRestore,
   faUndo
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -371,12 +372,12 @@ const Companies = () => {
               tooltip: "Edit",
             },
             {
-              icon: faTrash,
+              icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
-              variant: (r) => (r.deleted_at ? "danger" : "warning"),
+              variant: "danger",
               size: "sm",
               show: (r) => hasPermission("company.delete"),
-              tooltip: (r) => r.deleted_at ? "Delete Permanently" : "Move to Trash",
+              tooltip: row.deleted_at ? "Delete Permanently" : "Move to Trash",
             },
             {
               icon: faUndo,

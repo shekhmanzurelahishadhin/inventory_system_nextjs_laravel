@@ -25,7 +25,7 @@ class CompanyController extends Controller
         if ($companies instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             // Paginated response
             return response()->json([
-                'data' => $companies->items(),
+                'data' => CompanyResource::collection($companies->items()),
                 'total' => $companies->total(),
                 'current_page' => $companies->currentPage(),
                 'per_page' => $companies->perPage(),
@@ -34,7 +34,7 @@ class CompanyController extends Controller
 
         // Collection response (no pagination)
         return response()->json([
-            'data' => $companies,
+            'data' => CompanyResource::collection($companies),
             'total' => $companies->count(),
             'current_page' => 1,
             'per_page' => $companies->count(),
