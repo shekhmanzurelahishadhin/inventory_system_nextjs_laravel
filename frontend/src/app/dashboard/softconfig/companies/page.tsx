@@ -147,13 +147,13 @@ const Companies = () => {
         await api.post("/soft-config/companies", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        toast.success("Role saved successfully");
+        toast.success("Company saved successfully");
       } else if (modalType === "edit" && selectedCompany?.id) {
         await api.put(
           `/soft-config/companies/${selectedCompany.id}`,
           formData
         );
-        toast.success("Role updated successfully");
+        toast.success("Company updated successfully");
       }
 
       setIsSubmitting(false);
@@ -467,10 +467,10 @@ const Companies = () => {
           size="lg"
           title={
             modalType === "create"
-              ? "Create Role"
+              ? "Create Company"
               : modalType === "edit"
-              ? "Edit Role"
-              : "View Role"
+              ? "Edit Company"
+              : "View Company"
           }
           footer={
             modalType === "view" ? (

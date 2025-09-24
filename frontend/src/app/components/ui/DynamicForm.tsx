@@ -11,7 +11,7 @@ import MultiSelectField from "./MultiSelectField";
 interface DynamicFormProps {
   data?: Record<string, any> | null;
   fields: FieldConfigArray;
-  mode?: "create" | "edit" | "view" ; // 👈 added mode
+  mode?: "create" | "edit" | "view"; // 👈 added mode
   onChange?: (updated: Record<string, any>) => void;
   onSubmit?: (formData: Record<string, any>) => Promise<void> | void;
   backendErrors?: Record<string, string[]>;
@@ -102,8 +102,7 @@ const DynamicForm = forwardRef(
 
     // Common input classes
     const inputClasses = (key: string) =>
-      `mt-1 block w-full p-3 rounded-sm border ${
-        errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
+      `mt-1 block w-full p-3 rounded-sm border ${errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
       } focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;
 
     // Check field visibility based on mode + showOn
@@ -207,15 +206,26 @@ const DynamicForm = forwardRef(
                     ))}
                   </div>
                 ) : field.type === "file" ? (
-                  <input
-                    type="file"
-                    onChange={(e) =>
-                      !isReadOnly &&
-                      handleChange(field.key, e.target.files?.[0] || null)
-                    }
-                    disabled={isReadOnly}
-                    className={inputClasses(field.key)}
-                  />
+                  <div>
+                    <input
+                      type="file"
+                      onChange={(e) =>
+                        !isReadOnly &&
+                        handleChange(field.key, e.target.files?.[0] || null)
+                      }
+                      disabled={isReadOnly}
+                      className={inputClasses(field.key)}
+                      accept={field.accept || "*"} // Add accept attribute
+                    />
+                    {/* Show current file name if editing */}
+                    {mode === "edit" && value instanceof File && (
+                      <p className="text-sm text-gray-600 mt-1">Selected: {value.name}</p>
+                    )}
+                    {/* Show existing file info if editing and no new file selected */}
+                    {mode === "edit" && typeof value === "string" && value && (
+                      <p className="text-sm text-gray-600 mt-1">Current: {value.split('/').pop()}</p>
+                    )}
+                  </div>
                 ) : (
                   <input
                     type={field.type || "text"}
