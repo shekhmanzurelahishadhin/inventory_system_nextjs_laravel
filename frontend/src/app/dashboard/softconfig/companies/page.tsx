@@ -27,11 +27,11 @@ import { useRouter } from "next/navigation";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 import { formatDateTime } from "@/app/components/common/DateFormat";
 
-const Roles = () => {
+const Companies = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
     null
   );
-  const [selectedRole, setSelectedRole] = useState<any>(null); // Selected role for view/edit
+  const [selectedCompany, setSelectedCompany] = useState<any>(null); // Selected company for view/edit
   const [isMounted, setIsMounted] = useState(false); // To ensure client-side rendering
   const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>(
     {}
@@ -56,29 +56,65 @@ const Roles = () => {
     { label: "Company", href: "#" },
   ];
 
-  const roleFields = [
-    {
-      label: "Name",
-      key: "name",
-      type: "text",
-      required: true,
-      showOn: "all",
-    },
-    {
-      label: "Guard Name",
-      key: "guard_name",
-      type: "text",
-      readOnly: true,
-      showOn: "view",
-    },
-    {
-      label: "Created At",
-      key: "created_at",
-      type: "date",
-      readOnly: true,
-      showOn: "view",
-    },
-  ]; // Fields for DynamicForm and DynamicViewTable
+  const companyFields = [
+  {
+    label: "Company Name",
+    key: "name",
+    type: "text",
+    required: true,
+    showOn: "all", // visible in create/edit/view
+  },
+  {
+    label: "Email",
+    key: "email",
+    type: "email",
+    required: true,
+    showOn: "all",
+  },
+  {
+    label: "Phone",
+    key: "phone",
+    type: "text",
+    required: false,
+    showOn: "all",
+  },
+  {
+    label: "Address",
+    key: "address",
+    type: "textarea",
+    required: false,
+    showOn: "all",
+  },
+  {
+    label: "Logo",
+    key: "logo",
+    type: "file", // because backend expects UploadedFile
+    required: false,
+    showOn: "both", // show only on create/edit
+  },
+  {
+    label: "Logo",
+    key: "logo",
+    type: "image", // view only
+    required: false,
+    showOn: "view", // show only on view
+  },
+  {
+    label: "Created At",
+    key: "created_at",
+    type: "date",
+    readOnly: true,
+    showOn: "view",
+  },
+  {
+    label: "Updated At",
+    key: "updated_at",
+    type: "date",
+    readOnly: true,
+    showOn: "view",
+  },
+];
+
 
   // Ensure component is mounted (for client-side rendering)
   useEffect(() => {
@@ -86,9 +122,9 @@ const Roles = () => {
   }, []);
 
   // Open modal function
-  const openModal = (type: "create" | "edit" | "view", role: any = null) => {
+  const openModal = (type: "create" | "edit" | "view", company: any = null) => {
     setModalType(type);
-    setSelectedRole(role);
+    setSelectedCompany(company);
     setBackendErrors({});
     setIsSubmitting(false);
   };
@@ -96,7 +132,7 @@ const Roles = () => {
   // Close modal function
   const closeModal = () => {
     setModalType(null);
-    setSelectedRole(null);
+    setSelectedCompany(null);
     setBackendErrors({});
     setIsSubmitting(false);
   };
@@ -108,10 +144,10 @@ const Roles = () => {
       setBackendErrors({});
 
       if (modalType === "create") {
-        await api.post("/roles", formData);
+        await api.post("/soft-config/companies", formData);
         toast.success("Role saved successfully");
-      } else if (modalType === "edit" && selectedRole?.id) {
-        await api.put(`/roles/${selectedRole.id}`, formData);
+      } else if (modalType === "edit" && selectedCompany?.id) {
+        await api.put(`/soft-config/companies/${selectedCompany.id}`, formData);
         toast.success("Role updated successfully");
       }
 
@@ -130,11 +166,11 @@ const Roles = () => {
     }
   };
 
-  // Delete role function with SweetAlert2 confirmation
-  const handleDeleteRole = async (role: any) => {
+  // Delete company function with SweetAlert2 confirmation
+  const handleDeleteRole = async (company: any) => {
     const confirmed = await confirmAction({
       title: "Are you sure?",
-      text: `You are about to delete the role "${role.name}".!`,
+      text: `You are about to delete the company "${company.name}".!`,
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
     });
@@ -145,20 +181,20 @@ const Roles = () => {
       // Show loading
       Swal.fire({
         title: "Deleting...",
-        text: `Please wait while we delete the role`,
+        text: `Please wait while we delete the company`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
 
       // API call
-      await api.delete(`/roles/${role.id}`);
+      await api.delete(`/soft-config/companies/${company.id}`);
 
       Swal.close(); // close loading
 
       // Success message
       Swal.fire({
         title: "Deleted!",
-        text: `Role "${role.name}" has been deleted successfully.`,
+        text: `Role "${company.name}" has been deleted successfully.`,
         icon: "success",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
@@ -170,7 +206,7 @@ const Roles = () => {
       Swal.close();
       Swal.fire({
         title: "Error!",
-        text: error.response?.data?.message || "Failed to delete role",
+        text: error.response?.data?.message || "Failed to delete company",
         icon: "error",
         confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
@@ -244,29 +280,15 @@ const Roles = () => {
               onClick: (r) => openModal("view", r),
               variant: "primary",
               size: "sm",
-              show: (r) => hasPermission("role.view"),
+              show: (r) => hasPermission("company.view"),
               tooltip: "View",
-            },
-            {
-              icon: faKey,
-              onClick: (r) =>
-                router.push(
-                  `/dashboard/authorization/roles/role-permissions/${r.id}`
-                ),
-              variant: "success",
-              size: "sm",
-              show: (r) =>
-                !r.name?.includes("Super Admin") &&
-                hasPermission("role.assign-permissions"),
-              tooltip: "Assign Permissions",
             },
             {
               icon: faEdit,
               onClick: (r) => openModal("edit", r),
               variant: "secondary",
               size: "sm",
-              show: (r) =>
-                !r.name?.includes("Super Admin") && hasPermission("role.edit"),
+              show: (r) => hasPermission("company.edit"),
               tooltip: "Edit",
             },
             {
@@ -274,9 +296,7 @@ const Roles = () => {
               onClick: (r) => handleDeleteRole(r),
               variant: "danger",
               size: "sm",
-              show: (r) =>
-                !r.name?.includes("Super Admin") &&
-                hasPermission("role.delete"),
+              show: (r) => hasPermission("company.delete"),
               tooltip: "Delete",
             },
           ]}
@@ -291,10 +311,10 @@ const Roles = () => {
     <>
       <AccessRoute
         requiredPermissions={[
-          "role.view",
-          "role.create",
-          "role.edit",
-          "role.delete",
+          "company.view",
+          "company.create",
+          "company.edit",
+          "company.delete",
         ]}
       >
         <PageHeader
@@ -315,7 +335,7 @@ const Roles = () => {
                 size="md"
                 className="mt-2 sm:mt-0"
                 onClick={() => openModal("create")}
-                show={hasPermission("role.create")}
+                show={hasPermission("company.create")}
               >
                 Add New
               </Button>
@@ -331,10 +351,10 @@ const Roles = () => {
                   { name: "Guard Name", selector: "guard_name" },
                   { name: "Created at", selector: "created_at" },
                 ]}
-                exportFileName="roles"
+                exportFileName="companies"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search roles..."
+                searchPlaceholder="Search companys..."
                 refreshTrigger={refreshTrigger}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
@@ -413,14 +433,14 @@ const Roles = () => {
           }
         >
           {modalType === "view" && (
-            <DynamicViewTable data={selectedRole} fields={roleFields} />
+            <DynamicViewTable data={selectedCompany} fields={companyFields} />
           )}
 
           {(modalType === "create" || modalType === "edit") && (
             <DynamicForm
               ref={formRef}
-              data={modalType === "edit" ? selectedRole : null}
-              fields={roleFields}
+              data={modalType === "edit" ? selectedCompany : null}
+              fields={companyFields}
               onSubmit={handleFormSubmit}
               backendErrors={backendErrors}
               mode={modalType}
@@ -432,4 +452,4 @@ const Roles = () => {
   );
 };
 
-export default Roles;
+export default Companies;
