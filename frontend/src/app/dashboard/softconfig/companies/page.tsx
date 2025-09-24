@@ -151,10 +151,7 @@ const Companies = () => {
       } else if (modalType === "edit" && selectedCompany?.id) {
         await api.put(
           `/soft-config/companies/${selectedCompany.id}`,
-          formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          formData
         );
         toast.success("Role updated successfully");
       }
