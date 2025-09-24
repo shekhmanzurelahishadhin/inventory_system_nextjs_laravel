@@ -38,7 +38,13 @@ const renderValue = (field: any) => {
       <img
         src={`${API_BASE_URL}/storage/${value}`}  // backend should return full URL for logo
         alt={field.label}
-        className="h-12 w-50  rounded"
+        style={{
+              display: "block",
+              maxWidth: "100%",
+              height: "auto", // 👈 keeps the aspect ratio
+              objectFit: "contain", // or "cover" if you want to fill the container
+              borderRadius: "4px",
+            }}
       />
     );
   }

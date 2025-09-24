@@ -11,7 +11,7 @@ export const formatStatusBadge = ({
   // Trashed
   if (deletedAt) {
     return (
-      <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 transition duration-200">
+      <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-red-200 text-gray-800 hover:bg-gray-300 transition duration-200">
         Trashed
       </span>
     );

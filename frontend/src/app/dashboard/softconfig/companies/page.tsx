@@ -8,7 +8,7 @@ import {
   faEye,
   faKey,
   faTrashRestore,
-  faUndo
+  faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -144,10 +144,18 @@ const Companies = () => {
       setBackendErrors({});
 
       if (modalType === "create") {
-        await api.post("/soft-config/companies", formData);
+        await api.post("/soft-config/companies", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         toast.success("Role saved successfully");
       } else if (modalType === "edit" && selectedCompany?.id) {
-        await api.put(`/soft-config/companies/${selectedCompany.id}`, formData);
+        await api.put(
+          `/soft-config/companies/${selectedCompany.id}`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
         toast.success("Role updated successfully");
       }
 
@@ -307,11 +315,13 @@ const Companies = () => {
       cell: (row) =>
         row.logo ? (
           <img
-            src={`${API_BASE_URL}/storage/${row.logo}`} // make sure row.logo is the URL/path to the image
+            src={`${API_BASE_URL}/storage/${row.logo}`}
             alt={row.name}
             style={{
-              width: "100%",
-              height: "40px",
+              display: "block",
+              maxWidth: "100%",
+              height: "auto", // 👈 keeps the aspect ratio
+              objectFit: "contain", // or "cover" if you want to fill the container
               borderRadius: "4px",
             }}
           />
@@ -373,7 +383,8 @@ const Companies = () => {
             },
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
-              onClick: (r) =>r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
+              onClick: (r) =>
+                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("company.delete"),
