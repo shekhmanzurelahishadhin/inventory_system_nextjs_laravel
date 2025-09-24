@@ -7,6 +7,7 @@ import {
   faTrash,
   faEye,
   faKey,
+  faUndo
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -49,7 +50,6 @@ const Companies = () => {
   });
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "Soft Config", href: "#" },
@@ -57,64 +57,63 @@ const Companies = () => {
   ];
 
   const companyFields = [
-  {
-    label: "Company Name",
-    key: "name",
-    type: "text",
-    required: true,
-    showOn: "all", // visible in create/edit/view
-  },
-  {
-    label: "Email",
-    key: "email",
-    type: "email",
-    required: true,
-    showOn: "all",
-  },
-  {
-    label: "Phone",
-    key: "phone",
-    type: "text",
-    required: false,
-    showOn: "all",
-  },
-  {
-    label: "Address",
-    key: "address",
-    type: "textarea",
-    required: false,
-    showOn: "all",
-  },
-  {
-    label: "Logo",
-    key: "logo",
-    type: "file", // because backend expects UploadedFile
-    required: false,
-    showOn: "both", // show only on create/edit
-  },
-  {
-    label: "Logo",
-    key: "logo",
-    type: "image", // view only
-    required: false,
-    showOn: "view", // show only on view
-  },
-  {
-    label: "Created At",
-    key: "created_at",
-    type: "date",
-    readOnly: true,
-    showOn: "view",
-  },
-  {
-    label: "Updated At",
-    key: "updated_at",
-    type: "date",
-    readOnly: true,
-    showOn: "view",
-  },
-];
-
+    {
+      label: "Company Name",
+      key: "name",
+      type: "text",
+      required: true,
+      showOn: "all", // visible in create/edit/view
+    },
+    {
+      label: "Email",
+      key: "email",
+      type: "email",
+      required: true,
+      showOn: "all",
+    },
+    {
+      label: "Phone",
+      key: "phone",
+      type: "text",
+      required: false,
+      showOn: "all",
+    },
+    {
+      label: "Address",
+      key: "address",
+      type: "textarea",
+      required: false,
+      showOn: "all",
+    },
+    {
+      label: "Logo",
+      key: "logo",
+      type: "file", // because backend expects UploadedFile
+      required: false,
+      showOn: "both", // show only on create/edit
+    },
+    {
+      label: "Logo",
+      key: "logo",
+      type: "image", // view only
+      required: false,
+      showOn: "view", // show only on view
+    },
+    {
+      label: "Created At",
+      key: "created_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Updated At",
+      key: "updated_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
+    },
+  ];
 
   // Ensure component is mounted (for client-side rendering)
   useEffect(() => {
@@ -167,52 +166,132 @@ const Companies = () => {
   };
 
   // Delete company function with SweetAlert2 confirmation
-  const handleDeleteRole = async (company: any) => {
+  // Soft Delete (Move to Trash)
+  const handleSoftDelete = async (company: any) => {
     const confirmed = await confirmAction({
-      title: "Are you sure?",
-      text: `You are about to delete the company "${company.name}".!`,
-      confirmButtonText: "Yes, delete it!",
+      title: "Move to Trash?",
+      text: `You are about to move the company "${company.name}" to trash.`,
+      confirmButtonText: "Yes, move to trash!",
       cancelButtonText: "Cancel",
     });
 
     if (!confirmed) return;
 
     try {
-      // Show loading
       Swal.fire({
-        title: "Deleting...",
-        text: `Please wait while we delete the company`,
+        title: "Moving to Trash...",
+        text: `Please wait while we move the company`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
 
-      // API call
-      await api.delete(`/soft-config/companies/${company.id}`);
+      await api.post(`/soft-config/companies/trash/${company.id}`);
 
-      Swal.close(); // close loading
-
-      // Success message
+      Swal.close();
       Swal.fire({
-        title: "Deleted!",
-        text: `Role "${company.name}" has been deleted successfully.`,
+        title: "Moved!",
+        text: `Company "${company.name}" has been moved to trash.`,
         icon: "success",
-        confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
       });
 
-      // Refresh table
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       Swal.close();
       Swal.fire({
         title: "Error!",
-        text: error.response?.data?.message || "Failed to delete company",
+        text:
+          error.response?.data?.message || "Failed to move company to trash",
         icon: "error",
-        confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
       });
     }
   };
+
+  // Force Delete (Permanent)
+  const handleForceDelete = async (company: any) => {
+    const confirmed = await confirmAction({
+      title: "Delete Permanently?",
+      text: `You are about to permanently delete the company "${company.name}". This cannot be undone!`,
+      confirmButtonText: "Yes, delete permanently!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      Swal.fire({
+        title: "Deleting permanently...",
+        text: `Please wait while we delete the company permanently`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      await api.delete(`/soft-config/companies/${company.id}`); // force delete
+
+      Swal.close();
+      Swal.fire({
+        title: "Deleted!",
+        text: `Company "${company.name}" has been permanently deleted.`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      Swal.close();
+      Swal.fire({
+        title: "Error!",
+        text:
+          error.response?.data?.message ||
+          "Failed to delete company permanently",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  // Restore (Undo Soft Delete)
+  const handleRestore = async (company: any) => {
+    const confirmed = await confirmAction({
+      title: "Restore Company?",
+      text: `You are about to restore the company "${company.name}".`,
+      confirmButtonText: "Yes, restore it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      Swal.fire({
+        title: "Restoring...",
+        text: `Please wait while we restore the company`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      await api.post(`/soft-config/companies/restore/${company.id}`);
+
+      Swal.close();
+      Swal.fire({
+        title: "Restored!",
+        text: `Company "${company.name}" has been restored successfully.`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      Swal.close();
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to restore company",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   // Columns for DataTable
   const columns = [
     {
@@ -288,16 +367,24 @@ const Companies = () => {
               onClick: (r) => openModal("edit", r),
               variant: "secondary",
               size: "sm",
-              show: (r) => hasPermission("company.edit"),
+              show: (r) => hasPermission("company.edit") && !r.deleted_at,
               tooltip: "Edit",
             },
             {
               icon: faTrash,
-              onClick: (r) => handleDeleteRole(r),
-              variant: "danger",
+              onClick: (r) =>r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
+              variant: (r) => (r.deleted_at ? "danger" : "warning"),
               size: "sm",
               show: (r) => hasPermission("company.delete"),
-              tooltip: "Delete",
+              tooltip: (r) => r.deleted_at ? "Delete Permanently" : "Move to Trash",
+            },
+            {
+              icon: faUndo,
+              onClick: (r) => handleRestore(r),
+              variant: "success",
+              size: "sm",
+              show: (r) => r.deleted_at,
+              tooltip: "Restore",
             },
           ]}
         />
