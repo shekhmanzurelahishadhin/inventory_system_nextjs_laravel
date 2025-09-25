@@ -69,6 +69,7 @@ class CompanyController extends Controller
      */
     public function update(UpdateCompanyRequest $request, CompanyService $companyService, Company $company)
     {
+//        dd($request);
         $company = $companyService->updateCompany($company, $request->validated());
 
         return response()->json([

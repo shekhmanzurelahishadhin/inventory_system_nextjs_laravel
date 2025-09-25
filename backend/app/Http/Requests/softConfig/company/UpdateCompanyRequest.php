@@ -33,7 +33,7 @@ class UpdateCompanyRequest extends FormRequest
             'default_currency' => 'nullable|string|max:10',
             'timezone' => 'nullable|string|max:50',
             'is_active' => 'boolean',
-//            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // max 2MB
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // max 2MB
         ];
     }
 
@@ -62,9 +62,9 @@ class UpdateCompanyRequest extends FormRequest
 
             'is_active.boolean' => 'The active status must be true or false.',
 
-//            'logo.image'   => 'The logo must be an image file.',
-//            'logo.mimes'   => 'The logo must be a file of type: jpeg, png, jpg, gif, svg.',
-//            'logo.max'     => 'The logo size may not be greater than 2MB.',
+            'logo.image'   => 'The logo must be an image file.',
+            'logo.mimes'   => 'The logo must be a file of type: jpeg, png, jpg, gif, svg.',
+            'logo.max'     => 'The logo size may not be greater than 2MB.',
         ];
     }
 

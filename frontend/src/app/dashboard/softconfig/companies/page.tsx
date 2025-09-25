@@ -86,20 +86,20 @@ const Companies = () => {
       required: false,
       showOn: "all",
     },
-    {
-      label: "Logo",
-      key: "logo",
-      type: "file", // because backend expects UploadedFile
-      required: false,
-      showOn: "both", // show only on create/edit
-    },
-    {
-      label: "Logo",
-      key: "logo",
-      type: "image", // view only
-      required: false,
-      showOn: "view", // show only on view
-    },
+    // {
+    //   label: "Logo",
+    //   key: "logo",
+    //   type: "file", // because backend expects UploadedFile
+    //   required: false,
+    //   showOn: "both", // show only on create/edit
+    // },
+    // {
+    //   label: "Logo",
+    //   key: "logo",
+    //   type: "image", // view only
+    //   required: false,
+    //   showOn: "view", // show only on view
+    // },
     {
       label: "Created At",
       key: "created_at",
@@ -332,6 +332,12 @@ const Companies = () => {
     {
       name: "Name",
       selector: (row) => row.name,
+      sortable: true,
+    },
+    
+    {
+      name: "Email",
+      selector: (row) => row.email,
       sortable: true,
     },
     {
