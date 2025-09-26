@@ -86,13 +86,13 @@ const Companies = () => {
       required: false,
       showOn: "all",
     },
-    // {
-    //   label: "Logo",
-    //   key: "logo",
-    //   type: "file", // because backend expects UploadedFile
-    //   required: false,
-    //   showOn: "both", // show only on create/edit
-    // },
+    {
+      label: "Logo",
+      key: "logo",
+      type: "file", // because backend expects UploadedFile
+      required: false,
+      showOn: "both", // show only on create/edit
+    },
     // {
     //   label: "Logo",
     //   key: "logo",
@@ -139,6 +139,7 @@ const Companies = () => {
 
   // Handle form submission for create/edit
   const handleFormSubmit = async (formData: Record<string, any>) => {
+    console.log("Form Data Submitted:", formData);
     try {
       setIsSubmitting(true);
       setBackendErrors({});
