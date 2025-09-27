@@ -33,15 +33,12 @@ const DynamicForm = forwardRef(
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Initialize formData only once or when data changes and form is empty
-   // Initialize formData only once or when data changes
 useEffect(() => {
   if (Object.keys(formData).length === 0) {
     const initial: Record<string, any> = {};
-console.log("Fields for Initial Form Data:", fields); // Debug log
     fields.forEach((f) => {
       if (f.type === "file") {
         // File input starts empty (null)
-        console.log(`Setting initial value for file field '${f.key}' to null`);
         initial[f.key] = null;
       } else if (f.type === "checkbox") {
         initial[f.key] = data?.[f.key] ?? f.defaultValue ?? false;
@@ -49,8 +46,7 @@ console.log("Fields for Initial Form Data:", fields); // Debug log
         initial[f.key] = data?.[f.key] ?? f.defaultValue ?? "";
       }
     });
-    console.log("Initial Form Data:", initial); // Debug log
-
+    console.log("Initializing form data:", initial);
     setFormData(initial);
   }
 }, [data, fields]);

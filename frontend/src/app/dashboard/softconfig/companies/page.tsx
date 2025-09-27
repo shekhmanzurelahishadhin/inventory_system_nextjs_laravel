@@ -93,7 +93,17 @@ const Companies = () => {
       required: false,
       showOn: "both", // show only on create/edit
     },
-  
+    {
+    label: "Status",
+    key: "status",
+    type: "radio",           
+    required: true,
+    options: [
+      { label: "Active", value: "1" },
+      { label: "Inactive", value: "0" },
+    ],
+    showOn: "all", // create + edit + view
+  },
     {
       label: "Created At",
       key: "created_at",
@@ -168,6 +178,7 @@ const Companies = () => {
 
   // Open modal function
   const openModal = (type: "create" | "edit" | "view", company: any = null) => {
+    console.log(`Opening modal of type '${type}'`, company);
     setModalType(type);
     setSelectedCompany(company);
     setBackendErrors({});
