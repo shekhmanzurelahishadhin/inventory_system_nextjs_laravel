@@ -40,7 +40,6 @@ class CompanyService
         // handle logo replacement
         if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
             $data['logo'] = $this->fileUpload($data['logo'], 'logos', $company->logo_path);
-            unset($data['logo']);
         }
 
         $company->update($data); // updates the model
