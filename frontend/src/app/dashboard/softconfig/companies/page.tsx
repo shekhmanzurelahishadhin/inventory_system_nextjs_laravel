@@ -138,39 +138,68 @@ const Companies = () => {
   };
 
   // Handle form submission for create/edit
-  const handleFormSubmit = async (formData: Record<string, any>) => {
-    console.log("Form Data Submitted:", formData);
-    try {
-      setIsSubmitting(true);
-      setBackendErrors({});
+ const handleFormSubmit = async (formData: Record<string, any>) => {
+  console.log("Form Data Submitted:", formData);
 
-      if (modalType === "create") {
-        await api.post("/soft-config/companies", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        toast.success("Company saved successfully");
-      } else if (modalType === "edit" && selectedCompany?.id) {
-        await api.put(
-          `/soft-config/companies/${selectedCompany.id}`,
-          formData
-        );
-        toast.success("Company updated successfully");
+  try {
+    setIsSubmitting(true);
+    setBackendErrors({});
+
+    // Prepare FormData
+    const submitData = new FormData();
+
+    Object.keys(formData).forEach((key) => {
+      const value = formData[key];
+
+      if (value instanceof File) {
+        // Only append if user selected a new file
+        submitData.append(key, value);
+      } else if (value !== null && value !== undefined) {
+        // Convert booleans to 1/0 strings, everything else to string
+        if (typeof value === "boolean") {
+          submitData.append(key, value ? "1" : "0");
+        } else {
+          submitData.append(key, String(value));
+        }
       }
+    });
 
-      setIsSubmitting(false);
-      closeModal();
+    if (modalType === "create") {
+      // Create
+      await api.post("/soft-config/companies", submitData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      toast.success("Company saved successfully");
+    } else if (modalType === "edit" && selectedCompany?.id) {
+      // Edit: Use POST + _method=PUT for Laravel multipart/form-data
+      submitData.append("_method", "PUT");
+      console.log(formData);
 
-      // Force table to refetch by updating refreshTrigger
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      setIsSubmitting(false);
-      if (error.response?.status === 422) {
-        setBackendErrors(error.response.data.errors);
-      } else {
-        toast.error(error.response?.data.message || "Failed to save data");
-      }
+      await api.post(
+        `/soft-config/companies/${selectedCompany.id}`,
+        submitData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      toast.success("Company updated successfully");
     }
-  };
+
+    setIsSubmitting(false);
+    closeModal();
+    setRefreshTrigger((prev) => prev + 1); // refresh table
+
+  } catch (error: any) {
+    setIsSubmitting(false);
+
+    if (error.response?.status === 422) {
+      // Laravel validation errors
+      setBackendErrors(error.response.data.errors);
+    } else {
+      toast.error(error.response?.data.message || "Failed to save data");
+    }
+  }
+};
+
 
   // Delete company function with SweetAlert2 confirmation
   // Soft Delete (Move to Trash)
