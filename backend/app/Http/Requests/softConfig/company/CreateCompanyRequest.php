@@ -47,7 +47,7 @@ class CreateCompanyRequest extends FormRequest
             'address' => 'nullable|string|max:500',
             'default_currency' => 'nullable|string|max:10',
             'timezone' => 'nullable|string|max:50',
-            'is_active' => 'boolean',
+            'status' => 'boolean',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // max 2MB
         ];
     }
@@ -77,7 +77,7 @@ class CreateCompanyRequest extends FormRequest
             'default_currency.max' => 'The currency code cannot exceed 10 characters.',
             'timezone.max'         => 'The timezone cannot exceed 50 characters.',
 
-            'is_active.boolean' => 'The active status must be true or false.',
+            'status.boolean' => 'The active status must be true or false.',
 
             'logo.image'   => 'The logo must be an image file.',
             'logo.mimes'   => 'The logo must be a file of type: jpeg, png, jpg, gif, svg.',

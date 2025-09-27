@@ -46,7 +46,7 @@ useEffect(() => {
         initial[f.key] = data?.[f.key] ?? f.defaultValue ?? "";
       }
     });
-    console.log("Initializing form data:", initial);
+
     setFormData(initial);
   }
 }, [data, fields]);
@@ -130,6 +130,7 @@ useEffect(() => {
           .filter((f) => shouldShowField(f))
           .map((field) => {
             const value = formData[field.key] ?? "";
+            console.log(`Rendering field '${field.key}' with value:`, value);
             const isReadOnly =
               mode === "view" || field.readOnly; // disable in view mode
 
@@ -201,7 +202,7 @@ useEffect(() => {
                           type="radio"
                           name={field.key}
                           value={opt.value}
-                          checked={value === opt.value}
+                          checked={value == opt.value}
                           onChange={(e) =>
                             !isReadOnly &&
                             handleChange(field.key, e.target.value)
