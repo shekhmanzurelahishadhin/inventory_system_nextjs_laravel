@@ -93,13 +93,7 @@ const Companies = () => {
       required: false,
       showOn: "both", // show only on create/edit
     },
-    // {
-    //   label: "Logo",
-    //   key: "logo",
-    //   type: "image", // view only
-    //   required: false,
-    //   showOn: "view", // show only on view
-    // },
+  
     {
       label: "Created At",
       key: "created_at",
@@ -114,6 +108,57 @@ const Companies = () => {
       readOnly: true,
       showOn: "view",
     },
+  ];
+  const viewFields = [
+    {
+      label: "Company Name",
+      key: "name",
+      type: "text",
+      required: true,
+      showOn: "all", // visible in create/edit/view
+    },
+    {
+      label: "Email",
+      key: "email",
+      type: "email",
+      required: true,
+      showOn: "all",
+    },
+    {
+      label: "Phone",
+      key: "phone",
+      type: "text",
+      required: false,
+      showOn: "all",
+    },
+    {
+      label: "Address",
+      key: "address",
+      type: "textarea",
+      required: false,
+      showOn: "all",
+    },
+      {
+      label: "Logo",
+      key: "logo",
+      type: "image", // view only
+      required: false,
+      showOn: "view", // show only on view
+    },
+      {
+      label: "Created At",
+      key: "created_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Updated At",
+      key: "updated_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
+    }
   ];
 
   // Ensure component is mounted (for client-side rendering)
@@ -565,7 +610,7 @@ const Companies = () => {
           }
         >
           {modalType === "view" && (
-            <DynamicViewTable data={selectedCompany} fields={companyFields} />
+            <DynamicViewTable data={selectedCompany} fields={viewFields} />
           )}
 
           {(modalType === "create" || modalType === "edit") && (
