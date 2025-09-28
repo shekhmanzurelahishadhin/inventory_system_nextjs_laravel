@@ -113,6 +113,17 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
       icon: solidIcons.faCogs,
       children: [
         {
+          name: "Lookup",
+          href: "/dashboard/softconfig/lookups",
+          icon: solidIcons.faTable,
+          requiredPermissions: [
+            "lookup.view",
+            "lookup.create",
+            "lookup.edit",
+            "lookup.delete",
+          ],
+        },
+         {
           name: "Company",
           href: "/dashboard/softconfig/companies",
           icon: solidIcons.faBuilding,
