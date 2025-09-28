@@ -7,6 +7,7 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\authorization\RoleController;
 use App\Http\Controllers\api\authorization\PermissionController;
 use App\Http\Controllers\api\softConfig\CompanyController;
+use App\Http\Controllers\api\softConfig\LookupController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -68,6 +69,17 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::post('/restore/{id}', [CompanyController::class, 'restore']);
             Route::delete('/{id}', [CompanyController::class, 'destroy']); // force delete
         });
+
+        //------------------------------------lookup start-------------------------------------------------
+        Route::prefix('lookups')->group(function () {
+            Route::get('/', [LookupController::class, 'index']);
+            Route::post('/', [LookupController::class, 'store']);
+            Route::put('/{lookup}', [LookupController::class, 'update']);
+            Route::delete('/{lookup}', [LookupController::class, 'destroy']);
+        });
+        Route::get('/get-lookup/lists', [LookupController::class, 'getLookupLists']);
+
+        //------------------------------------lookup end-----------------------------------------------------
     });
 });
 
