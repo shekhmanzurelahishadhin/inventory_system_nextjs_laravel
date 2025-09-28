@@ -70,7 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/{id}', [CompanyController::class, 'destroy']); // force delete
         });
 
-        //------------------------------------lookup start-------------------------------------------------
+        //Lookups Route
         Route::prefix('lookups')->group(function () {
             Route::get('/', [LookupController::class, 'index']);
             Route::post('/', [LookupController::class, 'store']);
@@ -79,7 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::get('/get-lookup/lists', [LookupController::class, 'getLookupLists']);
 
-        //------------------------------------lookup end-----------------------------------------------------
+       
     });
 });
 

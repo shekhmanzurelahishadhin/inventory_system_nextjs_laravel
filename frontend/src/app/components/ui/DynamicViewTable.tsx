@@ -9,7 +9,7 @@ interface DynamicViewTableProps {
 
 const DynamicViewTable: React.FC<DynamicViewTableProps> = ({ data, fields }) => {
   if (!data) return null;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 const renderValue = (field: any) => {
   const value = data[field.key];

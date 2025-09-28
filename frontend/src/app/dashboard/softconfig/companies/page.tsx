@@ -49,7 +49,7 @@ const Companies = () => {
     page: 1,
     perPage: 10,
   });
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
   const breadcrumbItems = [
