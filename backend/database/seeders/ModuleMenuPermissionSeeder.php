@@ -471,5 +471,43 @@ class ModuleMenuPermissionSeeder extends Seeder
                 'sub_menu_id' => null,
             ]
         );
+
+        // Lookup
+        $lookupMenu = Menu::updateOrCreate(
+            ['name' => 'Lookup', 'module_id' => $softConfigModule->id],
+            ['slug' => 'lookup']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'lookup.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $lookupMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'lookup.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $lookupMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'lookup.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $lookupMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'lookup.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $lookupMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
     }
 }
