@@ -49,7 +49,7 @@ const [perPage, setPerPage] = useState(10);
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: "Soft Config", href: "#" },
+    { label: "Configure", href: "#" },
     { label: "Lookups", href: "#" },
   ];
 
@@ -106,10 +106,10 @@ const [perPage, setPerPage] = useState(10);
       setBackendErrors({});
 
       if (modalType === "create") {
-        await api.post("/soft-config/lookups", formData);
+        await api.post("/configure/lookups", formData);
         toast.success("Lookup saved successfully");
       } else if (modalType === "edit" && selectedLookup?.id) {
-        await api.put(`/soft-config/lookups/${selectedLookup.id}`, formData);
+        await api.put(`/configure/lookups/${selectedLookup.id}`, formData);
         toast.success("Lookup updated successfully");
       }
 
@@ -149,7 +149,7 @@ const [perPage, setPerPage] = useState(10);
       });
 
       // API call
-      await api.delete(`/soft-config/lookups/${lookup.id}`);
+      await api.delete(`/configure/lookups/${lookup.id}`);
 
       Swal.close(); // close loading
 
@@ -278,7 +278,7 @@ const [perPage, setPerPage] = useState(10);
             <div className="bg-white shadow overflow-hidden pt-8">
               <DynamicDataTable
                 columns={columns}
-                apiEndpoint="/soft-config/lookups"
+                apiEndpoint="/configure/lookups"
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Guard Name", selector: "guard_name" },

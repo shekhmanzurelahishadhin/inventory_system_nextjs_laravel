@@ -108,13 +108,13 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
       ],
     },
     {
-      name: "Soft Config",
+      name: "Configure",
       href: "#",
       icon: solidIcons.faCogs,
       children: [
         {
           name: "Lookup",
-          href: "/dashboard/softconfig/lookups",
+          href: "/dashboard/configure/lookups",
           icon: solidIcons.faTable,
           requiredPermissions: [
             "lookup.view",
@@ -125,7 +125,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
          {
           name: "Company",
-          href: "/dashboard/softconfig/companies",
+          href: "/dashboard/configure/companies",
           icon: solidIcons.faBuilding,
           requiredPermissions: [
             "company.view",
@@ -136,7 +136,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
         {
           name: "Category",
-          href: "/dashboard/softconfig/categories",
+          href: "/dashboard/configure/categories",
           icon: solidIcons.faTags,
           requiredPermissions: [
             "category.view",
@@ -147,7 +147,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
         {
           name: "Sub Category",
-          href: "/dashboard/softconfig/sub-categories",
+          href: "/dashboard/configure/sub-categories",
           icon: solidIcons.faLayerGroup,
           requiredPermissions: [
             "subcategory.view",
@@ -158,7 +158,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
         {
           name: "Brand",
-          href: "/dashboard/softconfig/brands",
+          href: "/dashboard/configure/brands",
           icon: solidIcons.faTrademark,
           requiredPermissions: [
             "brand.view",
@@ -169,7 +169,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
         {
           name: "Model",
-          href: "/dashboard/softconfig/models",
+          href: "/dashboard/configure/models",
           icon: solidIcons.faCubes,
           requiredPermissions: [
             "model.view",
@@ -180,7 +180,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
         {
           name: "Unit",
-          href: "/dashboard/softconfig/units",
+          href: "/dashboard/configure/units",
           icon: solidIcons.faRuler,
           requiredPermissions: [
             "unit.view",
@@ -191,7 +191,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
         {
           name: "Store",
-          href: "/dashboard/softconfig/stores",
+          href: "/dashboard/configure/stores",
           icon: solidIcons.faStore,
           requiredPermissions: [
             "store.view",
@@ -202,7 +202,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
         },
         {
           name: "Location",
-          href: "/dashboard/softconfig/locations",
+          href: "/dashboard/configure/locations",
           icon: solidIcons.faMapMarkerAlt,
           requiredPermissions: [
             "location.view",

@@ -53,7 +53,7 @@ const Companies = () => {
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: "Soft Config", href: "#" },
+    { label: "Configure", href: "#" },
     { label: "Company", href: "#" },
   ];
 
@@ -222,7 +222,7 @@ const Companies = () => {
 
     if (modalType === "create") {
       // Create
-      await api.post("/soft-config/companies", submitData, {
+      await api.post("/configure/companies", submitData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       toast.success("Company saved successfully");
@@ -232,7 +232,7 @@ const Companies = () => {
       console.log(formData);
 
       await api.post(
-        `/soft-config/companies/${selectedCompany.id}`,
+        `/configure/companies/${selectedCompany.id}`,
         submitData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -277,7 +277,7 @@ const Companies = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/soft-config/companies/trash/${company.id}`);
+      await api.post(`/configure/companies/trash/${company.id}`);
 
       Swal.close();
       Swal.fire({
@@ -319,7 +319,7 @@ const Companies = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.delete(`/soft-config/companies/${company.id}`); // force delete
+      await api.delete(`/configure/companies/${company.id}`); // force delete
 
       Swal.close();
       Swal.fire({
@@ -362,7 +362,7 @@ const Companies = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/soft-config/companies/restore/${company.id}`);
+      await api.post(`/configure/companies/restore/${company.id}`);
 
       Swal.close();
       Swal.fire({
@@ -533,7 +533,7 @@ const Companies = () => {
             <div className="bg-white shadow overflow-hidden pt-8">
               <DynamicDataTable
                 columns={columns}
-                apiEndpoint="/soft-config/companies"
+                apiEndpoint="/configure/companies"
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Guard Name", selector: "guard_name" },

@@ -59,7 +59,7 @@ Route::prefix('v1')->group(function () {
 
 
         // Soft Config Route
-        Route::prefix('soft-config')->group(function () {
+        Route::prefix('configure')->group(function () {
 
             // Companies Route
             Route::prefix('companies')->group(function () {
