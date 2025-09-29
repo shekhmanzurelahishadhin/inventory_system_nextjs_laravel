@@ -6,7 +6,7 @@ import {
   faEdit,
   faTrash,
   faEye,
-  faKey
+  faKey,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -25,6 +25,7 @@ import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 
 const Lookups = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -41,10 +42,10 @@ const Lookups = () => {
 
   const formRef = useRef<any>(null); // Ref for DynamicForm
   const router = useRouter(); // Next.js router
-const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
     page: 1,
-    perPage: 10
+    perPage: 10,
   });
 
   // Breadcrumb items
@@ -54,26 +55,36 @@ const [perPage, setPerPage] = useState(10);
   ];
 
   const lookupFields = [
+    { name: "name", label: "Name", type: "text", required: true },
     {
-      label: "Name",
-      key: "name",
+      name: "is_new",
+      label: "Is New Type",
+      type: "select",
+      options: [
+        { value: "", label: "Select One" },
+        { value: "1", label: "Yes" },
+        { value: "0", label: "No" },
+      ],
+      required: true,
+    },
+    {
+      name: "type_write",
+      label: "Type",
       type: "text",
       required: true,
-      showOn: "all",
+      showIf: (values) => values.is_new === "1", // dynamic show/hide
     },
     {
-      label: "Guard Name",
-      key: "guard_name",
-      type: "text",
-      readOnly: true,
-      showOn: "view",
-    },
-    {
-      label: "Created At",
-      key: "created_at",
-      type: "date",
-      readOnly: true,
-      showOn: "view",
+      name: "type_select",
+      label: "Type",
+      type: "select",
+      options: [
+        { value: "", label: "Select Type" },
+        { value: "type1", label: "Type 1" },
+        { value: "type2", label: "Type 2" },
+      ],
+      required: true,
+      showIf: (values) => values.is_new === "0",
     },
   ]; // Fields for DynamicForm and DynamicViewTable
 
@@ -89,7 +100,6 @@ const [perPage, setPerPage] = useState(10);
     setBackendErrors({});
     setIsSubmitting(false);
   };
-
 
   // Close modal function
   const closeModal = () => {
@@ -177,21 +187,20 @@ const [perPage, setPerPage] = useState(10);
   };
   // Columns for DataTable
   const columns = [
-     {
+    {
       name: "#",
-      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
+      cell: (row, index) =>
+        (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
-      grow: 0,
     },
+    { name: "Name", selector: (row) => row.name, sortable: true },
+    { name: "Type", selector: (row) => row.type, sortable: true },
+    { name: "Code", selector: (row) => row.code, sortable: true },
+
     {
-      name: "Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-    {
-      name: "Guard Name",
-      selector: (row) => row.guard_name,
-      sortable: true,
+      name: "Status",
+      cell: (row) =>
+        formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }), // or statusMap[row.status]
     },
     {
       name: "Created At",
@@ -209,7 +218,7 @@ const [perPage, setPerPage] = useState(10);
               onClick: (r) => openModal("view", r),
               variant: "primary",
               size: "sm",
-              show: (r) => hasPermission("lookup.view"),
+              show: () => hasPermission("lookup.view"),
               tooltip: "View",
             },
             {
@@ -217,8 +226,7 @@ const [perPage, setPerPage] = useState(10);
               onClick: (r) => openModal("edit", r),
               variant: "secondary",
               size: "sm",
-              show: (r) =>
-                !r.name?.includes("Super Admin") && hasPermission("lookup.edit"),
+              show: () => hasPermission("lookup.edit"),
               tooltip: "Edit",
             },
             {
@@ -226,9 +234,7 @@ const [perPage, setPerPage] = useState(10);
               onClick: (r) => handleDeleteLookup(r),
               variant: "danger",
               size: "sm",
-              show: (r) =>
-                !r.name?.includes("Super Admin") &&
-                hasPermission("lookup.delete"),
+              show: () => hasPermission("lookup.delete"),
               tooltip: "Delete",
             },
           ]}
@@ -238,7 +244,6 @@ const [perPage, setPerPage] = useState(10);
       ignoreRowClick: true,
     },
   ];
-
 
   return (
     <>
@@ -281,7 +286,13 @@ const [perPage, setPerPage] = useState(10);
                 apiEndpoint="/configure/lookups"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "Guard Name", selector: "guard_name" },
+                  { name: "Type", selector: "type" },
+                  { name: "Code", selector: "code" },
+                  {
+                    name: "Status",
+                    selector: (row) =>
+                      row.status === 1 ? "Active" : "Inactive",
+                  },
                   { name: "Created at", selector: "created_at" },
                 ]}
                 exportFileName="lookups"
@@ -289,7 +300,9 @@ const [perPage, setPerPage] = useState(10);
                 defaultPerPage={perPage}
                 searchPlaceholder="Search lookups..."
                 refreshTrigger={refreshTrigger}
-                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
+                onPaginationChange={(page, perPage) =>
+                  setPagination({ page, perPage })
+                }
               />
             </div>
           </div>
@@ -327,12 +340,30 @@ const [perPage, setPerPage] = useState(10);
                       : "opacity-100"
                   }`}
                 >
-                   {isSubmitting ?
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg> : ''
-                  }
+                  {isSubmitting ? (
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                  ) : (
+                    ""
+                  )}
                   {isSubmitting
                     ? modalType === "create"
                       ? "Creating..."

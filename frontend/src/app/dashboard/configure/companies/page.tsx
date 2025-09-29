@@ -536,7 +536,14 @@ const Companies = () => {
                 apiEndpoint="/configure/companies"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "Guard Name", selector: "guard_name" },
+                  { name: "Email", selector: "email" },
+                  { name: "Code", selector: "code" },
+                  { name: "address", selector: "address" },
+                   {
+                    name: "Status",
+                    selector: (row) =>
+                      row.status === 1 ? "Active" : "Inactive",
+                  },
                   { name: "Created at", selector: "created_at" },
                 ]}
                 exportFileName="companies"
