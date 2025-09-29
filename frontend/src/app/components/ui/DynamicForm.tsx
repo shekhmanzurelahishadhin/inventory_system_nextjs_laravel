@@ -121,6 +121,11 @@ useEffect(() => {
       if (showOn === "view") return mode === "view";
       if (showOn === "create") return mode === "create";
       if (showOn === "edit") return mode === "edit";
+
+      if (typeof field.showIf === "function") {
+        return field.showIf(formData);
+      }
+
       return false;
     };
 

@@ -55,38 +55,40 @@ const Lookups = () => {
   ];
 
   const lookupFields = [
-    { name: "name", label: "Name", type: "text", required: true },
-    {
-      name: "is_new",
-      label: "Is New Type",
-      type: "select",
-      options: [
-        { value: "", label: "Select One" },
-        { value: "1", label: "Yes" },
-        { value: "0", label: "No" },
-      ],
-      required: true,
-    },
-    {
-      name: "type_write",
-      label: "Type",
-      type: "text",
-      required: true,
-      showIf: (values) => values.is_new === "1", // dynamic show/hide
-    },
-    {
-      name: "type_select",
-      label: "Type",
-      type: "select",
-      options: [
-        { value: "", label: "Select Type" },
-        { value: "type1", label: "Type 1" },
-        { value: "type2", label: "Type 2" },
-      ],
-      required: true,
-      showIf: (values) => values.is_new === "0",
-    },
-  ]; // Fields for DynamicForm and DynamicViewTable
+  { name: "name", label: "Name", type: "text", required: true, key: "name" },
+  {
+    name: "is_new",
+    label: "Is New Type",
+    type: "select",
+    key: "is_new",
+    options: [
+      { value: "1", label: "Yes" },
+      { value: "0", label: "No" },
+    ],
+    required: true,
+  },
+  {
+    name: "type_write",
+    label: "Type",
+    type: "text",
+    key: "type_write",
+    required: true,
+    showIf: (values) => values.is_new === "1",
+  },
+  {
+    name: "type_select",
+    label: "Select Type",
+    type: "select",
+    key: "type_select",
+    options: [
+      { value: "type1", label: "Type 1" },
+      { value: "type2", label: "Type 2" },
+    ],
+    required: true,
+    showIf: (values) => values.is_new === "0",
+  },
+];
+
 
   // Ensure component is mounted (for client-side rendering)
   useEffect(() => {
