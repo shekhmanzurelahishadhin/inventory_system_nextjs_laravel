@@ -112,14 +112,20 @@ const DynamicForm = forwardRef(
 
     // Common input classes
     const inputClasses = (key: string) =>
-      `mt-1 block w-full p-3 rounded-sm border ${
-        errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
+      `mt-1 block w-full p-3 rounded-sm border ${errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
       } focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;
 
     // Check field visibility based on mode + showOn
     const shouldShowField = (field: any) => {
-      if (field.hidden) return false;
+      // check dynamic/static hidden first
+      if (typeof field.hidden === "function") {
+        return !field.hidden(formData); // invert because hidden=true → hide 
+      }
+      if (typeof field.hidden === "boolean") {
+        return !field.hidden; // static hide/show
+      }
 
+      // fallback to showOn logic (optional)
       let visible = false;
       const showOn = field.showOn || "both";
 
@@ -129,13 +135,9 @@ const DynamicForm = forwardRef(
       if (showOn === "create") visible = mode === "create";
       if (showOn === "edit") visible = mode === "edit";
 
-      // Apply conditional visibility on top of showOn
-      if (typeof field.showIf === "function") {
-        return visible && field.showIf(formData);
-      }
-
       return visible;
     };
+
 
     return (
       <form className="my-5 space-y-4" onSubmit={(e) => e.preventDefault()}>

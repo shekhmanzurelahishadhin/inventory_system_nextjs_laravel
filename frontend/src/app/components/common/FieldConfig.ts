@@ -6,7 +6,6 @@ export interface FieldConfig {
   required?: boolean;                  // field is required in form
   options?: { label: string; value: any }[]; // for select/radio
   showOn?: "view" | "create" | "both" | "all";  // control visibility
-  showIf?: (values: Record<string, any>) => boolean; // conditional visibility
   tabIndex?: number;                   // custom tab order
   pointerEventsNone?: boolean;         // disable pointer events
   placeholder?: string;
@@ -17,7 +16,7 @@ export interface FieldConfig {
   validate?: (value: any) => string | null; // custom validation function
   tooltip?: string;                     // optional tooltip/help text
   className?: string;                   // extra CSS class
-  hidden?: boolean;                     // completely hide field
+  hidden?: boolean | ((formData: Record<string, any>) => boolean); // hide field conditionally and dynamically
   prefix?: string;                      // prefix in input box
   suffix?: string;                      // suffix in input box
   step?: number;                        // for number/date input

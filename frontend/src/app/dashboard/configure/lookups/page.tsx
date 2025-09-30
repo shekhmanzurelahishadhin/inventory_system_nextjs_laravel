@@ -80,8 +80,8 @@ const Lookups = () => {
       label: "Type",
       type: "text",
       key: "type_write",
-      required: (values) => values.is_new === "1", // 👈 condition
-      showIf: (values) => values.is_new === "1",
+      required: (formData) => formData.is_new === "1", // 👈 condition
+      hidden: (formData) => formData.is_new !== "1", // dynamic hidden false to show when is_new=1 1!==1 => false => show
     },
     {
       name: "type_select",
@@ -89,8 +89,8 @@ const Lookups = () => {
       type: "select",
       key: "type_select",
       options: lookups,
-      required: (values) => values.is_new === "0", // 👈 condition
-      showIf: (values) => values.is_new === "0",
+      required: (formData) => formData.is_new === "0", // 👈 condition
+      hidden: (formData) => formData.is_new !== "0", // dynamic hidden false to show when is_new=0 0!==0 => false => show
     },
   ];
 
