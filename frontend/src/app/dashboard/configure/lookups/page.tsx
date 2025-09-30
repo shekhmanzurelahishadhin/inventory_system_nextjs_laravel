@@ -42,7 +42,7 @@ const Lookups = () => {
 
   const formRef = useRef<any>(null); // Ref for DynamicForm
   const router = useRouter(); // Next.js router
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(10); // Default rows per page
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 10,
