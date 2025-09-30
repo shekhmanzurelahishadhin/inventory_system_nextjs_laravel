@@ -33,25 +33,23 @@ const DynamicForm = forwardRef(
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     // Initialize formData only once or when data changes and form is empty
-useEffect(() => {
-  if (Object.keys(formData).length === 0) {
-    const initial: Record<string, any> = {};
-    fields.forEach((f) => {
-      if (f.type === "file") {
-        // File input starts empty (null)
-        initial[f.key] = null;
-      } else if (f.type === "checkbox") {
-        initial[f.key] = data?.[f.key] ?? f.defaultValue ?? false;
-      } else {
-        initial[f.key] = data?.[f.key] ?? f.defaultValue ?? "";
+    useEffect(() => {
+      if (Object.keys(formData).length === 0) {
+        const initial: Record<string, any> = {};
+        fields.forEach((f) => {
+          if (f.type === "file") {
+            // File input starts empty (null)
+            initial[f.key] = null;
+          } else if (f.type === "checkbox") {
+            initial[f.key] = data?.[f.key] ?? f.defaultValue ?? false;
+          } else {
+            initial[f.key] = data?.[f.key] ?? f.defaultValue ?? "";
+          }
+        });
+
+        setFormData(initial);
       }
-    });
-
-    setFormData(initial);
-  }
-}, [data, fields]);
-
-
+    }, [data, fields]);
 
     // Handle input change
     const handleChange = (key: string, value: any) => {
@@ -68,7 +66,12 @@ useEffect(() => {
 
     // Validate one field
     const validateField = (field: any, value: any) => {
-      if (field.required && (value === "" || value === null)) {
+      const isRequired =
+        typeof field.required === "function"
+          ? field.required(formData)
+          : field.required;
+
+      if (isRequired && (value === "" || value === null)) {
         return "This field is required";
       }
       if (field.minLength && value.length < field.minLength) {
@@ -109,24 +112,29 @@ useEffect(() => {
 
     // Common input classes
     const inputClasses = (key: string) =>
-      `mt-1 block w-full p-3 rounded-sm border ${errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
+      `mt-1 block w-full p-3 rounded-sm border ${
+        errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
       } focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;
 
     // Check field visibility based on mode + showOn
     const shouldShowField = (field: any) => {
       if (field.hidden) return false;
-      const showOn = field.showOn || "both";
-      if (showOn === "all") return mode === "create" || mode === "edit" || mode === "view";
-      if (showOn === "both") return mode === "create" || mode === "edit";
-      if (showOn === "view") return mode === "view";
-      if (showOn === "create") return mode === "create";
-      if (showOn === "edit") return mode === "edit";
 
+      let visible = false;
+      const showOn = field.showOn || "both";
+
+      if (showOn === "all") visible = true;
+      if (showOn === "both") visible = mode === "create" || mode === "edit";
+      if (showOn === "view") visible = mode === "view";
+      if (showOn === "create") visible = mode === "create";
+      if (showOn === "edit") visible = mode === "edit";
+
+      // Apply conditional visibility on top of showOn
       if (typeof field.showIf === "function") {
-        return field.showIf(formData);
+        return visible && field.showIf(formData);
       }
 
-      return false;
+      return visible;
     };
 
     return (
@@ -136,8 +144,7 @@ useEffect(() => {
           .map((field) => {
             const value = formData[field.key] ?? "";
             console.log(`Rendering field '${field.key}' with value:`, value);
-            const isReadOnly =
-              mode === "view" || field.readOnly; // disable in view mode
+            const isReadOnly = mode === "view" || field.readOnly; // disable in view mode
 
             return (
               <div key={field.key} className={field.className || ""}>
@@ -232,11 +239,15 @@ useEffect(() => {
                     />
                     {/* Show current file name if editing */}
                     {mode === "edit" && value instanceof File && (
-                      <p className="text-sm text-gray-600 mt-1">Selected: {value.name}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Selected: {value.name}
+                      </p>
                     )}
                     {/* Show existing file info if editing and no new file selected */}
                     {mode === "edit" && typeof value === "string" && value && (
-                      <p className="text-sm text-gray-600 mt-1">Current: {value.split('/').pop()}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Current: {value.split("/").pop()}
+                      </p>
                     )}
                   </div>
                 ) : (

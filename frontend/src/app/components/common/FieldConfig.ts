@@ -6,6 +6,7 @@ export interface FieldConfig {
   required?: boolean;                  // field is required in form
   options?: { label: string; value: any }[]; // for select/radio
   showOn?: "view" | "create" | "both" | "all";  // control visibility
+  showIf?: (values: Record<string, any>) => boolean; // conditional visibility
   tabIndex?: number;                   // custom tab order
   pointerEventsNone?: boolean;         // disable pointer events
   placeholder?: string;
