@@ -4,8 +4,10 @@ namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\softConfig\Lookup\LookupResource;
+use App\Models\softConfig\Lookup;
 use App\Services\softConfig\LookupService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LookupController extends Controller
 {
@@ -41,5 +43,13 @@ class LookupController extends Controller
             'current_page' => 1,
             'per_page' => $lookups->count(),
         ]);
+    }
+    public function getLookupLists(){
+        $types = Lookup::groupBy('type')->pluck('type')->map(fn($type) => [
+            'value' => $type,
+            'label' => $type,
+        ]);
+
+        return response()->json($types);
     }
 }

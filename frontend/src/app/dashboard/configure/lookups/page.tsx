@@ -47,12 +47,20 @@ const Lookups = () => {
     page: 1,
     perPage: 10,
   });
-
+  const [lookups, setLookups] = useState<any[]>([]);
+  useEffect(() => {
+    const fetchLookups = async () => {
+      const res = await api.get("/configure/get-lookup/lists");
+      setLookups(res.data.map((m: any) => ({ value: m.value, label: m.label })));
+    };
+    fetchLookups();
+  }, []);
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "Configure", href: "#" },
     { label: "Lookups", href: "#" },
   ];
+  console.log(lookups);
 
   const lookupFields = [
     { name: "name", label: "Name", type: "text", required: true, key: "name" },
@@ -77,13 +85,10 @@ const Lookups = () => {
     },
     {
       name: "type_select",
-      label: "Select Type",
+      label: "Type",
       type: "select",
       key: "type_select",
-      options: [
-        { value: "type1", label: "Type 1" },
-        { value: "type2", label: "Type 2" },
-      ],
+      options: lookups,
       required: (values) => values.is_new === "0", // 👈 condition
       showIf: (values) => values.is_new === "0",
     },
