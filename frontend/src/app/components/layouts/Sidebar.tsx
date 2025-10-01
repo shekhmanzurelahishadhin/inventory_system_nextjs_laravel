@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as solidIcons from "@fortawesome/free-solid-svg-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface SidebarProps {
   open: boolean;
@@ -33,9 +33,10 @@ const Sidebar = ({
   getInitials,
 }: SidebarProps) => {
   const pathname = usePathname();
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+  const [hoveredItem, setHoveredItem] = useState<{name: string; item: MenuItem; x: number; y: number} | null>(null);
+  const [nestedHoveredItem, setNestedHoveredItem] = useState<{name: string; item: MenuItem; x: number; y: number} | null>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
   const { user, hasRole, hasPermission } = useAuth();
 
   // Automatically expand parent menus if a child is active
@@ -76,6 +77,38 @@ const Sidebar = ({
     }));
   };
 
+  const handleMouseEnter = (item: MenuItem, event: React.MouseEvent) => {
+    if (!isCollapsed || !item.children) return;
+    
+    const rect = event.currentTarget.getBoundingClientRect();
+    setHoveredItem({
+      name: item.name,
+      item: item,
+      x: rect.right + 10,
+      y: rect.top
+    });
+  };
+
+  const handleNestedMouseEnter = (item: MenuItem, event: React.MouseEvent) => {
+    if (!item.children) return;
+    
+    const rect = event.currentTarget.getBoundingClientRect();
+    setNestedHoveredItem({
+      name: item.name,
+      item: item,
+      x: rect.right,
+      y: rect.top
+    });
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredItem(null);
+  };
+
+  const handleNestedMouseLeave = () => {
+    setNestedHoveredItem(null);
+  };
+
   const navigation: MenuItem[] = [
     { name: "Dashboard", href: "/dashboard", icon: solidIcons.faChartLine },
     {
@@ -87,34 +120,19 @@ const Sidebar = ({
           name: "Role",
           href: "/dashboard/authorization/roles",
           icon: solidIcons.faShieldAlt,
-          requiredPermissions: [
-            "role.view",
-            "role.create",
-            "role.edit",
-            "role.delete",
-          ],
+          requiredPermissions: ["role.view"],
         },
         {
           name: "Permission",
           href: "/dashboard/authorization/permissions",
           icon: solidIcons.faKey,
-          requiredPermissions: [
-            "permission.view",
-            "permission.create",
-            "permission.edit",
-            "permission.delete",
-          ],
+          requiredPermissions: ["permission.view"],
         },
         {
           name: "User",
           href: "/dashboard/users",
           icon: solidIcons.faUserCog,
-          requiredPermissions: [
-            "user.view",
-            "user.create",
-            "user.edit",
-            "user.delete",
-          ],
+          requiredPermissions: ["user.view"],
         },
       ],
     },
@@ -127,100 +145,55 @@ const Sidebar = ({
           name: "Lookup",
           href: "/dashboard/configure/lookups",
           icon: solidIcons.faTable,
-          requiredPermissions: [
-            "lookup.view",
-            "lookup.create",
-            "lookup.edit",
-            "lookup.delete",
-          ],
+          requiredPermissions: ["lookup.view"],
         },
         {
           name: "Company",
           href: "/dashboard/configure/companies",
           icon: solidIcons.faBuilding,
-          requiredPermissions: [
-            "company.view",
-            "company.create",
-            "company.edit",
-            "company.delete",
-          ],
+          requiredPermissions: ["company.view"],
         },
         {
           name: "Category",
           href: "/dashboard/configure/categories",
           icon: solidIcons.faTags,
-          requiredPermissions: [
-            "category.view",
-            "category.create",
-            "category.edit",
-            "category.delete",
-          ],
+          requiredPermissions: ["category.view"],
         },
         {
           name: "Sub Category",
           href: "/dashboard/configure/sub-categories",
           icon: solidIcons.faLayerGroup,
-          requiredPermissions: [
-            "subcategory.view",
-            "subcategory.create",
-            "subcategory.edit",
-            "subcategory.delete",
-          ],
+          requiredPermissions: ["subcategory.view"],
         },
         {
           name: "Brand",
           href: "/dashboard/configure/brands",
           icon: solidIcons.faTrademark,
-          requiredPermissions: [
-            "brand.view",
-            "brand.create",
-            "brand.edit",
-            "brand.delete",
-          ],
+          requiredPermissions: ["brand.view"],
         },
         {
           name: "Model",
           href: "/dashboard/configure/models",
           icon: solidIcons.faCubes,
-          requiredPermissions: [
-            "model.view",
-            "model.create",
-            "model.edit",
-            "model.delete",
-          ],
+          requiredPermissions: ["model.view"],
         },
         {
           name: "Unit",
           href: "/dashboard/configure/units",
           icon: solidIcons.faRuler,
-          requiredPermissions: [
-            "unit.view",
-            "unit.create",
-            "unit.edit",
-            "unit.delete",
-          ],
+          requiredPermissions: ["unit.view"],
         },
         {
           name: "Store",
           href: "/dashboard/configure/stores",
           icon: solidIcons.faStore,
-          requiredPermissions: [
-            "store.view",
-            "store.create",
-            "store.edit",
-            "store.delete",
-          ],
+          requiredPermissions: ["store.view"],
         },
         {
           name: "Location",
           href: "/dashboard/configure/locations",
           icon: solidIcons.faMapMarkerAlt,
-          requiredPermissions: [
-            "location.view",
-            "location.create",
-            "location.edit",
-            "location.delete",
-          ],
+          requiredPermissions: ["location.view"],
         },
       ],
     },
@@ -286,12 +259,113 @@ const Sidebar = ({
     },
   ];
 
+  const renderHoverMenuItem = (item: MenuItem, level = 0) => {
+    const hasChildren = Array.isArray(item.children) && item.children.length > 0;
+    const hasRequiredRoles = !item.requiredRoles || item.requiredRoles.some((r) => hasRole(r));
+    const hasRequiredPermissions = !item.requiredPermissions || item.requiredPermissions.some((p) => hasPermission(p));
+
+    if (!hasRequiredRoles || !hasRequiredPermissions) {
+      return null;
+    }
+
+    const isActive = pathname === item.href;
+
+    if (item.href && item.href !== "#") {
+      return (
+        <Link
+          key={item.name}
+          href={item.href}
+          className={`flex items-center px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
+            isActive
+              ? "bg-blue-600 text-white"
+              : "text-gray-300 hover:bg-gray-700"
+          } ${level > 0 ? 'pl-8' : ''}`}
+          onClick={() => {
+            setOpen(false);
+            setHoveredItem(null);
+            setNestedHoveredItem(null);
+          }}
+        >
+          <FontAwesomeIcon
+            icon={item.icon}
+            className="w-4 h-4 mr-3 text-gray-400"
+          />
+          <span>{item.name}</span>
+        </Link>
+      );
+    } else if (hasChildren) {
+      return (
+        <div
+          key={item.name}
+          className="relative"
+          onMouseEnter={(e) => handleNestedMouseEnter(item, e)}
+          onMouseLeave={handleNestedMouseLeave}
+        >
+          <div
+            className={`flex items-center justify-between px-3 py-2 text-sm rounded-md transition-colors duration-200 cursor-pointer ${
+              isActive
+                ? "bg-blue-600 text-white"
+                : "text-gray-300 hover:bg-gray-700"
+            } ${level > 0 ? 'pl-8' : ''}`}
+          >
+            <div className="flex items-center">
+              <FontAwesomeIcon
+                icon={item.icon}
+                className="w-4 h-4 mr-3 text-gray-400"
+              />
+              <span>{item.name}</span>
+            </div>
+            <FontAwesomeIcon
+              icon={solidIcons.faChevronRight}
+              className="w-3 h-3 ml-2 text-gray-400"
+            />
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  const renderHoverMenu = (item: {name: string; item: MenuItem; x: number; y: number}, isNested = false) => {
+    if (!item.item.children) return null;
+
+    const filteredChildren = item.item.children.filter(child => {
+      const hasRequiredRoles = !child.requiredRoles || child.requiredRoles.some((r) => hasRole(r));
+      const hasRequiredPermissions = !child.requiredPermissions || child.requiredPermissions.some((p) => hasPermission(p));
+      return hasRequiredRoles && hasRequiredPermissions;
+    });
+
+    if (filteredChildren.length === 0) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: isNested ? 10 : -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: isNested ? 10 : -20 }}
+        className="fixed bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-2 z-50 min-w-48"
+        style={{
+          left: item.x,
+          top: Math.max(item.y, 10), // Ensure it doesn't go above the viewport
+        }}
+        onMouseEnter={() => !isNested ? setHoveredItem(item) : setNestedHoveredItem(item)}
+        onMouseLeave={isNested ? handleNestedMouseLeave : handleMouseLeave}
+      >
+        <div className="px-3 py-2 border-b border-gray-700">
+          <span className="text-white font-medium text-sm">{item.name}</span>
+        </div>
+        <div className="py-1">
+          {filteredChildren.map((child) => renderHoverMenuItem(child))}
+        </div>
+      </motion.div>
+    );
+  };
+
   const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
     return items
       .map((item) => {
         // Check if item has children
-        const hasChildren =
-          Array.isArray(item.children) && item.children.length > 0;
+        const hasChildren = Array.isArray(item.children) && item.children.length > 0;
 
         // Recursively filter children first
         const allowedChildren = hasChildren
@@ -299,11 +373,8 @@ const Sidebar = ({
           : [];
 
         // Check parent permissions
-        const hasRequiredRoles =
-          !item.requiredRoles || item.requiredRoles.some((r) => hasRole(r));
-        const hasRequiredPermissions =
-          !item.requiredPermissions ||
-          item.requiredPermissions.some((p) => hasPermission(p));
+        const hasRequiredRoles = !item.requiredRoles || item.requiredRoles.some((r) => hasRole(r));
+        const hasRequiredPermissions = !item.requiredPermissions || item.requiredPermissions.some((p) => hasPermission(p));
 
         // Hide parent if no permission
         if (!hasRequiredRoles || !hasRequiredPermissions) {
@@ -321,7 +392,6 @@ const Sidebar = ({
         const content = (
           <>
             {item.icon && (
-              // Icon size and alignment based on collapse state and level
               <FontAwesomeIcon
                 icon={item.icon}
                 className={`transition-all duration-200 ${
@@ -339,13 +409,8 @@ const Sidebar = ({
                   {item.name}
                 </span>
                 {hasChildren && (
-                  // Expand/collapse icon
                   <FontAwesomeIcon
-                    icon={
-                      expandedMenus[item.name]
-                        ? solidIcons.faChevronDown
-                        : solidIcons.faChevronRight
-                    }
+                    icon={expandedMenus[item.name] ? solidIcons.faChevronDown : solidIcons.faChevronRight}
                     className={`w-3 h-3 transition-transform duration-200 ${
                       isActive ? "text-blue-400" : "text-gray-400"
                     }`}
@@ -358,35 +423,53 @@ const Sidebar = ({
 
         // Wrapper classes based on state and level for indentation and styling
         const wrapperClass = `
-        flex items-center p-3 rounded-lg mx-2 my-1 transition-all duration-200
-        ${
-          isActive
-            ? "bg-blue-900/30 text-white"
-            : "text-gray-300 hover:bg-gray-800"
-        }
-        ${level > 0 ? "pl-8" : ""}
-      `;
-        // Render link or div based on href validity
+          flex items-center p-3 rounded-lg mx-2 my-1 transition-all duration-200 relative group
+          ${
+            isActive
+              ? "bg-blue-900/30 text-white"
+              : "text-gray-300 hover:bg-gray-800"
+          }
+          ${level > 0 ? "pl-8" : ""}
+          ${isCollapsed && level === 0 ? "justify-center" : ""}
+        `;
+
         return (
-          // Each menu item container with key
-          <div key={item.name}>
+          <div 
+            key={item.name}
+            className="relative"
+            onMouseEnter={(e) => isCollapsed && level === 0 && handleMouseEnter(item, e)}
+            onMouseLeave={isCollapsed && level === 0 ? handleMouseLeave : undefined}
+          >
             {item.href && item.href !== "#" ? (
-              // Link for items with valid href
               <Link
                 href={item.href}
                 className={wrapperClass}
                 onClick={() => !hasChildren && setOpen(false)}
               >
                 {content}
+                
+                {/* Tooltip for collapsed state */}
+                {isCollapsed && level === 0 && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-40 whitespace-nowrap">
+                    {item.name}
+                    {hasChildren && " →"}
+                  </div>
+                )}
               </Link>
             ) : (
               <div
                 className={`${wrapperClass} cursor-pointer`}
-                onClick={() =>
-                  hasChildren ? toggleMenu(item.name) : setOpen(false)
-                }
+                onClick={() => hasChildren && !isCollapsed ? toggleMenu(item.name) : setOpen(false)}
               >
                 {content}
+                
+                {/* Tooltip for collapsed state */}
+                {isCollapsed && level === 0 && (
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-40 whitespace-nowrap">
+                    {item.name}
+                    {hasChildren && " →"}
+                  </div>
+                )}
               </div>
             )}
 
@@ -409,24 +492,29 @@ const Sidebar = ({
       .filter(Boolean) as JSX.Element[];
   };
 
-  // Main return with overlay, sidebar structure, header, navigation, and user section
   return (
     <>
-      {open && (
-        <div
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.4)" }}
-          className="fixed inset-0 bg-opacity-50 z-30 lg:hidden transition-opacity duration-300 backdrop-blur-sm"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
+      {/* Main sidebar container with proper overflow handling */}
       <div
+        ref={sidebarRef}
         className={`fixed inset-y-0 left-0 z-40 bg-gray-900 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 lg:z-auto flex flex-col ${
           open ? "translate-x-0" : "-translate-x-full"
-        } ${isCollapsed ? "w-16" : "w-64"} border-r border-gray-800 shadow-xl`}
+        } ${isCollapsed ? "w-16" : "w-64"} border-r border-gray-800 shadow-xl overflow-hidden`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-blue-900/30 to-gray-900 border-b border-gray-800">
+        <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-blue-900/30 to-gray-900 border-b border-gray-800 shrink-0">
           {!isCollapsed ? (
             <div className="text-white font-bold text-xl flex items-center">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mr-2">
@@ -453,13 +541,13 @@ const Sidebar = ({
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="mt-4 flex-1 overflow-y-auto sidebar-scroll px-2">
+        {/* Navigation - Fixed with proper scroll handling */}
+        <nav className="mt-4 flex-1 overflow-y-auto overflow-x-hidden px-2">
           {renderMenuItems(navigation)}
         </nav>
 
         {/* User section */}
-        <div className="p-4 bg-gray-800/50 border-t border-gray-800">
+        <div className="p-4 bg-gray-800/50 border-t border-gray-800 shrink-0">
           {!isCollapsed ? (
             <div className="flex items-center justify-between">
               <div className="flex items-center transition-opacity duration-300">
@@ -503,6 +591,15 @@ const Sidebar = ({
           )}
         </div>
       </div>
+
+      {/* Hover Menus - Placed outside the sidebar container */}
+      <AnimatePresence>
+        {hoveredItem && renderHoverMenu(hoveredItem)}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {nestedHoveredItem && renderHoverMenu(nestedHoveredItem, true)}
+      </AnimatePresence>
     </>
   );
 };
