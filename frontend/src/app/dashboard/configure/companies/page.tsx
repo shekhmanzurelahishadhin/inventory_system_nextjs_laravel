@@ -94,16 +94,16 @@ const Companies = () => {
       showOn: "both", // show only on create/edit
     },
     {
-    label: "Status",
-    key: "status",
-    type: "radio",           
-    required: true,
-    options: [
-      { label: "Active", value: "1" },
-      { label: "Inactive", value: "0" },
-    ],
-    showOn: "all", // create + edit + view
-  },
+      label: "Status",
+      key: "status",
+      type: "radio",
+      required: true,
+      options: [
+        { label: "Active", value: "1" },
+        { label: "Inactive", value: "0" },
+      ],
+      showOn: "edit", // edit only
+    },
     {
       label: "Created At",
       key: "created_at",
@@ -148,14 +148,33 @@ const Companies = () => {
       required: false,
       showOn: "all",
     },
-      {
+    {
       label: "Logo",
       key: "logo",
       type: "image", // view only
       required: false,
       showOn: "view", // show only on view
     },
-      {
+    {
+      label: "Status",
+      key: "status",
+      type: "radio",
+      required: true,
+      options: [
+        {
+          label: "Active",
+          value: "1",
+          className: "px-2 py-1 bg-green-100 text-green-700 rounded",
+        },
+        {
+          label: "Inactive",
+          value: "0",
+          className: "px-2 py-1 bg-red-100 text-red-700 rounded",
+        },
+      ],
+      showOn: "view",
+    },
+    {
       label: "Created At",
       key: "created_at",
       type: "date",
@@ -168,7 +187,7 @@ const Companies = () => {
       type: "date",
       readOnly: true,
       showOn: "view",
-    }
+    },
   ];
 
   // Ensure component is mounted (for client-side rendering)
@@ -194,68 +213,66 @@ const Companies = () => {
   };
 
   // Handle form submission for create/edit
- const handleFormSubmit = async (formData: Record<string, any>) => {
-  console.log("Form Data Submitted:", formData);
+  const handleFormSubmit = async (formData: Record<string, any>) => {
+    console.log("Form Data Submitted:", formData);
 
-  try {
-    setIsSubmitting(true);
-    setBackendErrors({});
+    try {
+      setIsSubmitting(true);
+      setBackendErrors({});
 
-    // Prepare FormData
-    const submitData = new FormData();
+      // Prepare FormData
+      const submitData = new FormData();
 
-    Object.keys(formData).forEach((key) => {
-      const value = formData[key];
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key];
 
-      if (value instanceof File) {
-        // Only append if user selected a new file
-        submitData.append(key, value);
-      } else if (value !== null && value !== undefined) {
-        // Convert booleans to 1/0 strings, everything else to string
-        if (typeof value === "boolean") {
-          submitData.append(key, value ? "1" : "0");
-        } else {
-          submitData.append(key, String(value));
+        if (value instanceof File) {
+          // Only append if user selected a new file
+          submitData.append(key, value);
+        } else if (value !== null && value !== undefined) {
+          // Convert booleans to 1/0 strings, everything else to string
+          if (typeof value === "boolean") {
+            submitData.append(key, value ? "1" : "0");
+          } else {
+            submitData.append(key, String(value));
+          }
         }
-      }
-    });
-
-    if (modalType === "create") {
-      // Create
-      await api.post("/configure/companies", submitData, {
-        headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Company saved successfully");
-    } else if (modalType === "edit" && selectedCompany?.id) {
-      // Edit: Use POST + _method=PUT for Laravel multipart/form-data
-      submitData.append("_method", "PUT");
-      console.log(formData);
 
-      await api.post(
-        `/configure/companies/${selectedCompany.id}`,
-        submitData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      if (modalType === "create") {
+        // Create
+        await api.post("/configure/companies", submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Company saved successfully");
+      } else if (modalType === "edit" && selectedCompany?.id) {
+        // Edit: Use POST + _method=PUT for Laravel multipart/form-data
+        submitData.append("_method", "PUT");
+        console.log(formData);
 
-      toast.success("Company updated successfully");
+        await api.post(
+          `/configure/companies/${selectedCompany.id}`,
+          submitData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        toast.success("Company updated successfully");
+      }
+
+      setIsSubmitting(false);
+      closeModal();
+      setRefreshTrigger((prev) => prev + 1); // refresh table
+    } catch (error: any) {
+      setIsSubmitting(false);
+
+      if (error.response?.status === 422) {
+        // Laravel validation errors
+        setBackendErrors(error.response.data.errors);
+      } else {
+        toast.error(error.response?.data.message || "Failed to save data");
+      }
     }
-
-    setIsSubmitting(false);
-    closeModal();
-    setRefreshTrigger((prev) => prev + 1); // refresh table
-
-  } catch (error: any) {
-    setIsSubmitting(false);
-
-    if (error.response?.status === 422) {
-      // Laravel validation errors
-      setBackendErrors(error.response.data.errors);
-    } else {
-      toast.error(error.response?.data.message || "Failed to save data");
-    }
-  }
-};
-
+  };
 
   // Delete company function with SweetAlert2 confirmation
   // Soft Delete (Move to Trash)
@@ -420,7 +437,7 @@ const Companies = () => {
       selector: (row) => row.name,
       sortable: true,
     },
-    
+
     {
       name: "Email",
       selector: (row) => row.email,
@@ -539,7 +556,7 @@ const Companies = () => {
                   { name: "Email", selector: "email" },
                   { name: "Code", selector: "code" },
                   { name: "address", selector: "address" },
-                   {
+                  {
                     name: "Status",
                     selector: (row) =>
                       row.status === 1 ? "Active" : "Inactive",

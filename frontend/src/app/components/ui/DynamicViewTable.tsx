@@ -1,67 +1,75 @@
 "use client";
 import React from "react";
 
-
 interface DynamicViewTableProps {
   data: Record<string, any> | null;
   fields: FieldConfigArray;
 }
 
-const DynamicViewTable: React.FC<DynamicViewTableProps> = ({ data, fields }) => {
+const DynamicViewTable: React.FC<DynamicViewTableProps> = ({
+  data,
+  fields,
+}) => {
   if (!data) return null;
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const renderValue = (field: any) => {
-  const value = data[field.key];
+  const renderValue = (field: any) => {
+    const value = data[field.key];
 
-  // Use a custom render function if provided
-  if (field.render) return field.render(value, data);
+    // Use a custom render function if provided
+    if (field.render) return field.render(value, data);
 
-  // Handle select fields with options
-  if (field.type === "select" && field.options) {
-    const option = field.options.find((opt: any) => opt.value === value);
-    return option ? option.label : "-";
-  }
+    if ((field.type === "select" || field.type === "radio") && field.options) {
+      const option = field.options.find(
+        (opt: any) => String(opt.value) === String(value ?? "")
+      );
+      if (!option) return "-";
 
-  // Handle checkbox
-  if (field.type === "checkbox") return value ? "Yes" : "No";
+      return option.className ? (
+        <span className={option.className}>{option.label}</span>
+      ) : (
+        option.label
+      );
+    }
 
-  // Handle date formatting
-  if (field.type === "date" && value) {
-    const d = new Date(value);
-    return isNaN(d.getTime()) ? value : d.toLocaleDateString();
-  }
+    // Handle checkbox
+    if (field.type === "checkbox") return value ? "Yes" : "No";
 
-  // 🖼️ Handle image fields
-  if (field.type === "image" && value) {
-    return (
-      <img
-        src={`${API_BASE_URL}/storage/${value}`}  // backend should return full URL for logo
-        alt={field.label}
-        style={{
-              display: "block",
-              maxWidth: "100%",
-              height: "auto", // 👈 keeps the aspect ratio
-              objectFit: "contain", // or "cover" if you want to fill the container
-              borderRadius: "4px",
-            }}
-      />
-    );
-  }
+    // Handle date formatting
+    if (field.type === "date" && value) {
+      const d = new Date(value);
+      return isNaN(d.getTime()) ? value : d.toLocaleDateString();
+    }
 
-  // Handle number / currency formatting
-  if (field.type === "currency" && typeof value === "number") {
-    return `${field.prefix || "$"}${value}${field.suffix || ""}`;
-  }
+    // 🖼️ Handle image fields
+    if (field.type === "image" && value) {
+      return (
+        <img
+          src={`${API_BASE_URL}/storage/${value}`} // backend should return full URL for logo
+          alt={field.label}
+          style={{
+            display: "block",
+            maxWidth: "100%",
+            height: "auto", // 👈 keeps the aspect ratio
+            objectFit: "contain", // or "cover" if you want to fill the container
+            borderRadius: "4px",
+          }}
+        />
+      );
+    }
 
-  // Prefix / Suffix
-  if (field.prefix || field.suffix)
-    return `${field.prefix || ""}${value}${field.suffix || ""}`;
+    // Handle number / currency formatting
+    if (field.type === "currency" && typeof value === "number") {
+      return `${field.prefix || "$"}${value}${field.suffix || ""}`;
+    }
 
-  // Default
-  return value ?? "-";
-};
+    // Prefix / Suffix
+    if (field.prefix || field.suffix)
+      return `${field.prefix || ""}${value}${field.suffix || ""}`;
 
+    // Default
+    return value ?? "-";
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -78,7 +86,9 @@ const renderValue = (field: any) => {
                 >
                   {field.label}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{renderValue(field)}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {renderValue(field)}
+                </td>
               </tr>
             ))}
         </tbody>

@@ -48,22 +48,26 @@ const Lookups = () => {
     perPage: 10,
   });
   const [lookups, setLookups] = useState<any[]>([]);
-  useEffect(() => {
-    const fetchLookups = async () => {
-      const res = await api.get("/configure/get-lookup/lists");
-      setLookups(res.data.map((m: any) => ({ value: m.value, label: m.label })));
-    };
-    fetchLookups();
-  }, []);
+  const fetchLookups = async () => {
+  try {
+    const res = await api.get("/configure/get-lookup/lists");
+    setLookups(res.data.map((m: any) => ({ value: m.value, label: m.label })));
+  } catch (error) {
+    console.error("Failed to fetch lookups", error);
+  }
+};
+useEffect(() => {
+  fetchLookups();
+}, []);
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "Configure", href: "#" },
     { label: "Lookups", href: "#" },
   ];
-  console.log(lookups);
 
   const lookupFields = [
-    { name: "name", label: "Name", type: "text", required: true, key: "name" },
+    { name: "name", label: "Name", type: "text", required: true, key: "name",  showOn: "all" },
+     { name: "type", label: "Type", type: "text", key: "type",  showOn: "view" },
     {
       name: "is_new",
       label: "Is New Type",
@@ -74,6 +78,7 @@ const Lookups = () => {
         { value: "0", label: "No" },
       ],
       required: true,
+      showOn: "create",
     },
     {
       name: "type_write",
@@ -91,6 +96,50 @@ const Lookups = () => {
       options: lookups,
       required: (formData) => formData.is_new === "0", // 👈 condition
       hidden: (formData) => formData.is_new !== "0", // dynamic hidden false to show when is_new=0 0!==0 => false => show
+    },
+     {
+      label: "Status",
+      key: "status",
+      type: "radio",
+      required: true,
+      options: [
+        { label: "Active", value: "1" },
+        { label: "Inactive", value: "0" },
+      ],
+      showOn: "edit", // edit only
+    },
+        {
+      label: "Status",
+      key: "status",
+      type: "radio",
+      required: true,
+      options: [
+        {
+          label: "Active",
+          value: "1",
+          className: "px-2 py-1 bg-green-100 text-green-700 rounded",
+        },
+        {
+          label: "Inactive",
+          value: "0",
+          className: "px-2 py-1 bg-red-100 text-red-700 rounded",
+        },
+      ],
+      showOn: "view",
+    },
+     {
+      label: "Created At",
+      key: "created_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Updated At",
+      key: "updated_at",
+      type: "date",
+      readOnly: true,
+      showOn: "view",
     },
   ];
 
@@ -128,7 +177,7 @@ const Lookups = () => {
         await api.put(`/configure/lookups/${selectedLookup.id}`, formData);
         toast.success("Lookup updated successfully");
       }
-
+      await fetchLookups();
       setIsSubmitting(false);
       closeModal();
 

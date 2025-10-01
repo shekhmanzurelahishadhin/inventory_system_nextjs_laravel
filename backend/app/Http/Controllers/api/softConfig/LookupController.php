@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\softConfig\lookup\StoreLookupRequest;
+use App\Http\Requests\softConfig\lookup\UpdateLookupRequest;
 use App\Http\Resources\softConfig\Lookup\LookupResource;
 use App\Models\softConfig\Lookup;
 use App\Services\softConfig\LookupService;
@@ -48,6 +49,10 @@ class LookupController extends Controller
     public function store(StoreLookupRequest $request, LookupService $lookupService)
     {
         return $lookupService->store($request);
+    }
+
+    public function update(UpdateLookupRequest $request,Lookup $lookup ,LookupService $lookupService){
+        return $lookupService->update($request, $lookup);
     }
 
     public function getLookupLists(){

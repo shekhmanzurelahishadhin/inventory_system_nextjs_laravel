@@ -5,6 +5,7 @@ namespace App\Services\softConfig;
 
 
 use App\Models\softConfig\Company;
+use App\Models\softConfig\Lookup;
 use App\Traits\FileUploader;
 
 class CompanyService
@@ -70,5 +71,32 @@ class CompanyService
             return true;
         }
         return false;
+    }
+
+    public function destroy($id){
+        $lookup = Lookup::find($id);
+
+        if (!$lookup) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lookup record not found'
+            ]);
+        }
+
+        try {
+            // Delete the record
+            $lookup->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Lookup deleted successfully'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete Lookup record',
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
