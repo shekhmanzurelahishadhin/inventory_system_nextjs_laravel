@@ -93,12 +93,35 @@ class LookupController extends Controller
             'message' => 'Lookup is not in trash',
         ], 400);
     }
-    public function getLookupLists(){
+    public function getLookupTypeLists(){
         $types = Lookup::groupBy('type')->pluck('type')->map(fn($type) => [
             'value' => $type,
             'label' => $type,
         ]);
 
         return response()->json($types);
+    }
+    public function getLookupListByType($type)
+    {
+
+        $values = Lookup::where('type',$type)->where('status',1)->map(fn($value) => [
+            'value' => $value->code,
+            'label' => $value->name,
+        ]);
+
+        return response()->json($values);
+
+    }
+
+    public function getLookupNameByCode($type,$code)
+    {
+
+        $value = Lookup::where('type',$type)->where('code',$code)->first();
+        if ($value){
+            return $value->name;
+        }
+        else{
+            return 'Not Defined';
+        }
     }
 }

@@ -119,29 +119,4 @@ class LookupService
         }
         return false;
     }
-    public function getLookupListByType($type,$code)
-    {
-
-        $values = Lookup::where('type',$type)->where('status',1)->get();
-
-        $status = $code?"":"<option value=''>Select One</option>";
-        foreach ($values as $value){
-            $selected = $value->code == $code ? 'selected' : '';
-            $status .= "<option value='{$value->code}' $selected>{$value->name}</option>";
-        }
-        return $status;
-
-    }
-
-    public function getLookupNameByCode($type,$code)
-    {
-
-        $value = Lookup::where('type',$type)->where('code',$code)->first();
-        if ($value){
-            return $value->name;
-        }
-        else{
-            return 'Not Defined';
-        }
-    }
 }

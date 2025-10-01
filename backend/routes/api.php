@@ -81,7 +81,8 @@ Route::prefix('v1')->group(function () {
                 Route::post('/restore/{id}', [LookupController::class, 'restore']);
                 Route::delete('/{id}', [LookupController::class, 'destroy']); // force delete
             });
-            Route::get('/get-lookup/lists', [LookupController::class, 'getLookupLists']);
+            Route::get('/get-lookup-type/lists', [LookupController::class, 'getLookupTypeLists']);
+            Route::get('/get-lookup-list/{type}', [LookupController::class, 'getLookupTypeLists']);
         });
     });
 

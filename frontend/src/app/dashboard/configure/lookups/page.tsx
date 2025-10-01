@@ -52,7 +52,7 @@ const Lookups = () => {
   const [lookups, setLookups] = useState<any[]>([]);
   const fetchLookups = async () => {
     try {
-      const res = await api.get("/configure/get-lookup/lists");
+      const res = await api.get("/configure/get-lookup-type/lists");
       setLookups(
         res.data.map((m: any) => ({ value: m.value, label: m.label }))
       );
