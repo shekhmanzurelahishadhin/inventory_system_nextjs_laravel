@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as solidIcons from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { motion } from "framer-motion";
 
 interface SidebarProps {
   open: boolean;
@@ -389,19 +390,19 @@ const Sidebar = ({
               </div>
             )}
 
-            {hasChildren && !isCollapsed && allowedChildren.length > 0 && (
-              <div
-                className="overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out"
-                style={{
-                  maxHeight: expandedMenus[item.name]
-                    ? `${allowedChildren.length * 3.5}rem`
-                    : "0",
-                  opacity: expandedMenus[item.name] ? 1 : 0,
-                }}
-              >
-                <div className="ml-2">{allowedChildren}</div>
-              </div>
-            )}
+           {hasChildren && !isCollapsed && allowedChildren.length > 0 && (
+  <motion.div
+    initial={{ height: 0, opacity: 0 }}
+    animate={{
+      height: expandedMenus[item.name] ? "auto" : 0,
+      opacity: expandedMenus[item.name] ? 1 : 0,
+    }}
+    transition={{ duration: 0.25, ease: "easeInOut" }}
+    className="overflow-hidden ml-2"
+  >
+    {allowedChildren}
+  </motion.div>
+)}
           </div>
         );
       })
