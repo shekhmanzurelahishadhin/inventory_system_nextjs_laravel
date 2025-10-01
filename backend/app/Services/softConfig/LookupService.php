@@ -96,6 +96,29 @@ class LookupService
         }
     }
 
+    public function softDeleteLookup(Lookup $lookup)
+    {
+        $lookup->delete();
+    }
+
+    public function restoreLookup(Lookup $lookup)
+    {
+        if ($lookup->trashed()) {
+            $lookup->restore();
+        }
+        return $lookup;
+    }
+
+    public function forceDeleteLookup(Lookup $lookup)
+    {
+        if ($lookup->trashed()) {
+            // delete logo from storage
+
+            $lookup->forceDelete();
+            return true;
+        }
+        return false;
+    }
     public function getLookupListByType($type,$code)
     {
 

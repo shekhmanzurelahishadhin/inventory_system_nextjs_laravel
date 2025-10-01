@@ -7,6 +7,8 @@ import {
   faTrash,
   faEye,
   faKey,
+  faTrashRestore,
+  faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -49,16 +51,18 @@ const Lookups = () => {
   });
   const [lookups, setLookups] = useState<any[]>([]);
   const fetchLookups = async () => {
-  try {
-    const res = await api.get("/configure/get-lookup/lists");
-    setLookups(res.data.map((m: any) => ({ value: m.value, label: m.label })));
-  } catch (error) {
-    console.error("Failed to fetch lookups", error);
-  }
-};
-useEffect(() => {
-  fetchLookups();
-}, []);
+    try {
+      const res = await api.get("/configure/get-lookup/lists");
+      setLookups(
+        res.data.map((m: any) => ({ value: m.value, label: m.label }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch lookups", error);
+    }
+  };
+  useEffect(() => {
+    fetchLookups();
+  }, []);
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "Configure", href: "#" },
@@ -66,8 +70,15 @@ useEffect(() => {
   ];
 
   const lookupFields = [
-    { name: "name", label: "Name", type: "text", required: true, key: "name",  showOn: "all" },
-     { name: "type", label: "Type", type: "text", key: "type",  showOn: "view" },
+    {
+      name: "name",
+      label: "Name",
+      type: "text",
+      required: true,
+      key: "name",
+      showOn: "all",
+    },
+    { name: "type", label: "Type", type: "text", key: "type", showOn: "view" },
     {
       name: "is_new",
       label: "Is New Type",
@@ -97,7 +108,7 @@ useEffect(() => {
       required: (formData) => formData.is_new === "0", // 👈 condition
       hidden: (formData) => formData.is_new !== "0", // dynamic hidden false to show when is_new=0 0!==0 => false => show
     },
-     {
+    {
       label: "Status",
       key: "status",
       type: "radio",
@@ -108,7 +119,7 @@ useEffect(() => {
       ],
       showOn: "edit", // edit only
     },
-        {
+    {
       label: "Status",
       key: "status",
       type: "radio",
@@ -127,7 +138,7 @@ useEffect(() => {
       ],
       showOn: "view",
     },
-     {
+    {
       label: "Created At",
       key: "created_at",
       type: "date",
@@ -194,52 +205,131 @@ useEffect(() => {
   };
 
   // Delete lookup function with SweetAlert2 confirmation
-  const handleDeleteLookup = async (lookup: any) => {
-    const confirmed = await confirmAction({
-      title: "Are you sure?",
-      text: `You are about to delete the lookup "${lookup.name}".!`,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      // Show loading
-      Swal.fire({
-        title: "Deleting...",
-        text: `Please wait while we delete the lookup`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      // API call
-      await api.delete(`/configure/lookups/${lookup.id}`);
-
-      Swal.close(); // close loading
-
-      // Success message
-      Swal.fire({
-        title: "Deleted!",
-        text: `Lookup "${lookup.name}" has been deleted successfully.`,
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-
-      // Refresh table
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to delete lookup",
-        icon: "error",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-    }
-  };
+   // Soft Delete (Move to Trash)
+   const handleSoftDelete = async (lookup: any) => {
+     const confirmed = await confirmAction({
+       title: "Move to Trash?",
+       text: `You are about to move the lookup "${lookup.name}" to trash.`,
+       confirmButtonText: "Yes, move to trash!",
+       cancelButtonText: "Cancel",
+     });
+ 
+     if (!confirmed) return;
+ 
+     try {
+       Swal.fire({
+         title: "Moving to Trash...",
+         text: `Please wait while we move the lookup`,
+         allowOutsideClick: false,
+         didOpen: () => Swal.showLoading(),
+       });
+ 
+       await api.post(`/configure/lookups/trash/${lookup.id}`);
+ 
+       Swal.close();
+       Swal.fire({
+         title: "Moved!",
+         text: `lookup "${lookup.name}" has been moved to trash.`,
+         icon: "success",
+         confirmButtonText: "OK",
+       });
+       await fetchLookups();
+       setRefreshTrigger((prev) => prev + 1);
+     } catch (error: any) {
+       Swal.close();
+       Swal.fire({
+         title: "Error!",
+         text:
+           error.response?.data?.message || "Failed to move lookup to trash",
+         icon: "error",
+         confirmButtonText: "OK",
+       });
+     }
+   };
+ 
+   // Force Delete (Permanent)
+   const handleForceDelete = async (lookup: any) => {
+     const confirmed = await confirmAction({
+       title: "Delete Permanently?",
+       text: `You are about to permanently delete the lookup "${lookup.name}". This cannot be undone!`,
+       confirmButtonText: "Yes, delete permanently!",
+       cancelButtonText: "Cancel",
+     });
+ 
+     if (!confirmed) return;
+ 
+     try {
+       Swal.fire({
+         title: "Deleting permanently...",
+         text: `Please wait while we delete the lookup permanently`,
+         allowOutsideClick: false,
+         didOpen: () => Swal.showLoading(),
+       });
+ 
+       await api.delete(`/configure/lookups/${lookup.id}`); // force delete
+ 
+       Swal.close();
+       Swal.fire({
+         title: "Deleted!",
+         text: `lookup "${lookup.name}" has been permanently deleted.`,
+         icon: "success",
+         confirmButtonText: "OK",
+       });
+       await fetchLookups();
+       setRefreshTrigger((prev) => prev + 1);
+     } catch (error: any) {
+       Swal.close();
+       Swal.fire({
+         title: "Error!",
+         text:
+           error.response?.data?.message ||
+           "Failed to delete lookup permanently",
+         icon: "error",
+         confirmButtonText: "OK",
+       });
+     }
+   };
+ 
+   // Restore (Undo Soft Delete)
+   const handleRestore = async (lookup: any) => {
+     const confirmed = await confirmAction({
+       title: "Restore lookup?",
+       text: `You are about to restore the lookup "${lookup.name}".`,
+       confirmButtonText: "Yes, restore it!",
+       cancelButtonText: "Cancel",
+     });
+ 
+     if (!confirmed) return;
+ 
+     try {
+       Swal.fire({
+         title: "Restoring...",
+         text: `Please wait while we restore the lookup`,
+         allowOutsideClick: false,
+         didOpen: () => Swal.showLoading(),
+       });
+ 
+       await api.post(`/configure/lookups/restore/${lookup.id}`);
+ 
+       Swal.close();
+       Swal.fire({
+         title: "Restored!",
+         text: `lookup "${lookup.name}" has been restored successfully.`,
+         icon: "success",
+         confirmButtonText: "OK",
+       });
+       await fetchLookups();
+       setRefreshTrigger((prev) => prev + 1);
+     } catch (error: any) {
+       Swal.close();
+       Swal.fire({
+         title: "Error!",
+         text: error.response?.data?.message || "Failed to restore lookup",
+         icon: "error",
+         confirmButtonText: "OK",
+       });
+     }
+   };
   // Columns for DataTable
   const columns = [
     {
@@ -281,16 +371,25 @@ useEffect(() => {
               onClick: (r) => openModal("edit", r),
               variant: "secondary",
               size: "sm",
-              show: () => hasPermission("lookup.edit"),
+              show: (r) => hasPermission("lookup.edit") && !r.deleted_at,
               tooltip: "Edit",
             },
             {
-              icon: faTrash,
-              onClick: (r) => handleDeleteLookup(r),
+              icon: row.deleted_at ? faTrashRestore : faTrash,
+              onClick: (r) =>
+                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
               variant: "danger",
               size: "sm",
-              show: () => hasPermission("lookup.delete"),
-              tooltip: "Delete",
+              show: (r) => hasPermission("lookup.delete"),
+              tooltip: row.deleted_at ? "Delete Permanently" : "Move to Trash",
+            },
+            {
+              icon: faUndo,
+              onClick: (r) => handleRestore(r),
+              variant: "success",
+              size: "sm",
+              show: (r) => r.deleted_at,
+              tooltip: "Restore",
             },
           ]}
         />

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { formatStatusBadge } from "../common/StatusFormat";
 
 interface DynamicViewTableProps {
   data: Record<string, any> | null;
@@ -24,7 +25,9 @@ const DynamicViewTable: React.FC<DynamicViewTableProps> = ({
         (opt: any) => String(opt.value) === String(value ?? "")
       );
       if (!option) return "-";
-
+      if (field.key === "status") {
+        return formatStatusBadge({ status: value, deletedAt: data.deleted_at });
+      }
       return option.className ? (
         <span className={option.className}>{option.label}</span>
       ) : (

@@ -54,7 +54,45 @@ class LookupController extends Controller
     public function update(UpdateLookupRequest $request,Lookup $lookup ,LookupService $lookupService){
         return $lookupService->update($request, $lookup);
     }
+    // Soft delete (move to trash)
+    public function trash(Lookup $lookup, LookupService $lookupService)
+    {
+        $lookupService->softDeleteLookup($lookup);
 
+        return response()->json([
+            'message' => 'Lookup moved to trash successfully',
+        ]);
+    }
+
+    // Restore soft-deleted Lookup
+    public function restore($id, LookupService $lookupService)
+    {
+        $lookup = Lookup::withTrashed()->findOrFail($id);
+
+        $lookup = $lookupService->restoreLookup($lookup);
+
+        return response()->json([
+            'message' => 'Lookup restored successfully',
+            'data' => $lookup,
+        ]);
+    }
+
+    // Force delete permanently
+    public function destroy($id, LookupService $lookupService)
+    {
+        $lookup = Lookup::withTrashed()->findOrFail($id);
+        $deleted = $lookupService->forceDeleteLookup($lookup);
+
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Lookup permanently deleted',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Lookup is not in trash',
+        ], 400);
+    }
     public function getLookupLists(){
         $types = Lookup::groupBy('type')->pluck('type')->map(fn($type) => [
             'value' => $type,

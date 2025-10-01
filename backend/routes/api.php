@@ -77,7 +77,9 @@ Route::prefix('v1')->group(function () {
                 Route::get('/', [LookupController::class, 'index']);
                 Route::post('/', [LookupController::class, 'store']);
                 Route::put('/{lookup}', [LookupController::class, 'update']);
-                Route::delete('/{lookup}', [LookupController::class, 'destroy']);
+                Route::post('trash/{lookup}', [LookupController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [LookupController::class, 'restore']);
+                Route::delete('/{id}', [LookupController::class, 'destroy']); // force delete
             });
             Route::get('/get-lookup/lists', [LookupController::class, 'getLookupLists']);
         });
