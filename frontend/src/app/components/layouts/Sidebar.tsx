@@ -390,19 +390,19 @@ const Sidebar = ({
               </div>
             )}
 
-           {hasChildren && !isCollapsed && allowedChildren.length > 0 && (
-  <motion.div
-    initial={{ height: 0, opacity: 0 }}
-    animate={{
-      height: expandedMenus[item.name] ? "auto" : 0,
-      opacity: expandedMenus[item.name] ? 1 : 0,
-    }}
-    transition={{ duration: 0.25, ease: "easeInOut" }}
-    className="overflow-hidden ml-2"
-  >
-    {allowedChildren}
-  </motion.div>
-)}
+            {hasChildren && !isCollapsed && allowedChildren.length > 0 && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{
+                  height: expandedMenus[item.name] ? "auto" : 0,
+                  opacity: expandedMenus[item.name] ? 1 : 0,
+                }}
+                transition={{ duration: 0.25, ease: "easeInOut" }}
+                className="overflow-hidden ml-2"
+              >
+                {allowedChildren}
+              </motion.div>
+            )}
           </div>
         );
       })
