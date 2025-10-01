@@ -104,7 +104,7 @@ class LookupController extends Controller
     public function getLookupListByType($type)
     {
 
-        $values = Lookup::where('type',$type)->where('status',1)->map(fn($value) => [
+        $values = Lookup::where('type',$type)->where('status',1)->get()->map(fn($value) => [
             'value' => $value->code,
             'label' => $value->name,
         ]);

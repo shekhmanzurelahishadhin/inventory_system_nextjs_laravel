@@ -82,7 +82,7 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [LookupController::class, 'destroy']); // force delete
             });
             Route::get('/get-lookup-type/lists', [LookupController::class, 'getLookupTypeLists']);
-            Route::get('/get-lookup-list/{type}', [LookupController::class, 'getLookupTypeLists']);
+            Route::get('/get-lookup-list/{type}', [LookupController::class, 'getLookupListByType']);
         });
     });
 

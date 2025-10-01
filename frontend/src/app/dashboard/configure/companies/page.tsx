@@ -45,6 +45,7 @@ const Companies = () => {
   const formRef = useRef<any>(null); // Ref for DynamicForm
   const router = useRouter(); // Next.js router
   const [perPage, setPerPage] = useState(10);
+  const [status, setStatus] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 10,
@@ -98,10 +99,7 @@ const Companies = () => {
       key: "status",
       type: "radio",
       required: true,
-      options: [
-        { label: "Active", value: "1" },
-        { label: "Inactive", value: "0" },
-      ],
+      options: status,
       showOn: "edit", // edit only
     },
     {
@@ -160,18 +158,13 @@ const Companies = () => {
       key: "status",
       type: "radio",
       required: true,
-      options: [
-        {
-          label: "Active",
-          value: "1",
-          className: "px-2 py-1 bg-green-100 text-green-700 rounded",
-        },
-        {
-          label: "Inactive",
-          value: "0",
-          className: "px-2 py-1 bg-red-100 text-red-700 rounded",
-        },
-      ],
+      options: status.map(opt => ({
+      ...opt,
+      className:
+        opt.value === "1"
+          ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+          : "px-2 py-1 bg-red-100 text-red-700 rounded",
+    })),
       showOn: "view",
     },
     {
@@ -194,10 +187,22 @@ const Companies = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
+const fetchLookups = async () => {
+    try {
+      const type = "active_status";
+      const res = await api.get(`/configure/get-lookup-list/${type}`);
+      setStatus(
+        res.data.map((m: any) => ({ value: m.value, label: m.label }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch lookups", error);
+    }
+  };
+  useEffect(() => {
+    fetchLookups();
+  }, []);
   // Open modal function
   const openModal = (type: "create" | "edit" | "view", company: any = null) => {
-    console.log(`Opening modal of type '${type}'`, company);
     setModalType(type);
     setSelectedCompany(company);
     setBackendErrors({});

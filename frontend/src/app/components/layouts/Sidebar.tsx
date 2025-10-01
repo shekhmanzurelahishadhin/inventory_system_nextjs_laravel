@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import * as solidIcons from '@fortawesome/free-solid-svg-icons';
-import { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import * as solidIcons from "@fortawesome/free-solid-svg-icons";
+import { useState, useEffect } from "react";
+import { useAuth } from "../../context/AuthContext";
 
 interface SidebarProps {
   open: boolean;
@@ -24,22 +24,30 @@ interface MenuItem {
   requiredPermissions?: string[];
 }
 
-const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: SidebarProps) => {
+const Sidebar = ({
+  open,
+  setOpen,
+  isCollapsed,
+  setIsCollapsed,
+  getInitials,
+}: SidebarProps) => {
   const pathname = usePathname();
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>(
+    {}
+  );
   const { user, hasRole, hasPermission } = useAuth();
 
   // Automatically expand parent menus if a child is active
   useEffect(() => {
     const expandActiveParents = (items: MenuItem[], parents: string[] = []) => {
-      items.forEach(item => {
+      items.forEach((item) => {
         const hasChildren = !!item.children;
         const childMatches = hasChildren && checkChildActive(item.children);
         const isActive = item.href === pathname || childMatches;
 
         if (isActive && parents.length) {
-          parents.forEach(parentName => {
-            setExpandedMenus(prev => ({ ...prev, [parentName]: true }));
+          parents.forEach((parentName) => {
+            setExpandedMenus((prev) => ({ ...prev, [parentName]: true }));
           });
         }
 
@@ -50,8 +58,10 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
     };
 
     const checkChildActive = (children: MenuItem[]): boolean => {
-      return children.some(child =>
-        child.href === pathname || (child.children && checkChildActive(child.children))
+      return children.some(
+        (child) =>
+          child.href === pathname ||
+          (child.children && checkChildActive(child.children))
       );
     };
 
@@ -59,9 +69,9 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
   }, [pathname]);
 
   const toggleMenu = (menuName: string) => {
-    setExpandedMenus(prev => ({
+    setExpandedMenus((prev) => ({
       ...prev,
-      [menuName]: !prev[menuName]
+      [menuName]: !prev[menuName],
     }));
   };
 
@@ -123,7 +133,7 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
             "lookup.delete",
           ],
         },
-         {
+        {
           name: "Company",
           href: "/dashboard/configure/companies",
           icon: solidIcons.faBuilding,
@@ -275,116 +285,130 @@ const Sidebar = ({ open, setOpen, isCollapsed, setIsCollapsed, getInitials }: Si
     },
   ];
 
-const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
-  return items
-    .map(item => {
-      // Check if item has children
-      const hasChildren = Array.isArray(item.children) && item.children.length > 0; 
+  const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
+    return items
+      .map((item) => {
+        // Check if item has children
+        const hasChildren =
+          Array.isArray(item.children) && item.children.length > 0;
 
-      // Recursively filter children first
-      const allowedChildren = hasChildren ? renderMenuItems(item.children, level + 1) : [];
+        // Recursively filter children first
+        const allowedChildren = hasChildren
+          ? renderMenuItems(item.children, level + 1)
+          : [];
 
-      // Check parent permissions
-      const hasRequiredRoles =
-        !item.requiredRoles || item.requiredRoles.some(r => hasRole(r));
-      const hasRequiredPermissions =
-        !item.requiredPermissions || item.requiredPermissions.some(p => hasPermission(p));
+        // Check parent permissions
+        const hasRequiredRoles =
+          !item.requiredRoles || item.requiredRoles.some((r) => hasRole(r));
+        const hasRequiredPermissions =
+          !item.requiredPermissions ||
+          item.requiredPermissions.some((p) => hasPermission(p));
 
-      // Hide parent if no permission
-      if (!hasRequiredRoles || !hasRequiredPermissions) {
-        return null;
-      }
+        // Hide parent if no permission
+        if (!hasRequiredRoles || !hasRequiredPermissions) {
+          return null;
+        }
 
-      // Hide parent if children exist but none allowed
-      if (hasChildren && allowedChildren.length === 0) {
-        return null;
-      }
+        // Hide parent if children exist but none allowed
+        if (hasChildren && allowedChildren.length === 0) {
+          return null;
+        }
 
-      // Determine if the item is active
-      const isActive = pathname === item.href;
+        // Determine if the item is active
+        const isActive = pathname === item.href;
 
-      const content = (
-        <>
-          {item.icon && (
-            // Icon size and alignment based on collapse state and level
-            <FontAwesomeIcon
-              icon={item.icon}
-              className={`transition-all duration-200 ${
-                isCollapsed && level === 0 ? 'mx-auto text-lg' : 'text-base'
-              } ${isActive ? 'text-blue-400' : 'text-gray-400'}`}
-            />
-          )}
-          {!isCollapsed && (
-            <>
-              <span
-                className={`flex-1 transition-all duration-200 text-sm ml-3 ${
-                  isActive ? 'text-white font-medium' : 'text-gray-300'
-                }`}
-              >
-                {item.name}
-              </span>
-              {hasChildren && (
-                // Expand/collapse icon
-                <FontAwesomeIcon
-                  icon={
-                    expandedMenus[item.name]
-                      ? solidIcons.faChevronDown
-                      : solidIcons.faChevronRight
-                  }
-                  className={`w-3 h-3 transition-transform duration-200 ${
-                    isActive ? 'text-blue-400' : 'text-gray-400'
+        const content = (
+          <>
+            {item.icon && (
+              // Icon size and alignment based on collapse state and level
+              <FontAwesomeIcon
+                icon={item.icon}
+                className={`transition-all duration-200 ${
+                  isCollapsed && level === 0 ? "mx-auto text-lg" : "text-base"
+                } ${isActive ? "text-blue-400" : "text-gray-400"}`}
+              />
+            )}
+            {!isCollapsed && (
+              <>
+                <span
+                  className={`flex-1 transition-all duration-200 text-sm ml-3 ${
+                    isActive ? "text-white font-medium" : "text-gray-300"
                   }`}
-                />
-              )}
-            </>
-          )}
-        </>
-      );
+                >
+                  {item.name}
+                </span>
+                {hasChildren && (
+                  // Expand/collapse icon
+                  <FontAwesomeIcon
+                    icon={
+                      expandedMenus[item.name]
+                        ? solidIcons.faChevronDown
+                        : solidIcons.faChevronRight
+                    }
+                    className={`w-3 h-3 transition-transform duration-200 ${
+                      isActive ? "text-blue-400" : "text-gray-400"
+                    }`}
+                  />
+                )}
+              </>
+            )}
+          </>
+        );
 
-      // Wrapper classes based on state and level for indentation and styling
-      const wrapperClass = `
+        // Wrapper classes based on state and level for indentation and styling
+        const wrapperClass = `
         flex items-center p-3 rounded-lg mx-2 my-1 transition-all duration-200
-        ${isActive ? 'bg-blue-900/30 text-white' : 'text-gray-300 hover:bg-gray-800'}
-        ${level > 0 ? 'pl-8' : ''}
+        ${
+          isActive
+            ? "bg-blue-900/30 text-white"
+            : "text-gray-300 hover:bg-gray-800"
+        }
+        ${level > 0 ? "pl-8" : ""}
       `;
-      // Render link or div based on href validity
-      return (
-        // Each menu item container with key
-        <div key={item.name}>
-          {item.href && item.href !== '#' ? (
-            // Link for items with valid href
-            <Link
-              href={item.href}
-              className={wrapperClass}
-              onClick={() => !hasChildren && setOpen(false)}
-            >
-              {content}
-            </Link>
-          ) : (
-            <div
-              className={`${wrapperClass} cursor-pointer`}
-              onClick={() => (hasChildren ? toggleMenu(item.name) : setOpen(false))}
-            >
-              {content}
-            </div>
-          )}
+        // Render link or div based on href validity
+        return (
+          // Each menu item container with key
+          <div key={item.name}>
+            {item.href && item.href !== "#" ? (
+              // Link for items with valid href
+              <Link
+                href={item.href}
+                className={wrapperClass}
+                onClick={() => !hasChildren && setOpen(false)}
+              >
+                {content}
+              </Link>
+            ) : (
+              <div
+                className={`${wrapperClass} cursor-pointer`}
+                onClick={() =>
+                  hasChildren ? toggleMenu(item.name) : setOpen(false)
+                }
+              >
+                {content}
+              </div>
+            )}
 
-          {hasChildren && !isCollapsed && allowedChildren.length > 0 && (
-            <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                expandedMenus[item.name] ? 'max-h-96' : 'max-h-0'
-              }`}
-            >
-              <div className="ml-2">{allowedChildren}</div>
-            </div>
-          )}
-        </div>
-      );
-    })
-    .filter(Boolean) as JSX.Element[];
-};
+            {hasChildren && !isCollapsed && allowedChildren.length > 0 && (
+              <div
+                className="overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out"
+                style={{
+                  maxHeight: expandedMenus[item.name]
+                    ? `${allowedChildren.length * 3.5}rem`
+                    : "0",
+                  opacity: expandedMenus[item.name] ? 1 : 0,
+                }}
+              >
+                <div className="ml-2">{allowedChildren}</div>
+              </div>
+            )}
+          </div>
+        );
+      })
+      .filter(Boolean) as JSX.Element[];
+  };
 
- // Main return with overlay, sidebar structure, header, navigation, and user section
+  // Main return with overlay, sidebar structure, header, navigation, and user section
   return (
     <>
       {open && (
@@ -395,22 +419,35 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
         />
       )}
 
-      <div className={`fixed inset-y-0 left-0 z-40 bg-gray-900 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 lg:z-auto flex flex-col ${open ? 'translate-x-0' : '-translate-x-full'} ${isCollapsed ? 'w-16' : 'w-64'} border-r border-gray-800 shadow-xl`}>
+      <div
+        className={`fixed inset-y-0 left-0 z-40 bg-gray-900 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 lg:z-auto flex flex-col ${
+          open ? "translate-x-0" : "-translate-x-full"
+        } ${isCollapsed ? "w-16" : "w-64"} border-r border-gray-800 shadow-xl`}
+      >
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-blue-900/30 to-gray-900 border-b border-gray-800">
           {!isCollapsed ? (
             <div className="text-white font-bold text-xl flex items-center">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mr-2">
-                <FontAwesomeIcon icon={solidIcons.faCube} className="text-white text-sm" />
+                <FontAwesomeIcon
+                  icon={solidIcons.faCube}
+                  className="text-white text-sm"
+                />
               </div>
               Admin Panel
             </div>
           ) : (
             <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mx-auto">
-              <FontAwesomeIcon icon={solidIcons.faCube} className="text-white text-sm" />
+              <FontAwesomeIcon
+                icon={solidIcons.faCube}
+                className="text-white text-sm"
+              />
             </div>
           )}
-          <button className="text-gray-400 hover:text-white lg:hidden transition-colors duration-200" onClick={() => setOpen(false)}>
+          <button
+            className="text-gray-400 hover:text-white lg:hidden transition-colors duration-200"
+            onClick={() => setOpen(false)}
+          >
             <FontAwesomeIcon icon={solidIcons.faTimes} />
           </button>
         </div>
@@ -430,7 +467,9 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
                 </div>
                 <div className="ml-3 transition-opacity duration-300">
                   <p className="text-sm font-medium text-white">{user?.name}</p>
-                  <p className="text-xs font-medium text-gray-400">Administrator</p>
+                  <p className="text-xs font-medium text-gray-400">
+                    Administrator
+                  </p>
                 </div>
               </div>
               <button
@@ -438,7 +477,10 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
                 onClick={() => setIsCollapsed(true)}
                 aria-label="Collapse sidebar"
               >
-                <FontAwesomeIcon icon={solidIcons.faChevronLeft} className="transition-transform duration-200" />
+                <FontAwesomeIcon
+                  icon={solidIcons.faChevronLeft}
+                  className="transition-transform duration-200"
+                />
               </button>
             </div>
           ) : (
@@ -451,7 +493,10 @@ const renderMenuItems = (items: MenuItem[], level = 0): JSX.Element[] => {
                 onClick={() => setIsCollapsed(false)}
                 aria-label="Expand sidebar"
               >
-                <FontAwesomeIcon icon={solidIcons.faChevronRight} className="transition-transform duration-200" />
+                <FontAwesomeIcon
+                  icon={solidIcons.faChevronRight}
+                  className="transition-transform duration-200"
+                />
               </button>
             </div>
           )}
