@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\softConfig\lookup\StoreLookupRequest;
 use App\Http\Resources\softConfig\Lookup\LookupResource;
 use App\Models\softConfig\Lookup;
 use App\Services\softConfig\LookupService;
@@ -44,6 +45,11 @@ class LookupController extends Controller
             'per_page' => $lookups->count(),
         ]);
     }
+    public function store(StoreLookupRequest $request, LookupService $lookupService)
+    {
+        return $lookupService->store($request);
+    }
+
     public function getLookupLists(){
         $types = Lookup::groupBy('type')->pluck('type')->map(fn($type) => [
             'value' => $type,
