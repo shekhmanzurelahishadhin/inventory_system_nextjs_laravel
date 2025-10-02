@@ -16,6 +16,7 @@ class LookupService
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where('name', 'like', "%{$search}%")
+                ->orWhere('type', 'like', "%{$search}%")
                 ->orWhere('code', 'like', "%{$search}%");
         }
 

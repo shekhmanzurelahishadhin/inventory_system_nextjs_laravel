@@ -19,6 +19,8 @@ class CompanyService
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('address', 'like', "%{$search}%")
                 ->orWhere('code', 'like', "%{$search}%");
         }
 
