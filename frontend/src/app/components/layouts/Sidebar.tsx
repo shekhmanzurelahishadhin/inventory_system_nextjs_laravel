@@ -225,44 +225,44 @@ const Sidebar = ({
       ],
     },
     {
-  name: "Purchase",
-  href: "#",
-  icon: solidIcons.faShoppingCart,
-  children: [
-    {
-      name: "Suppliers",
-      href: "/dashboard/purchase/suppliers",
-      icon: solidIcons.faTruck,
-      requiredPermissions: ["supplier.view","supplier.create","supplier.edit","supplier.delete"],
+      name: "Purchase",
+      href: "#",
+      icon: solidIcons.faShoppingCart,
+      children: [
+        {
+          name: "Suppliers",
+          href: "/dashboard/purchase/suppliers",
+          icon: solidIcons.faTruck,
+          requiredPermissions: ["supplier.view", "supplier.create", "supplier.edit", "supplier.delete"],
+        },
+        {
+          name: "Purchase Orders",
+          href: "/dashboard/purchase/orders",
+          icon: solidIcons.faFileInvoice,
+          requiredPermissions: ["purchase.view", "purchase.create", "purchase.edit", "purchase.delete"],
+        }
+      ]
     },
     {
-      name: "Purchase Orders",
-      href: "/dashboard/purchase/orders",
-      icon: solidIcons.faFileInvoice,
-      requiredPermissions: ["purchase.view","purchase.create","purchase.edit","purchase.delete"],
+      name: "Sales",
+      href: "#",
+      icon: solidIcons.faShoppingBag,
+      children: [
+        {
+          name: "Customers",
+          href: "/dashboard/sales/customers",
+          icon: solidIcons.faUsers,
+          requiredPermissions: ["customer.view", "customer.create", "customer.edit", "customer.delete"],
+        },
+        {
+          name: "Sales Orders",
+          href: "/dashboard/sales/orders",
+          icon: solidIcons.faReceipt,
+          requiredPermissions: ["sales.view", "sales.create", "sales.edit", "sales.delete"],
+        }
+      ]
     }
-  ]
-},
-{
-  name: "Sales",
-  href: "#",
-  icon: solidIcons.faShoppingBag,
-  children: [
-    {
-      name: "Customers",
-      href: "/dashboard/sales/customers",
-      icon: solidIcons.faUsers,
-      requiredPermissions: ["customer.view","customer.create","customer.edit","customer.delete"],
-    },
-    {
-      name: "Sales Orders",
-      href: "/dashboard/sales/orders",
-      icon: solidIcons.faReceipt,
-      requiredPermissions: ["sales.view","sales.create","sales.edit","sales.delete"],
-    }
-  ]
-}
-,
+    ,
     {
       name: "Apps",
       href: "#",
@@ -363,17 +363,15 @@ const Sidebar = ({
               // Icon size and alignment based on collapse state and level
               <FontAwesomeIcon
                 icon={item.icon}
-                className={`transition-all duration-200 ${
-                  isCollapsed && level === 0 ? "mx-auto text-lg" : "text-base"
-                } ${isActive ? "text-blue-400" : "text-gray-400"}`}
+                className={`transition-all duration-200 ${isCollapsed && level === 0 ? "mx-auto text-lg" : "text-base"
+                  } ${isActive ? "text-blue-400" : "text-gray-400"}`}
               />
             )}
             {!isCollapsed && (
               <>
                 <span
-                  className={`flex-1 transition-all duration-200 text-sm ml-3 ${
-                    isActive ? "text-white font-medium" : "text-gray-300"
-                  }`}
+                  className={`flex-1 transition-all duration-200 text-sm ml-3 ${isActive ? "text-white font-medium" : "text-gray-300"
+                    }`}
                 >
                   {item.name}
                 </span>
@@ -385,9 +383,8 @@ const Sidebar = ({
                         ? solidIcons.faChevronDown
                         : solidIcons.faChevronRight
                     }
-                    className={`w-3 h-3 transition-transform duration-200 ${
-                      isActive ? "text-blue-400" : "text-gray-400"
-                    }`}
+                    className={`w-3 h-3 transition-transform duration-200 ${isActive ? "text-blue-400" : "text-gray-400"
+                      }`}
                   />
                 )}
               </>
@@ -398,11 +395,10 @@ const Sidebar = ({
         // Wrapper classes based on state and level for indentation and styling
         const wrapperClass = `
         flex items-center p-3 rounded-lg mx-2 my-1 transition-all duration-200
-        ${
-          isActive
+        ${isActive
             ? "bg-blue-900/30 text-white"
             : "text-gray-300 hover:bg-gray-800"
-        }
+          }
         ${level > 0 ? "pl-8" : ""}
       `;
         // Render link or div based on href validity
@@ -460,9 +456,8 @@ const Sidebar = ({
       )}
 
       <div
-        className={`fixed inset-y-0 left-0 z-40 bg-gray-900 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 lg:z-auto flex flex-col ${
-          open ? "translate-x-0" : "-translate-x-full"
-        } ${isCollapsed ? "w-16" : "w-64"} border-r border-gray-800 shadow-xl`}
+        className={`fixed inset-y-0 left-0 z-40 bg-gray-900 transform transition-all duration-300 ease-in-out lg:static lg:translate-x-0 lg:z-auto flex flex-col ${open ? "translate-x-0" : "-translate-x-full"
+          } ${isCollapsed ? "w-16" : "w-64"} border-r border-gray-800 shadow-xl`}
       >
         {/* Header */}
         <div className="flex items-center justify-between h-16 px-4 bg-gradient-to-r from-blue-900/30 to-gray-900 border-b border-gray-800">
