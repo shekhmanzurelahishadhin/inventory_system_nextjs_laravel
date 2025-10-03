@@ -450,7 +450,7 @@ const Lookups = () => {
                   { name: "Created at", selector: "created_at" },
                 ]}
                 exportFileName="lookups"
-                allowExportAll={true}
+                allowExportAll={true} // Allow exporting all data
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search lookups..."
