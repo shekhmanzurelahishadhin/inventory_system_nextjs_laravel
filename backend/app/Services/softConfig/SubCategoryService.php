@@ -20,4 +20,38 @@ class SubCategoryService
         $query->with('category:id,name')->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
+    public function createSubCategory(array $data)
+    {
+        return SubCategory::create($data);
+    }
+
+    public function updateSubCategory(SubCategory $subCategory, array $data)
+    {
+        $subCategory->update($data); // updates the model
+        return $subCategory;         // return the model itself
+    }
+
+
+    public function softDeleteSubCategory(SubCategory $subCategory)
+    {
+        $subCategory->delete();
+    }
+
+    public function restoreSubCategory(SubCategory $subCategory)
+    {
+        if ($subCategory->trashed()) {
+            $subCategory->restore();
+        }
+        return $subCategory;
+    }
+
+    public function forceDeleteSubCategory(SubCategory $subCategory)
+    {
+        if ($subCategory->trashed()) {
+            $subCategory->forceDelete();
+            return true;
+        }
+        return false;
+    }
 }

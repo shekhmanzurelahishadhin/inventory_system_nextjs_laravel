@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\softConfig\subCategory\CreateSubCategoryRequest;
+use App\Http\Requests\softConfig\subCategory\UpdateSubCategoryRequest;
 use App\Http\Resources\softConfig\subCategory\SubCategoryResource;
 use App\Models\softConfig\SubCategory;
 use App\Services\softConfig\SubCategoryService;
@@ -39,15 +41,15 @@ class SubCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateCategoryRequest $request, SubCategoryService $subCategoryService)
+    public function store(CreateSubCategoryRequest $request, SubCategoryService $subCategoryService)
     {
         $validatedData = $request->validated();
 
-        $subCategory  = $subCategoryService->createCategory($validatedData);
+        $subCategory  = $subCategoryService->createSubCategory($validatedData);
 
         return response()->json([
             'message' => 'SubCategory created successfully',
-            'data' => new SubCategoryResource($subCategory ),
+            'data' => new SubCategoryResource($subCategory),
         ]);
     }
 
@@ -62,14 +64,14 @@ class SubCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategoryRequest $request, SubCategoryService $subCategoryService, SubCategory $subCategory )
+    public function update(UpdateSubCategoryRequest $request, SubCategoryService $subCategoryService, SubCategory $subCategory )
     {
 //        dd($request);
-        $subCategory  = $subCategoryService->updateCategory($subCategory , $request->validated());
+        $subCategory  = $subCategoryService->updateSubCategory($subCategory , $request->validated());
 
         return response()->json([
             'message' => 'Category updated successfully',
-            'data' => new SubCategoryResource($subCategory ),
+            'data' => new SubCategoryResource($subCategory),
         ]);
     }
 
@@ -80,7 +82,7 @@ class SubCategoryController extends Controller
     // Soft delete (move to trash)
     public function trash(SubCategory $subCategory , SubCategoryService $subCategoryService)
     {
-        $subCategoryService->softDeleteCategory($subCategory );
+        $subCategoryService->softDeleteSubCategory($subCategory);
 
         return response()->json([
             'message' => 'SubCategory moved to trash successfully',
@@ -92,7 +94,7 @@ class SubCategoryController extends Controller
     {
         $subCategory  = SubCategory::withTrashed()->findOrFail($id);
 
-        $subCategory  = $subCategoryService->restoreCategory($subCategory );
+        $subCategory  = $subCategoryService->restoreSubCategory($subCategory);
 
         return response()->json([
             'message' => 'SubCategory restored successfully',
@@ -104,7 +106,7 @@ class SubCategoryController extends Controller
     public function destroy($id, SubCategoryService $subCategoryService)
     {
         $subCategory  = SubCategory::withTrashed()->findOrFail($id);
-        $deleted = $subCategoryService->forceDeleteCategory($subCategory );
+        $deleted = $subCategoryService->forceDeleteSubCategory($subCategory);
 
         if ($deleted) {
             return response()->json([
