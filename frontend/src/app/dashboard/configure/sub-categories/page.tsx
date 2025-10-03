@@ -6,6 +6,8 @@ import {
   faEdit,
   faTrash,
   faEye,
+  faTrashRestore,
+  faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -61,7 +63,7 @@ const SubCategories = () => {
     fetchCategories();
   }, []);
 
-const fetchLookups = async () => {
+  const fetchLookups = async () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
@@ -98,7 +100,7 @@ const fetchLookups = async () => {
       required: true,
       showOn: "all",
     },
-      {
+    {
       label: "Status",
       key: "status",
       type: "radio",
@@ -113,18 +115,18 @@ const fetchLookups = async () => {
       readOnly: true,
       showOn: "view",
     },
- {
+    {
       label: "Status",
       key: "status",
       type: "radio",
       required: true,
       options: status.map(opt => ({
-      ...opt,
-      className:
-        opt.value === "1"
-          ? "px-2 py-1 bg-green-100 text-green-700 rounded"
-          : "px-2 py-1 bg-red-100 text-red-700 rounded",
-    })),
+        ...opt,
+        className:
+          opt.value === "1"
+            ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+            : "px-2 py-1 bg-red-100 text-red-700 rounded",
+      })),
       showOn: "view",
     },
     {
@@ -156,115 +158,195 @@ const fetchLookups = async () => {
     setIsSubmitting(false);
   };
 
-   const handleFormSubmit = async (formData: Record<string, any>) => {
-      console.log("Form Data Submitted:", formData);
-  
-      try {
-        setIsSubmitting(true);
-        setBackendErrors({});
-  
-        // Prepare FormData
-        const submitData = new FormData();
-  
-        Object.keys(formData).forEach((key) => {
-          const value = formData[key];
-  
-          if (value instanceof File) {
-            // Only append if user selected a new file
-            submitData.append(key, value);
-          } else if (value !== null && value !== undefined) {
-            // Convert booleans to 1/0 strings, everything else to string
-            if (typeof value === "boolean") {
-              submitData.append(key, value ? "1" : "0");
-            } else {
-              submitData.append(key, String(value));
-            }
+  const handleFormSubmit = async (formData: Record<string, any>) => {
+    console.log("Form Data Submitted:", formData);
+
+    try {
+      setIsSubmitting(true);
+      setBackendErrors({});
+
+      // Prepare FormData
+      const submitData = new FormData();
+
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key];
+
+        if (value instanceof File) {
+          // Only append if user selected a new file
+          submitData.append(key, value);
+        } else if (value !== null && value !== undefined) {
+          // Convert booleans to 1/0 strings, everything else to string
+          if (typeof value === "boolean") {
+            submitData.append(key, value ? "1" : "0");
+          } else {
+            submitData.append(key, String(value));
           }
+        }
+      });
+
+      if (modalType === "create") {
+        // Create
+        await api.post("/configure/sub-categories", submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
-  
-        if (modalType === "create") {
-          // Create
-          await api.post("/configure/sub-categories", submitData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-          toast.success("Category saved successfully");
-        } else if (modalType === "edit" && selectedSubCategory?.id) {
-          // Edit: Use POST + _method=PUT for Laravel multipart/form-data
-          submitData.append("_method", "PUT");
-          console.log(formData);
-  
-          await api.post(
-            `/configure/sub-categories/${selectedSubCategory.id}`,
-            submitData,
-            { headers: { "Content-Type": "multipart/form-data" } }
-          );
-  
-          toast.success("Category updated successfully");
-        }
-  
-        setIsSubmitting(false);
-        closeModal();
-        setRefreshTrigger((prev) => prev + 1); // refresh table
-      } catch (error: any) {
-        setIsSubmitting(false);
-  
-        if (error.response?.status === 422) {
-          // Laravel validation errors
-          setBackendErrors(error.response.data.errors);
-        } else {
-          toast.error(error.response?.data.message || "Failed to save data");
-        }
+        toast.success("Category saved successfully");
+      } else if (modalType === "edit" && selectedSubCategory?.id) {
+        // Edit: Use POST + _method=PUT for Laravel multipart/form-data
+        submitData.append("_method", "PUT");
+        console.log(formData);
+
+        await api.post(
+          `/configure/sub-categories/${selectedSubCategory.id}`,
+          submitData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        toast.success("Category updated successfully");
       }
-    };
-  
+
+      setIsSubmitting(false);
+      closeModal();
+      setRefreshTrigger((prev) => prev + 1); // refresh table
+    } catch (error: any) {
+      setIsSubmitting(false);
+
+      if (error.response?.status === 422) {
+        // Laravel validation errors
+        setBackendErrors(error.response.data.errors);
+      } else {
+        toast.error(error.response?.data.message || "Failed to save data");
+      }
+    }
+  };
+
 
   // Delete Sub Category function with SweetAlert2 confirmation
-  const handleDelete = async (subCategory: any) => {
+  // Soft Delete (Move to Trash)
+  const handleSoftDelete = async (subCategory: any) => {
     const confirmed = await confirmAction({
-      title: "Are you sure?",
-      text: `You are about to delete the Sub Category "${subCategory.name}".!`,
-      confirmButtonText: "Yes, delete it!",
+      title: "Move to Trash?",
+      text: `You are about to move the Sub Category "${subCategory.name}" to trash.`,
+      confirmButtonText: "Yes, move to trash!",
       cancelButtonText: "Cancel",
     });
 
     if (!confirmed) return;
 
     try {
-      // Show loading
       Swal.fire({
-        title: "Deleting...",
-        text: `Please wait while we delete the Sub Category`,
+        title: "Moving to Trash...",
+        text: `Please wait while we move the sub category`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
 
-      // API call
-      await api.delete(`/configure/sub-categories/${subCategory.id}`);
+      await api.post(`/configure/sub-categories/trash/${subCategory.id}`);
 
-      Swal.close(); // close loading
-
-      // Success message
+      Swal.close();
       Swal.fire({
-        title: "Deleted!",
-        text: `Sub Categories "${subCategory.name}" has been deleted successfully.`,
+        title: "Moved!",
+        text: `Sub Category "${subCategory.name}" has been moved to trash.`,
         icon: "success",
-        confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
       });
 
-      // Refresh table
       setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       Swal.close();
       Swal.fire({
         title: "Error!",
-        text: error.response?.data?.message || "Failed to delete Sub Category",
+        text:
+          error.response?.data?.message || "Failed to move sub category to trash",
         icon: "error",
-        confirmButtonColor: "#3085d6",
         confirmButtonText: "OK",
       });
     }
   };
+
+  // Force Delete (Permanent)
+  const handleForceDelete = async (subCategory: any) => {
+    const confirmed = await confirmAction({
+      title: "Delete Permanently?",
+      text: `You are about to permanently delete the sub category "${subCategory.name}". This cannot be undone!`,
+      confirmButtonText: "Yes, delete permanently!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      Swal.fire({
+        title: "Deleting permanently...",
+        text: `Please wait while we delete the sub category permanently`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      await api.delete(`/configure/sub-categories/${subCategory.id}`); // force delete
+
+      Swal.close();
+      Swal.fire({
+        title: "Deleted!",
+        text: `Category "${subCategory.name}" has been permanently deleted.`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      Swal.close();
+      Swal.fire({
+        title: "Error!",
+        text:
+          error.response?.data?.message ||
+          "Failed to delete sub category permanently",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
+  // Restore (Undo Soft Delete)
+  const handleRestore = async (subCategory: any) => {
+    const confirmed = await confirmAction({
+      title: "Restore Category?",
+      text: `You are about to restore the sub category "${subCategory.name}".`,
+      confirmButtonText: "Yes, restore it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!confirmed) return;
+
+    try {
+      Swal.fire({
+        title: "Restoring...",
+        text: `Please wait while we restore the sub category`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      await api.post(`/configure/sub-categories/restore/${subCategory.id}`);
+
+      Swal.close();
+      Swal.fire({
+        title: "Restored!",
+        text: `Category "${subCategory.name}" has been restored successfully.`,
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+
+      setRefreshTrigger((prev) => prev + 1);
+    } catch (error: any) {
+      Swal.close();
+      Swal.fire({
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to restore sub category",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
+    }
+  };
+
   // Columns for DataTable
   const columns = [
     {
@@ -314,15 +396,24 @@ const fetchLookups = async () => {
               variant: "secondary",
               size: "sm",
               tooltip: "Edit",
-              show: (r) => hasPermission("sub-category.edit"),
+              show: (r) => hasPermission("sub-category.edit") && !r.deleted_at,
             },
             {
-              icon: faTrash,
-              onClick: (r) => handleDelete(r),
+              icon: row.deleted_at ? faTrashRestore : faTrash,
+              onClick: (r) =>
+                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
               variant: "danger",
               size: "sm",
-              tooltip: "Delete",
               show: (r) => hasPermission("sub-category.delete"),
+              tooltip: row.deleted_at ? "Delete Permanently" : "Move to Trash",
+            },
+            {
+              icon: faUndo,
+              onClick: (r) => handleRestore(r),
+              variant: "success",
+              size: "sm",
+              show: (r) => r.deleted_at,
+              tooltip: "Restore",
             },
           ]}
         />
@@ -420,8 +511,8 @@ const fetchLookups = async () => {
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
                   className={`${isSubmitting
-                      ? "opacity-60 cursor-not-allowed"
-                      : "opacity-100"
+                    ? "opacity-60 cursor-not-allowed"
+                    : "opacity-100"
                     }`}
                 >
                   {isSubmitting ? (
