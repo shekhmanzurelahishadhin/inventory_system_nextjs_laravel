@@ -143,10 +143,10 @@ const SubCategories = () => {
       setBackendErrors({});
 
       if (modalType === "create") {
-        await api.post("/sub-categories", formData);
+        await api.post("/configure/sub-categories", formData);
         toast.success("Sub Category saved successfully");
       } else if (modalType === "edit" && selectedSubCategory?.id) {
-        await api.put(`/sub-categories/${selectedSubCategory.id}`, formData);
+        await api.put(`/configure/sub-categories/${selectedSubCategory.id}`, formData);
         toast.success("Sub Category updated successfully");
       }
 
@@ -186,7 +186,7 @@ const SubCategories = () => {
       });
 
       // API call
-      await api.delete(`/sub-categories/${subCategory.id}`);
+      await api.delete(`/configure/sub-categories/${subCategory.id}`);
 
       Swal.close(); // close loading
 
@@ -311,7 +311,7 @@ const SubCategories = () => {
             <div className="bg-white shadow overflow-hidden pt-8">
               <DynamicDataTable
                 columns={columns}
-                apiEndpoint="/sub-categories"
+                apiEndpoint="/configure/sub-categories"
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Category Name", selector: "category_name" },

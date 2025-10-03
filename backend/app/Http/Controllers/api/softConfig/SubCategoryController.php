@@ -3,9 +3,117 @@
 namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\softConfig\subCategory\SubCategoryResource;
+use App\Models\softConfig\SubCategory;
+use App\Services\softConfig\SubCategoryService;
 use Illuminate\Http\Request;
 
 class SubCategoryController extends Controller
 {
-    //
+    public function index(Request $request, SubCategoryService $subCategoryService)
+    {
+        $perPage = $request->get('per_page');
+        $filters = $request->only('search');
+
+        $subCategories = $subCategoryService->getSubCategories($filters, $perPage);
+
+        if ($subCategories instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            // Paginated response
+            return response()->json([
+                'data' => SubCategoryResource::collection($subCategories->items()),
+                'total' => $subCategories->total(),
+                'current_page' => $subCategories->currentPage(),
+                'per_page' => $subCategories->perPage(),
+            ]);
+        }
+
+        // Collection response (no pagination)
+        return response()->json([
+            'data' => SubCategoryResource::collection($subCategories),
+            'total' => $subCategories->count(),
+            'current_page' => 1,
+            'per_page' => $subCategories->count(),
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(CreateCategoryRequest $request, SubCategoryService $subCategoryService)
+    {
+        $validatedData = $request->validated();
+
+        $subCategory  = $subCategoryService->createCategory($validatedData);
+
+        return response()->json([
+            'message' => 'SubCategory created successfully',
+            'data' => new SubCategoryResource($subCategory ),
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateCategoryRequest $request, SubCategoryService $subCategoryService, SubCategory $subCategory )
+    {
+//        dd($request);
+        $subCategory  = $subCategoryService->updateCategory($subCategory , $request->validated());
+
+        return response()->json([
+            'message' => 'Category updated successfully',
+            'data' => new SubCategoryResource($subCategory ),
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+
+    // Soft delete (move to trash)
+    public function trash(SubCategory $subCategory , SubCategoryService $subCategoryService)
+    {
+        $subCategoryService->softDeleteCategory($subCategory );
+
+        return response()->json([
+            'message' => 'SubCategory moved to trash successfully',
+        ]);
+    }
+
+    // Restore soft-deleted category
+    public function restore($id, SubCategoryService $subCategoryService)
+    {
+        $subCategory  = SubCategory::withTrashed()->findOrFail($id);
+
+        $subCategory  = $subCategoryService->restoreCategory($subCategory );
+
+        return response()->json([
+            'message' => 'SubCategory restored successfully',
+            'data' => $subCategory ,
+        ]);
+    }
+
+    // Force delete permanently
+    public function destroy($id, SubCategoryService $subCategoryService)
+    {
+        $subCategory  = SubCategory::withTrashed()->findOrFail($id);
+        $deleted = $subCategoryService->forceDeleteCategory($subCategory );
+
+        if ($deleted) {
+            return response()->json([
+                'message' => 'SubCategory permanently deleted',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'SubCategory is not in trash',
+        ], 400);
+    }
 }

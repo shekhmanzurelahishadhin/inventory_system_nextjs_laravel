@@ -8,7 +8,7 @@ use App\Models\softConfig\Category;
 
 class CategoryService
 {
-    public function getCompanies($filters = [], $perPage)
+    public function getCategories($filters = [], $perPage)
     {
         $query = Category::withTrashed();
 

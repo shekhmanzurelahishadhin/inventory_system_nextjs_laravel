@@ -9,6 +9,7 @@ use App\Http\Controllers\api\authorization\PermissionController;
 use App\Http\Controllers\api\softConfig\CompanyController;
 use App\Http\Controllers\api\softConfig\LookupController;
 use App\Http\Controllers\api\softConfig\CategoryController;
+use App\Http\Controllers\api\softConfig\SubCategoryController;
 
 
 Route::prefix('v1')->group(function () {
@@ -94,6 +95,17 @@ Route::prefix('v1')->group(function () {
                 Route::post('trash/{category}', [CategoryController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [CategoryController::class, 'restore']);
                 Route::delete('/{id}', [CategoryController::class, 'destroy']); // force delete
+            });
+
+            // Categories Route
+            Route::prefix('sub-categories')->group(function () {
+                Route::get('/', [SubCategoryController::class, 'index']);
+                Route::post('/', [SubCategoryController::class, 'store']);
+                Route::get('/{category}', [SubCategoryController::class, 'show']);
+                Route::put('/{category}', [SubCategoryController::class, 'update']);
+                Route::post('trash/{category}', [SubCategoryController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [SubCategoryController::class, 'restore']);
+                Route::delete('/{id}', [SubCategoryController::class, 'destroy']); // force delete
             });
         });
     });

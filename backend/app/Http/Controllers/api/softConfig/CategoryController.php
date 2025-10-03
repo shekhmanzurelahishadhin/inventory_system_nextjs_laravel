@@ -20,24 +20,24 @@ class CategoryController extends Controller
         $perPage = $request->get('per_page');
         $filters = $request->only('search');
 
-        $companies = $categoryService->getCompanies($filters, $perPage);
+        $categories = $categoryService->getCategories($filters, $perPage);
 
-        if ($companies instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+        if ($categories instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             // Paginated response
             return response()->json([
-                'data' => CategoryResource::collection($companies->items()),
-                'total' => $companies->total(),
-                'current_page' => $companies->currentPage(),
-                'per_page' => $companies->perPage(),
+                'data' => CategoryResource::collection($categories->items()),
+                'total' => $categories->total(),
+                'current_page' => $categories->currentPage(),
+                'per_page' => $categories->perPage(),
             ]);
         }
 
         // Collection response (no pagination)
         return response()->json([
-            'data' => CategoryResource::collection($companies),
-            'total' => $companies->count(),
+            'data' => CategoryResource::collection($categories),
+            'total' => $categories->count(),
             'current_page' => 1,
-            'per_page' => $companies->count(),
+            'per_page' => $categories->count(),
         ]);
     }
 
