@@ -8,6 +8,7 @@ use App\Http\Controllers\api\authorization\RoleController;
 use App\Http\Controllers\api\authorization\PermissionController;
 use App\Http\Controllers\api\softConfig\CompanyController;
 use App\Http\Controllers\api\softConfig\LookupController;
+use App\Http\Controllers\api\softConfig\CategoryController;
 
 
 Route::prefix('v1')->group(function () {
@@ -83,6 +84,17 @@ Route::prefix('v1')->group(function () {
             });
             Route::get('/get-lookup-type/lists', [LookupController::class, 'getLookupTypeLists']);
             Route::get('/get-lookup-list/{type}', [LookupController::class, 'getLookupListByType']);
+
+            // Categories Route
+            Route::prefix('categories')->group(function () {
+                Route::get('/', [CategoryController::class, 'index']);
+                Route::post('/', [CategoryController::class, 'store']);
+                Route::get('/{category}', [CategoryController::class, 'show']);
+                Route::put('/{category}', [CategoryController::class, 'update']);
+                Route::post('trash/{category}', [CategoryController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [CategoryController::class, 'restore']);
+                Route::delete('/{id}', [CategoryController::class, 'destroy']); // force delete
+            });
         });
     });
 
