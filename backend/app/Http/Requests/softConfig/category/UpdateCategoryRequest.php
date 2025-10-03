@@ -32,7 +32,7 @@ class UpdateCategoryRequest extends FormRequest
                 Rule::unique('categories')->ignore($categoryId),
             ],
             'slug' => [
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 Rule::unique('categories')->ignore($categoryId),
@@ -50,7 +50,6 @@ class UpdateCategoryRequest extends FormRequest
             'name.max' => 'The category name cannot exceed 255 characters.',
             'name.unique' => 'This category name already exists.',
 
-            'slug.required' => 'The category slug is required.',
             'slug.string' => 'The category slug must be a string.',
             'slug.max' => 'The category slug cannot exceed 255 characters.',
             'slug.unique' => 'This category slug already exists.',
