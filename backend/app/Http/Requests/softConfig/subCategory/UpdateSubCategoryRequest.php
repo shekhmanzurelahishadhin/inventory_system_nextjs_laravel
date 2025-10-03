@@ -21,7 +21,7 @@ class UpdateSubCategoryRequest extends FormRequest
      */
     public function rules(): array
     {
-        $id = $this->route('sub_category'); // depends on route binding
+        $id = $this->route('subCategory'); // depends on route binding
 
         return [
             'category_id' => 'required|exists:categories,id',

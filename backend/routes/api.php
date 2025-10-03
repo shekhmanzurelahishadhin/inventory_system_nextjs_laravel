@@ -101,9 +101,9 @@ Route::prefix('v1')->group(function () {
             Route::prefix('sub-categories')->group(function () {
                 Route::get('/', [SubCategoryController::class, 'index']);
                 Route::post('/', [SubCategoryController::class, 'store']);
-                Route::get('/{category}', [SubCategoryController::class, 'show']);
-                Route::put('/{category}', [SubCategoryController::class, 'update']);
-                Route::post('trash/{category}', [SubCategoryController::class, 'trash']); // soft delete
+                Route::get('/{subCategory}', [SubCategoryController::class, 'show']);
+                Route::put('/{subCategory}', [SubCategoryController::class, 'update']);
+                Route::post('trash/{subCategory}', [SubCategoryController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [SubCategoryController::class, 'restore']);
                 Route::delete('/{id}', [SubCategoryController::class, 'destroy']); // force delete
             });

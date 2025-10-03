@@ -64,9 +64,8 @@ class SubCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSubCategoryRequest $request, SubCategoryService $subCategoryService, SubCategory $subCategory )
+    public function update(UpdateSubCategoryRequest $request, SubCategoryService $subCategoryService, SubCategory $subCategory)
     {
-//        dd($request);
         $subCategory  = $subCategoryService->updateSubCategory($subCategory , $request->validated());
 
         return response()->json([

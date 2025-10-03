@@ -25,6 +25,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import FormSkeleton from "@/app/components/ui/FormSkeleton";
 import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 
 const SubCategories = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -39,6 +40,7 @@ const SubCategories = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0); // Add this line
   const { hasPermission } = useAuth();
   const [loadingDropdowns, setLoadingDropdowns] = useState(false);
+  const [status, setStatus] = useState<any[]>([]);
 
   const formRef = useRef<any>(null);
 
@@ -59,7 +61,20 @@ const SubCategories = () => {
     fetchCategories();
   }, []);
 
-
+const fetchLookups = async () => {
+    try {
+      const type = "active_status";
+      const res = await api.get(`/configure/get-lookup-list/${type}`);
+      setStatus(
+        res.data.map((m: any) => ({ value: m.value, label: m.label }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch lookups", error);
+    }
+  };
+  useEffect(() => {
+    fetchLookups();
+  }, []);
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -68,7 +83,7 @@ const SubCategories = () => {
   ];
 
   const subCategoryFields = [
-     {
+    {
       label: "Category",
       key: "category_id",
       type: "select",
@@ -81,16 +96,37 @@ const SubCategories = () => {
       key: "name",
       type: "text",
       required: true,
-      showOn: "both",
+      showOn: "all",
+    },
+      {
+      label: "Status",
+      key: "status",
+      type: "radio",
+      required: true,
+      options: status,
+      showOn: "edit", // edit only
     },
     {
-      label: "Category",
+      label: "Category Name",
       key: "category_name",
       type: "text",
       readOnly: true,
       showOn: "view",
     },
-   
+ {
+      label: "Status",
+      key: "status",
+      type: "radio",
+      required: true,
+      options: status.map(opt => ({
+      ...opt,
+      className:
+        opt.value === "1"
+          ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+          : "px-2 py-1 bg-red-100 text-red-700 rounded",
+    })),
+      showOn: "view",
+    },
     {
       label: "Created At",
       key: "created_at",
@@ -111,23 +147,6 @@ const SubCategories = () => {
     setSelectedSubCategory(subCategory);
     setBackendErrors({});
     setIsSubmitting(false);
-
-    // if (type === "edit" && subCategory) {
-    //   setLoadingDropdowns(true);
-    //   (async () => {
-    //     try {
-    //       const [catRes] = await Promise.all([
-    //         api.get("/configure/categories"),
-    //       ]);
-
-    //       setCategories(
-    //         catRes.data.data.map((c: any) => ({ value: c.id, label: c.name }))
-    //       );
-    //     } finally {
-    //       setLoadingDropdowns(false);
-    //     }
-    //   })();
-    // }
   };
 
   const closeModal = () => {
@@ -137,33 +156,67 @@ const SubCategories = () => {
     setIsSubmitting(false);
   };
 
-  const handleFormSubmit = async (formData: Record<string, any>) => {
-    try {
-      setIsSubmitting(true);
-      setBackendErrors({});
-
-      if (modalType === "create") {
-        await api.post("/configure/sub-categories", formData);
-        toast.success("Sub Category saved successfully");
-      } else if (modalType === "edit" && selectedSubCategory?.id) {
-        await api.put(`/configure/sub-categories/${selectedSubCategory.id}`, formData);
-        toast.success("Sub Category updated successfully");
+   const handleFormSubmit = async (formData: Record<string, any>) => {
+      console.log("Form Data Submitted:", formData);
+  
+      try {
+        setIsSubmitting(true);
+        setBackendErrors({});
+  
+        // Prepare FormData
+        const submitData = new FormData();
+  
+        Object.keys(formData).forEach((key) => {
+          const value = formData[key];
+  
+          if (value instanceof File) {
+            // Only append if user selected a new file
+            submitData.append(key, value);
+          } else if (value !== null && value !== undefined) {
+            // Convert booleans to 1/0 strings, everything else to string
+            if (typeof value === "boolean") {
+              submitData.append(key, value ? "1" : "0");
+            } else {
+              submitData.append(key, String(value));
+            }
+          }
+        });
+  
+        if (modalType === "create") {
+          // Create
+          await api.post("/configure/sub-categories", submitData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+          toast.success("Category saved successfully");
+        } else if (modalType === "edit" && selectedSubCategory?.id) {
+          // Edit: Use POST + _method=PUT for Laravel multipart/form-data
+          submitData.append("_method", "PUT");
+          console.log(formData);
+  
+          await api.post(
+            `/configure/sub-categories/${selectedSubCategory.id}`,
+            submitData,
+            { headers: { "Content-Type": "multipart/form-data" } }
+          );
+  
+          toast.success("Category updated successfully");
+        }
+  
+        setIsSubmitting(false);
+        closeModal();
+        setRefreshTrigger((prev) => prev + 1); // refresh table
+      } catch (error: any) {
+        setIsSubmitting(false);
+  
+        if (error.response?.status === 422) {
+          // Laravel validation errors
+          setBackendErrors(error.response.data.errors);
+        } else {
+          toast.error(error.response?.data.message || "Failed to save data");
+        }
       }
-
-      setIsSubmitting(false);
-      closeModal();
-
-      // Force table to refetch by updating refreshTrigger
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      setIsSubmitting(false);
-      if (error.response?.status === 422) {
-        setBackendErrors(error.response.data.errors);
-      } else {
-        toast.error(error.response?.data.message || "Failed to save data");
-      }
-    }
-  };
+    };
+  
 
   // Delete Sub Category function with SweetAlert2 confirmation
   const handleDelete = async (subCategory: any) => {
@@ -214,7 +267,7 @@ const SubCategories = () => {
   };
   // Columns for DataTable
   const columns = [
-      {
+    {
       name: "#",
       cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
@@ -228,6 +281,12 @@ const SubCategories = () => {
     {
       name: "Category Name",
       selector: (row) => row.category_name,
+      sortable: true,
+    },
+    {
+      name: "Status",
+      selector: (row) =>
+        formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
       sortable: true,
     },
     {
@@ -315,6 +374,11 @@ const SubCategories = () => {
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Category Name", selector: "category_name" },
+                  {
+                    name: "Status",
+                    selector: (row) =>
+                      row.status === 1 ? "Active" : "Inactive",
+                  },
                   { name: "Created at", selector: "created_at" },
                 ]}
                 exportFileName="SubCategories"
@@ -338,8 +402,8 @@ const SubCategories = () => {
             modalType === "create"
               ? "Create Sub Category"
               : modalType === "edit"
-              ? "Edit Sub Category"
-              : "View Sub Category"
+                ? "Edit Sub Category"
+                : "View Sub Category"
           }
           footer={
             modalType === "view" ? (
@@ -355,11 +419,10 @@ const SubCategories = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -390,8 +453,8 @@ const SubCategories = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )
@@ -409,7 +472,7 @@ const SubCategories = () => {
               {loadingDropdowns ? (
                 <div className="p-6 text-center">
                   {/* <FormSkeleton fields={subCategoryFields} mode={modalType} /> */}
-                  <DatatableLoader/>
+                  <DatatableLoader />
                 </div>
               ) : (
                 <DynamicForm
