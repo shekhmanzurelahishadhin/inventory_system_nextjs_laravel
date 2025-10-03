@@ -72,7 +72,7 @@ const DynamicForm = forwardRef(
           : field.required;
 
       if (isRequired && (value === "" || value === null)) {
-        return "This field is required";
+        return `${field.label} is required`;
       }
       if (field.minLength && value.length < field.minLength) {
         return `Minimum ${field.minLength} characters required`;
