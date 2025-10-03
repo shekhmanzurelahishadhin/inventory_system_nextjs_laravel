@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\softConfig\Lookup;
+namespace App\Http\Resources\softConfig\lookup;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

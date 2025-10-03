@@ -5,7 +5,7 @@ namespace App\Http\Controllers\api\softConfig;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\softConfig\lookup\StoreLookupRequest;
 use App\Http\Requests\softConfig\lookup\UpdateLookupRequest;
-use App\Http\Resources\softConfig\Lookup\LookupResource;
+use App\Http\Resources\softConfig\lookup\LookupResource;
 use App\Models\softConfig\Lookup;
 use App\Services\softConfig\LookupService;
 use Illuminate\Http\Request;
