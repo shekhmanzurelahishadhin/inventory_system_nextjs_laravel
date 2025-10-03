@@ -360,28 +360,6 @@ const fetchLookups = async () => {
       grow: 0,
     },
     {
-      name: "Logo",
-      cell: (row) =>
-        row.logo ? (
-          <img
-            src={`${API_BASE_URL}/storage/${row.logo}`}
-            alt={row.name}
-            style={{
-              display: "block",
-              maxWidth: "100%",
-              height: "auto", // 👈 keeps the aspect ratio
-              objectFit: "contain", // or "cover" if you want to fill the container
-              borderRadius: "4px",
-            }}
-          />
-        ) : (
-          <span className="text-gray-400">No Logo</span>
-        ),
-      width: "10%", // optional width
-      grow: 0,
-    },
-
-    {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,

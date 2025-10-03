@@ -11,7 +11,7 @@ class CreateCategoryRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,25 @@ class CreateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255|unique:categories,name',
+            'slug' => 'nullable|string|max:255|unique:categories,slug',
+            'description' => 'nullable|string',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'The category name is required.',
+            'name.string' => 'The category name must be a string.',
+            'name.max' => 'The category name cannot exceed 255 characters.',
+            'name.unique' => 'This category name already exists.',
+
+            'slug.string' => 'The category slug must be a string.',
+            'slug.max' => 'The category slug cannot exceed 255 characters.',
+            'slug.unique' => 'This category slug already exists.',
+
+            'description.string' => 'The description must be valid text.',
         ];
     }
 }

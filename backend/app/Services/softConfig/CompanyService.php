@@ -14,7 +14,7 @@ class CompanyService
 
     public function getCompanies($filters = [], $perPage)
     {
-        $query = Company::withTrashed();;
+        $query = Company::withTrashed();
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
