@@ -225,6 +225,45 @@ const Sidebar = ({
       ],
     },
     {
+  name: "Purchase",
+  href: "#",
+  icon: solidIcons.faShoppingCart,
+  children: [
+    {
+      name: "Suppliers",
+      href: "/dashboard/purchase/suppliers",
+      icon: solidIcons.faTruck,
+      requiredPermissions: ["supplier.view","supplier.create","supplier.edit","supplier.delete"],
+    },
+    {
+      name: "Purchase Orders",
+      href: "/dashboard/purchase/orders",
+      icon: solidIcons.faFileInvoice,
+      requiredPermissions: ["purchase.view","purchase.create","purchase.edit","purchase.delete"],
+    }
+  ]
+},
+{
+  name: "Sales",
+  href: "#",
+  icon: solidIcons.faShoppingBag,
+  children: [
+    {
+      name: "Customers",
+      href: "/dashboard/sales/customers",
+      icon: solidIcons.faUsers,
+      requiredPermissions: ["customer.view","customer.create","customer.edit","customer.delete"],
+    },
+    {
+      name: "Sales Orders",
+      href: "/dashboard/sales/orders",
+      icon: solidIcons.faReceipt,
+      requiredPermissions: ["sales.view","sales.create","sales.edit","sales.delete"],
+    }
+  ]
+}
+,
+    {
       name: "Apps",
       href: "#",
       icon: solidIcons.faThLarge,
