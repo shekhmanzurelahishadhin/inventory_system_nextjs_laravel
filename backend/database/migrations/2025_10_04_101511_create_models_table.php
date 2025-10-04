@@ -13,7 +13,18 @@ return new class extends Migration
     {
         Schema::create('models', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('brand_id')->constrained('brands')->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('sub_category_id')->constrained('sub_categories')->onDelete('cascade');
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->boolean('status')->default(true);
+            $table->softDeletes();
             $table->timestamps();
+            // Auditing columns
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
         });
     }
 
