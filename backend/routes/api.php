@@ -10,6 +10,7 @@ use App\Http\Controllers\api\softConfig\CompanyController;
 use App\Http\Controllers\api\softConfig\LookupController;
 use App\Http\Controllers\api\softConfig\CategoryController;
 use App\Http\Controllers\api\softConfig\SubCategoryController;
+use App\Http\Controllers\api\softConfig\BrandController;
 
 
 Route::prefix('v1')->group(function () {
@@ -97,7 +98,7 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [CategoryController::class, 'destroy']); // force delete
             });
 
-            // Categories Route
+            // Sub Categories Route
             Route::prefix('sub-categories')->group(function () {
                 Route::get('/', [SubCategoryController::class, 'index']);
                 Route::post('/', [SubCategoryController::class, 'store']);
@@ -106,6 +107,17 @@ Route::prefix('v1')->group(function () {
                 Route::post('trash/{subCategory}', [SubCategoryController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [SubCategoryController::class, 'restore']);
                 Route::delete('/{id}', [SubCategoryController::class, 'destroy']); // force delete
+            });
+
+            // Brans Route
+            Route::prefix('brands')->group(function () {
+                Route::get('/', [BrandController::class, 'index']);
+                Route::post('/', [BrandController::class, 'store']);
+                Route::get('/{brand}', [BrandController::class, 'show']);
+                Route::put('/{brand}', [BrandController::class, 'update']);
+                Route::post('trash/{brand}', [BrandController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [BrandController::class, 'restore']);
+                Route::delete('/{id}', [BrandController::class, 'destroy']); // force delete
             });
         });
     });
