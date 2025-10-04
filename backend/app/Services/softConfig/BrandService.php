@@ -8,7 +8,7 @@ use App\Models\softConfig\Brand;
 
 class BrandService
 {
-    public function getCategories($filters = [], $perPage)
+    public function getBrands($filters = [], $perPage)
     {
         $query = Brand::withTrashed();
 
@@ -19,5 +19,39 @@ class BrandService
 
         $query->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
+    }
+
+    public function createBrand(array $data)
+    {
+        return Brand::create($data);
+    }
+
+    public function updateBrand(Brand $brand, array $data)
+    {
+        $brand->update($data); // updates the model
+        return $brand;         // return the model itself
+    }
+
+
+    public function softDeleteBrand(Brand $brand)
+    {
+        $brand->delete();
+    }
+
+    public function restoreBrand(Brand $brand)
+    {
+        if ($brand->trashed()) {
+            $brand->restore();
+        }
+        return $brand;
+    }
+
+    public function forceDeleteBrand(Brand $brand)
+    {
+        if ($brand->trashed()) {
+            $brand->forceDelete();
+            return true;
+        }
+        return false;
     }
 }
