@@ -67,13 +67,6 @@ const Brands = () => {
       showOn: "all", // visible in create/edit/view
     },
     {
-      label: "Description",
-      key: "description",
-      type: "textarea",
-      required: false,
-      showOn: "all",
-    },
-    {
       label: "Status",
       key: "status",
       type: "radio",
@@ -89,13 +82,6 @@ const Brands = () => {
       type: "text",
       required: true,
       showOn: "all", // visible in create/edit/view
-    },
-    {
-      label: "Description",
-      key: "description",
-      type: "textarea",
-      required: false,
-      showOn: "all",
     },
     {
       label: "Status",
@@ -365,11 +351,6 @@ const fetchLookups = async () => {
       sortable: true,
     },
     {
-      name: "Description",
-      selector: (row) => row.description,
-      sortable: true,
-    },
-    {
       name: "Status",
       selector: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
@@ -468,7 +449,6 @@ const fetchLookups = async () => {
                 apiEndpoint="/configure/brands"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "description", selector: "description" },
                   {
                     name: "Status",
                     selector: (row) =>
