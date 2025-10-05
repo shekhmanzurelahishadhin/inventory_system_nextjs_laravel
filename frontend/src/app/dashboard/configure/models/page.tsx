@@ -47,6 +47,7 @@ const Models = () => {
   const formRef = useRef<any>(null);
 
   const [categories, setCategories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
 
 
   const [perPage, setPerPage] = useState(10);
@@ -58,7 +59,9 @@ const Models = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await api.get("/configure/categories");
+      const brandRes = await api.get("/configure/brands");
       setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
+      setBrands(brandRes.data.data.map((b: any) => ({ value: b.id, label: b.name })));
     };
     fetchCategories();
   }, []);
@@ -92,6 +95,14 @@ const Models = () => {
       required: true,
       showOn: "both",
       options: categories,
+    },
+    {
+      label: "Brand",
+      key: "brand_id",
+      type: "select",
+      required: true,
+      showOn: "both",
+      options: brands,
     },
     {
       label: "Name",
