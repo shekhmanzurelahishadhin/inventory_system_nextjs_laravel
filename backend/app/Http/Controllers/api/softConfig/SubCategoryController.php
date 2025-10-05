@@ -12,6 +12,13 @@ use Illuminate\Http\Request;
 
 class SubCategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:sub-category.create|sub-category.view|sub-category.edit|sub-category.delete')->only('index');
+        $this->middleware('permission:sub-category.create')->only('store');
+        $this->middleware('permission:sub-category.edit')->only('update');
+        $this->middleware('permission:sub-category.delete')->only('destroy');
+    }
     public function index(Request $request, SubCategoryService $subCategoryService)
     {
         $perPage = $request->get('per_page');

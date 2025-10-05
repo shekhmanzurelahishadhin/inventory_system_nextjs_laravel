@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:brand.create|brand.view|brand.edit|brand.delete')->only('index');
+        $this->middleware('permission:brand.create')->only('store');
+        $this->middleware('permission:brand.edit')->only('update');
+        $this->middleware('permission:brand.delete')->only('destroy');
+    }
+
     public function index(Request $request, BrandService $brandService)
     {
         $perPage = $request->get('per_page');

@@ -12,6 +12,14 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:company.create|company.view|company.edit|company.delete')->only('index');
+        $this->middleware('permission:company.create')->only('store');
+        $this->middleware('permission:company.edit')->only('update');
+        $this->middleware('permission:company.delete')->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      */
