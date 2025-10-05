@@ -76,7 +76,7 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [CompanyController::class, 'destroy']); // force delete
             });
 
-            //Lookups Route
+            // Lookups Route
             Route::prefix('lookups')->group(function () {
                 Route::get('/', [LookupController::class, 'index']);
                 Route::post('/', [LookupController::class, 'store']);
