@@ -186,7 +186,7 @@ const Models = () => {
 
       if (modalType === "create") {
         // Create
-        await api.post("/configure/sub-categories", submitData, {
+        await api.post("/configure/models", submitData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         toast.success("Category saved successfully");
@@ -196,7 +196,7 @@ const Models = () => {
         console.log(formData);
 
         await api.post(
-          `/configure/sub-categories/${selectedModel.id}`,
+          `/configure/models/${selectedModel.id}`,
           submitData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
@@ -220,12 +220,12 @@ const Models = () => {
   };
 
 
-  // Delete Sub Category function with SweetAlert2 confirmation
+  // Delete Model function with SweetAlert2 confirmation
   // Soft Delete (Move to Trash)
   const handleSoftDelete = async (model: any) => {
     const confirmed = await confirmAction({
       title: "Move to Trash?",
-      text: `You are about to move the Sub Category "${model.name}" to trash.`,
+      text: `You are about to move the Model "${model.name}" to trash.`,
       confirmButtonText: "Yes, move to trash!",
       cancelButtonText: "Cancel",
     });
@@ -235,17 +235,17 @@ const Models = () => {
     try {
       Swal.fire({
         title: "Moving to Trash...",
-        text: `Please wait while we move the sub category`,
+        text: `Please wait while we move the Model`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/configure/sub-categories/trash/${model.id}`);
+      await api.post(`/configure/models/trash/${model.id}`);
 
       Swal.close();
       Swal.fire({
         title: "Moved!",
-        text: `Sub Category "${model.name}" has been moved to trash.`,
+        text: `Model "${model.name}" has been moved to trash.`,
         icon: "success",
         confirmButtonText: "OK",
       });
@@ -256,7 +256,7 @@ const Models = () => {
       Swal.fire({
         title: "Error!",
         text:
-          error.response?.data?.message || "Failed to move sub category to trash",
+          error.response?.data?.message || "Failed to move Model to trash",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -267,7 +267,7 @@ const Models = () => {
   const handleForceDelete = async (model: any) => {
     const confirmed = await confirmAction({
       title: "Delete Permanently?",
-      text: `You are about to permanently delete the sub category "${model.name}". This cannot be undone!`,
+      text: `You are about to permanently delete the Model "${model.name}". This cannot be undone!`,
       confirmButtonText: "Yes, delete permanently!",
       cancelButtonText: "Cancel",
     });
@@ -277,12 +277,12 @@ const Models = () => {
     try {
       Swal.fire({
         title: "Deleting permanently...",
-        text: `Please wait while we delete the sub category permanently`,
+        text: `Please wait while we delete the Model permanently`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.delete(`/configure/sub-categories/${model.id}`); // force delete
+      await api.delete(`/configure/models/${model.id}`); // force delete
 
       Swal.close();
       Swal.fire({
@@ -299,7 +299,7 @@ const Models = () => {
         title: "Error!",
         text:
           error.response?.data?.message ||
-          "Failed to delete sub category permanently",
+          "Failed to delete Model permanently",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -310,7 +310,7 @@ const Models = () => {
   const handleRestore = async (model: any) => {
     const confirmed = await confirmAction({
       title: "Restore Category?",
-      text: `You are about to restore the sub category "${model.name}".`,
+      text: `You are about to restore the Model "${model.name}".`,
       confirmButtonText: "Yes, restore it!",
       cancelButtonText: "Cancel",
     });
@@ -320,12 +320,12 @@ const Models = () => {
     try {
       Swal.fire({
         title: "Restoring...",
-        text: `Please wait while we restore the sub category`,
+        text: `Please wait while we restore the Model`,
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/configure/sub-categories/restore/${model.id}`);
+      await api.post(`/configure/models/restore/${model.id}`);
 
       Swal.close();
       Swal.fire({
@@ -340,7 +340,7 @@ const Models = () => {
       Swal.close();
       Swal.fire({
         title: "Error!",
-        text: error.response?.data?.message || "Failed to restore sub category",
+        text: error.response?.data?.message || "Failed to restore Model",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -388,7 +388,7 @@ const Models = () => {
               variant: "primary",
               size: "sm",
               tooltip: "View",
-              show: (r) => hasPermission("sub-category.view"),
+              show: (r) => hasPermission("model.view"),
             },
             {
               icon: faEdit,
@@ -396,7 +396,7 @@ const Models = () => {
               variant: "secondary",
               size: "sm",
               tooltip: "Edit",
-              show: (r) => hasPermission("sub-category.edit") && !r.deleted_at,
+              show: (r) => hasPermission("model.edit") && !r.deleted_at,
             },
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
@@ -404,7 +404,7 @@ const Models = () => {
                 r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
               variant: "danger",
               size: "sm",
-              show: (r) => hasPermission("sub-category.delete"),
+              show: (r) => hasPermission("model.delete"),
               tooltip: row.deleted_at ? "Delete Permanently" : "Move to Trash",
             },
             {
@@ -427,10 +427,10 @@ const Models = () => {
     <>
       <AccessRoute
         requiredPermissions={[
-          "sub-category.view",
-          "sub-category.create",
-          "sub-category.edit",
-          "sub-category.delete",
+          "model.view",
+          "model.create",
+          "model.edit",
+          "model.delete",
         ]}
       >
         <PageHeader
@@ -451,7 +451,7 @@ const Models = () => {
                 size="md"
                 className="mt-2 sm:mt-0"
                 onClick={() => openModal("create")}
-                show={hasPermission("sub-category.create")}
+                show={hasPermission("model.create")}
               >
                 Add New
               </Button>
@@ -461,7 +461,7 @@ const Models = () => {
             <div className="bg-white shadow overflow-hidden pt-8">
               <DynamicDataTable
                 columns={columns}
-                apiEndpoint="/configure/sub-categories"
+                apiEndpoint="/configure/models"
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Category Name", selector: "category_name" },
@@ -491,10 +491,10 @@ const Models = () => {
           size="lg"
           title={
             modalType === "create"
-              ? "Create Sub Category"
+              ? "Create Model"
               : modalType === "edit"
-                ? "Edit Sub Category"
-                : "View Sub Category"
+                ? "Edit Model"
+                : "View Model"
           }
           footer={
             modalType === "view" ? (
