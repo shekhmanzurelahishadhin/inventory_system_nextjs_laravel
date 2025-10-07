@@ -29,4 +29,9 @@ class ModelService
         $query->with('brand:id,name')->with('category:id,name')->with('subCategory:id,name')->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+    public function createModel(array $data)
+    {
+        return ProductModel::create($data);
+    }
+
 }

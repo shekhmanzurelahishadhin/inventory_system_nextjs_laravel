@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\softConfig\model\CreateModelRequest;
 use App\Http\Resources\softConfig\model\ModelResource;
 use App\Services\softConfig\ModelService;
 use Illuminate\Http\Request;
@@ -40,6 +41,18 @@ class ProductModelController extends Controller
             'total' => $productModels->count(),
             'current_page' => 1,
             'per_page' => $productModels->count(),
+        ]);
+    }
+
+    public function store(CreateModelRequest $request, ModelService $modelService)
+    {
+        $validatedData = $request->validated();
+
+        $productModel = $modelService->createModel($validatedData);
+
+        return response()->json([
+            'message' => 'Model created successfully',
+            'data' => new ModelResource($productModel),
         ]);
     }
 
