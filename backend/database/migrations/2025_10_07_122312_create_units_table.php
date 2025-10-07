@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('units', function (Blueprint $table) {
             $table->id();
             $table->string('name');      // e.g., Piece, Kilogram, Liter
+            $table->string('slug')->unique();
             $table->string('code');      // e.g., pcs, kg, ltr
             $table->boolean('status')->default(true);
             $table->softDeletes();

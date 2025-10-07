@@ -67,10 +67,10 @@ const Units = () => {
       showOn: "all", // visible in create/edit/view
     },
     {
-      label: "Description",
-      key: "description",
-      type: "textarea",
-      required: false,
+      label: "Code",
+      key: "code",
+      type: "text",
+      required: true,
       showOn: "all",
     },
     {
@@ -91,9 +91,9 @@ const Units = () => {
       showOn: "all", // visible in create/edit/view
     },
     {
-      label: "Description",
-      key: "description",
-      type: "textarea",
+      label: "Code",
+      key: "code",
+      type: "test",
       required: false,
       showOn: "all",
     },
@@ -365,8 +365,8 @@ const fetchLookups = async () => {
       sortable: true,
     },
     {
-      name: "Description",
-      selector: (row) => row.description,
+      name: "Code",
+      selector: (row) => row.code,
       sortable: true,
     },
     {
@@ -468,7 +468,7 @@ const fetchLookups = async () => {
                 apiEndpoint="/configure/units"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "description", selector: "description" },
+                  { name: "code", selector: "code" },
                   {
                     name: "Status",
                     selector: (row) =>

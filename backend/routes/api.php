@@ -12,6 +12,7 @@ use App\Http\Controllers\api\softConfig\CategoryController;
 use App\Http\Controllers\api\softConfig\SubCategoryController;
 use App\Http\Controllers\api\softConfig\BrandController;
 use App\Http\Controllers\api\softConfig\ProductModelController;
+use App\Http\Controllers\api\softConfig\UnitController;
 
 
 Route::prefix('v1')->group(function () {
@@ -130,6 +131,17 @@ Route::prefix('v1')->group(function () {
                 Route::post('trash/{product_model}', [ProductModelController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [ProductModelController::class, 'restore']);
                 Route::delete('/{id}', [ProductModelController::class, 'destroy']); // force delete
+            });
+
+            // Models Route
+            Route::prefix('units')->group(function () {
+                Route::get('/', [UnitController::class, 'index']);
+                Route::post('/', [UnitController::class, 'store']);
+                Route::get('/{unit}', [UnitController::class, 'show']);
+                Route::put('/{unit}', [UnitController::class, 'update']);
+                Route::post('trash/{unit}', [UnitController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [UnitController::class, 'restore']);
+                Route::delete('/{id}', [UnitController::class, 'destroy']); // force delete
             });
         });
     });
