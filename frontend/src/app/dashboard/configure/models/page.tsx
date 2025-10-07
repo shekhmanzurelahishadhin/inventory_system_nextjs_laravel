@@ -146,6 +146,20 @@ const Models = () => {
       showOn: "view",
     },
     {
+      label: "Sub Category",
+      key: "sub_category_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Brand",
+      key: "brand_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
       label: "Status",
       key: "status",
       type: "radio",
@@ -504,7 +518,9 @@ const Models = () => {
                 apiEndpoint="/configure/models"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "Category Name", selector: "category_name" },
+                  { name: "Category", selector: "category_name" },
+                  { name: "Sub Category", selector: "sub_category_name" },
+                  { name: "Brand", selector: "brand_name" },
                   {
                     name: "Status",
                     selector: (row) =>
