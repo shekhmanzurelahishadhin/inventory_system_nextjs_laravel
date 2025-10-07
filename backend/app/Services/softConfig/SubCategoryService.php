@@ -8,7 +8,7 @@ use App\Models\softConfig\SubCategory;
 
 class SubCategoryService
 {
-    public function getSubCategories($filters = [], $perPage)
+    public function getSubCategories($filters = [], $perPage, $categoryId)
     {
         $query = SubCategory::withTrashed();
 
@@ -19,7 +19,9 @@ class SubCategoryService
                     $q->where('name', 'like', "%{$search}%");
                 });
         }
-
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
         $query->with('category:id,name')->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }

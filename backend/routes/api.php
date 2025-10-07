@@ -125,9 +125,9 @@ Route::prefix('v1')->group(function () {
             Route::prefix('models')->group(function () {
                 Route::get('/', [ProductModelController::class, 'index']);
                 Route::post('/', [ProductModelController::class, 'store']);
-                Route::get('/{model}', [ProductModelController::class, 'show']);
-                Route::put('/{model}', [ProductModelController::class, 'update']);
-                Route::post('trash/{model}', [ProductModelController::class, 'trash']); // soft delete
+                Route::get('/{product_model}', [ProductModelController::class, 'show']);
+                Route::put('/{product_model}', [ProductModelController::class, 'update']);
+                Route::post('trash/{product_model}', [ProductModelController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [ProductModelController::class, 'restore']);
                 Route::delete('/{id}', [ProductModelController::class, 'destroy']); // force delete
             });

@@ -47,6 +47,7 @@ const Models = () => {
   const formRef = useRef<any>(null);
 
   const [categories, setCategories] = useState<any[]>([]);
+  const [subCategories, setSubCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
 
 
@@ -65,6 +66,16 @@ const Models = () => {
     };
     fetchCategories();
   }, []);
+
+  // When form changes
+    const handleFormChange = async (updated: Record<string, any>) => {
+      // Category selected → fetch sub-categories
+      if (updated.category_id) {
+        const res = await api.get(`/configure/sub-categories?category_id=${updated.category_id}`);
+        console.log(res);
+        setSubCategories(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
+      }
+    };
 
   const fetchLookups = async () => {
     try {
@@ -95,6 +106,14 @@ const Models = () => {
       required: true,
       showOn: "both",
       options: categories,
+    },
+     {
+      label: "Sub Category",
+      key: "sub_category_id",
+      type: "select",
+      required: true,
+      showOn: "both",
+      options: subCategories,
     },
     {
       label: "Brand",
@@ -582,6 +601,7 @@ const Models = () => {
                   data={modalType === "edit" ? selectedModel : null}
                   fields={modelFields}
                   onSubmit={handleFormSubmit}
+                  onChange={handleFormChange}
                   backendErrors={backendErrors}
                   mode={modalType}
                 />

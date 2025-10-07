@@ -23,8 +23,9 @@ class SubCategoryController extends Controller
     {
         $perPage = $request->get('per_page');
         $filters = $request->only('search');
+        $categoryId = $request->query('category_id');
 
-        $subCategories = $subCategoryService->getSubCategories($filters, $perPage);
+        $subCategories = $subCategoryService->getSubCategories($filters, $perPage, $categoryId);
 
         if ($subCategories instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             // Paginated response
