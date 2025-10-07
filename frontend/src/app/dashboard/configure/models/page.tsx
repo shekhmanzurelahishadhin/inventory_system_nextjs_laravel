@@ -391,8 +391,18 @@ const Models = () => {
       sortable: true,
     },
     {
-      name: "Category Name",
+      name: "Category",
       selector: (row) => row.category_name,
+      sortable: true,
+    },
+    {
+      name: "Sub Category",
+      selector: (row) => row.sub_category_name,
+      sortable: true,
+    },
+    {
+      name: "Brand",
+      selector: (row) => row.brand_name,
       sortable: true,
     },
     {
