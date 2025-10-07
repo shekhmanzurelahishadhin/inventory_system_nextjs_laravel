@@ -15,7 +15,7 @@ class UnitService
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+                ->orWhere('code', 'like', "%{$search}%");
         }
 
         $query->orderBy('id','desc');
