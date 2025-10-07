@@ -76,7 +76,7 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, CategoryService $categoryService, Category $category)
     {
-//        dd($request);
+
         $category = $categoryService->updateCategory($category, $request->validated());
 
         return response()->json([

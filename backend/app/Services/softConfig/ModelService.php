@@ -29,9 +29,38 @@ class ModelService
         $query->with('brand:id,name')->with('category:id,name')->with('subCategory:id,name')->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
     public function createModel(array $data)
     {
         return ProductModel::create($data);
     }
 
+    public function updateModel(ProductModel $product_model, array $data)
+    {
+        $product_model->update($data); // updates the model
+        return $product_model;         // return the model itself
+    }
+
+
+    public function softDeleteModel(ProductModel $product_model)
+    {
+        $product_model->delete();
+    }
+
+    public function restoreModel(ProductModel $product_model)
+    {
+        if ($product_model->trashed()) {
+            $product_model->restore();
+        }
+        return $product_model;
+    }
+
+    public function forceDeleteModel(ProductModel $product_model)
+    {
+        if ($product_model->trashed()) {
+            $product_model->forceDelete();
+            return true;
+        }
+        return false;
+    }
 }

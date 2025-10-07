@@ -74,7 +74,7 @@ class BrandController extends Controller
      */
     public function update(UpdateBrandRequest $request, BrandService $brandService, Brand $brand)
     {
-//        dd($request);
+
         $brand = $brandService->updateBrand($brand, $request->validated());
 
         return response()->json([
