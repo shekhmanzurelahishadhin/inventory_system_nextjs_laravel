@@ -13,6 +13,7 @@ use App\Http\Controllers\api\softConfig\SubCategoryController;
 use App\Http\Controllers\api\softConfig\BrandController;
 use App\Http\Controllers\api\softConfig\ProductModelController;
 use App\Http\Controllers\api\softConfig\UnitController;
+use App\Http\Controllers\api\softConfig\StoreController;
 
 
 Route::prefix('v1')->group(function () {
@@ -133,7 +134,7 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/{id}', [ProductModelController::class, 'destroy']); // force delete
             });
 
-            // Models Route
+            // Units Route
             Route::prefix('units')->group(function () {
                 Route::get('/', [UnitController::class, 'index']);
                 Route::post('/', [UnitController::class, 'store']);
@@ -142,6 +143,17 @@ Route::prefix('v1')->group(function () {
                 Route::post('trash/{unit}', [UnitController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [UnitController::class, 'restore']);
                 Route::delete('/{id}', [UnitController::class, 'destroy']); // force delete
+            });
+
+            // Stores Route
+            Route::prefix('stores')->group(function () {
+                Route::get('/', [StoreController::class, 'index']);
+                Route::post('/', [StoreController::class, 'store']);
+                Route::get('/{store}', [StoreController::class, 'show']);
+                Route::put('/{store}', [StoreController::class, 'update']);
+                Route::post('trash/{store}', [StoreController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [StoreController::class, 'restore']);
+                Route::delete('/{id}', [StoreController::class, 'destroy']); // force delete
             });
         });
     });

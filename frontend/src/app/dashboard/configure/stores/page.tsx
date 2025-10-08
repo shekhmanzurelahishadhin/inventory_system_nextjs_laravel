@@ -104,7 +104,7 @@ const SubCategories = () => {
       label: "Address",
       key: "address",
       type: "textarea",
-      required: true,
+      required: false,
       showOn: "all",
     },
     {
@@ -373,6 +373,11 @@ const SubCategories = () => {
       sortable: true,
     },
     {
+      name: "Address",
+      selector: (row) => row.address,
+      sortable: true,
+    },
+    {
       name: "Status",
       selector: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
@@ -472,6 +477,7 @@ const SubCategories = () => {
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Company Name", selector: "company_name" },
+                  { name: "Address", selector: "address" },
                   {
                     name: "Status",
                     selector: (row) =>
