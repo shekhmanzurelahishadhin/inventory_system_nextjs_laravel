@@ -12,4 +12,9 @@ class Store extends Model
     use HasFactory, SoftDeletes, SetSlugAndAuditing;
 
     protected $guarded = ['id'];
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

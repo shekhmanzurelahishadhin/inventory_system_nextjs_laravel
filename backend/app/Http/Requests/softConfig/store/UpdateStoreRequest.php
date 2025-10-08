@@ -11,7 +11,7 @@ class UpdateStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,34 @@ class UpdateStoreRequest extends FormRequest
      */
     public function rules(): array
     {
+        $storeId = $this->route('store')->id;
+
         return [
-            //
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|unique:stores,slug,' . $storeId,
+            'code' => 'nullable|string|max:50|unique:stores,code,' . $storeId,
+            'address' => 'nullable|string|max:500',
+            'status' => 'boolean',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'The store name is required.',
+            'name.string'   => 'The store name must be a valid string.',
+            'name.max'      => 'The store name cannot exceed 255 characters.',
+
+            'slug.unique'   => 'This store slug is already in use.',
+            'slug.max'      => 'The slug cannot exceed 255 characters.',
+
+            'code.unique'   => 'This store code is already taken.',
+            'code.max'      => 'The store code cannot exceed 50 characters.',
+
+
+            'address.max'   => 'The address cannot exceed 500 characters.',
+
+            'status.boolean' => 'The active status must be true or false.',
         ];
     }
 }

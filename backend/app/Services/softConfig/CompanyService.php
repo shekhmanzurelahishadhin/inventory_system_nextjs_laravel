@@ -35,6 +35,9 @@ class CompanyService
             $data['logo'] = $this->fileUpload($data['logo'], 'companyLogos');
         }
 
+        $data['code'] = generateCode('CMP', 'companies', 'code');
+
+
         return Company::create($data);
     }
 
@@ -44,7 +47,7 @@ class CompanyService
         if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
             $data['logo'] = $this->fileUpload($data['logo'], 'logos', $company->logo_path);
         }
-
+        $data['code'] = generateCode('CMP', 'companies', 'code');
         $company->update($data); // updates the model
         return $company;         // return the model itself
     }
