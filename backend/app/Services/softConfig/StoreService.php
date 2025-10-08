@@ -32,31 +32,31 @@ class StoreService
         return Store::create($data);
     }
 
-    public function updateStore(Store $subCategory, array $data)
+    public function updateStore(Store $store, array $data)
     {
         $data['code'] = generateCode('STR', 'stores', 'code');
-        $subCategory->update($data); // updates the model
-        return $subCategory;         // return the model itself
+        $store->update($data); // updates the model
+        return $store;         // return the model itself
     }
 
 
-    public function softDeleteStore(Store $subCategory)
+    public function softDeleteStore(Store $store)
     {
-        $subCategory->delete();
+        $store->delete();
     }
 
-    public function restoreStore(Store $subCategory)
+    public function restoreStore(Store $store)
     {
-        if ($subCategory->trashed()) {
-            $subCategory->restore();
+        if ($store->trashed()) {
+            $store->restore();
         }
-        return $subCategory;
+        return $store;
     }
 
-    public function forceDeleteStore(Store $subCategory)
+    public function forceDeleteStore(Store $store)
     {
-        if ($subCategory->trashed()) {
-            $subCategory->forceDelete();
+        if ($store->trashed()) {
+            $store->forceDelete();
             return true;
         }
         return false;
