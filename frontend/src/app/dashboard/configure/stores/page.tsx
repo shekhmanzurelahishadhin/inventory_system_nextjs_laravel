@@ -46,7 +46,7 @@ const SubCategories = () => {
 
   const formRef = useRef<any>(null);
 
-  const [categories, setCategories] = useState<any[]>([]);
+  const [companies, setCategories] = useState<any[]>([]);
 
 
   const [perPage, setPerPage] = useState(10);
@@ -57,7 +57,7 @@ const SubCategories = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const res = await api.get("/configure/categories");
+      const res = await api.get("/configure/companies");
       setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
     };
     fetchCategories();
@@ -86,17 +86,24 @@ const SubCategories = () => {
 
   const storeFields = [
     {
-      label: "Category",
-      key: "category_id",
+      label: "Company",
+      key: "company_id",
       type: "select",
       required: true,
       showOn: "both",
-      options: categories,
+      options: companies,
     },
     {
-      label: "Name",
+      label: "Store Name",
       key: "name",
       type: "text",
+      required: true,
+      showOn: "all",
+    },
+    {
+      label: "Address",
+      key: "address",
+      type: "textarea",
       required: true,
       showOn: "all",
     },
@@ -109,8 +116,8 @@ const SubCategories = () => {
       showOn: "edit", // edit only
     },
     {
-      label: "Category Name",
-      key: "category_name",
+      label: "Company Name",
+      key: "company_name",
       type: "text",
       readOnly: true,
       showOn: "view",
@@ -186,22 +193,22 @@ const SubCategories = () => {
 
       if (modalType === "create") {
         // Create
-        await api.post("/configure/sub-categories", submitData, {
+        await api.post("/configure/stores", submitData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        toast.success("Category saved successfully");
+        toast.success("Store saved successfully");
       } else if (modalType === "edit" && selectedStore?.id) {
         // Edit: Use POST + _method=PUT for Laravel multipart/form-data
         submitData.append("_method", "PUT");
         console.log(formData);
 
         await api.post(
-          `/configure/sub-categories/${selectedStore.id}`,
+          `/configure/stores/${selectedStore.id}`,
           submitData,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
 
-        toast.success("Category updated successfully");
+        toast.success("Store updated successfully");
       }
 
       setIsSubmitting(false);
@@ -240,7 +247,7 @@ const SubCategories = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/configure/sub-categories/trash/${store.id}`);
+      await api.post(`/configure/stores/trash/${store.id}`);
 
       Swal.close();
       Swal.fire({
@@ -282,12 +289,12 @@ const SubCategories = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.delete(`/configure/sub-categories/${store.id}`); // force delete
+      await api.delete(`/configure/stores/${store.id}`); // force delete
 
       Swal.close();
       Swal.fire({
         title: "Deleted!",
-        text: `Category "${store.name}" has been permanently deleted.`,
+        text: `Store "${store.name}" has been permanently deleted.`,
         icon: "success",
         confirmButtonText: "OK",
       });
@@ -309,7 +316,7 @@ const SubCategories = () => {
   // Restore (Undo Soft Delete)
   const handleRestore = async (store: any) => {
     const confirmed = await confirmAction({
-      title: "Restore Category?",
+      title: "Restore Store?",
       text: `You are about to restore the store "${store.name}".`,
       confirmButtonText: "Yes, restore it!",
       cancelButtonText: "Cancel",
@@ -325,12 +332,12 @@ const SubCategories = () => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/configure/sub-categories/restore/${store.id}`);
+      await api.post(`/configure/stores/restore/${store.id}`);
 
       Swal.close();
       Swal.fire({
         title: "Restored!",
-        text: `Category "${store.name}" has been restored successfully.`,
+        text: `Store "${store.name}" has been restored successfully.`,
         icon: "success",
         confirmButtonText: "OK",
       });
@@ -361,8 +368,8 @@ const SubCategories = () => {
       sortable: true,
     },
     {
-      name: "Category Name",
-      selector: (row) => row.category_name,
+      name: "Company Name",
+      selector: (row) => row.company_name,
       sortable: true,
     },
     {
@@ -388,7 +395,7 @@ const SubCategories = () => {
               variant: "primary",
               size: "sm",
               tooltip: "View",
-              show: (r) => hasPermission("sub-category.view"),
+              show: (r) => hasPermission("store.view"),
             },
             {
               icon: faEdit,
@@ -396,7 +403,7 @@ const SubCategories = () => {
               variant: "secondary",
               size: "sm",
               tooltip: "Edit",
-              show: (r) => hasPermission("sub-category.edit") && !r.deleted_at,
+              show: (r) => hasPermission("store.edit") && !r.deleted_at,
             },
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
@@ -404,7 +411,7 @@ const SubCategories = () => {
                 r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
               variant: "danger",
               size: "sm",
-              show: (r) => hasPermission("sub-category.delete"),
+              show: (r) => hasPermission("store.delete"),
               tooltip: row.deleted_at ? "Delete Permanently" : "Move to Trash",
             },
             {
@@ -427,10 +434,10 @@ const SubCategories = () => {
     <>
       <AccessRoute
         requiredPermissions={[
-          "sub-category.view",
-          "sub-category.create",
-          "sub-category.edit",
-          "sub-category.delete",
+          "store.view",
+          "store.create",
+          "store.edit",
+          "store.delete",
         ]}
       >
         <PageHeader
@@ -451,7 +458,7 @@ const SubCategories = () => {
                 size="md"
                 className="mt-2 sm:mt-0"
                 onClick={() => openModal("create")}
-                show={hasPermission("sub-category.create")}
+                show={hasPermission("store.create")}
               >
                 Add New
               </Button>
@@ -461,10 +468,10 @@ const SubCategories = () => {
             <div className="bg-white shadow overflow-hidden pt-8">
               <DynamicDataTable
                 columns={columns}
-                apiEndpoint="/configure/sub-categories"
+                apiEndpoint="/configure/stores"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "Category Name", selector: "category_name" },
+                  { name: "Company Name", selector: "company_name" },
                   {
                     name: "Status",
                     selector: (row) =>
@@ -475,7 +482,7 @@ const SubCategories = () => {
                 exportFileName="SubCategories"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search permission..."
+                searchPlaceholder="Search stores..."
                 refreshTrigger={refreshTrigger} // Add this prop
                 onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
                 allowExportAll={true} // allow export all data

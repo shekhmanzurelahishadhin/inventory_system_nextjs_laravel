@@ -189,7 +189,7 @@ const SubCategories = () => {
         await api.post("/configure/sub-categories", submitData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        toast.success("Category saved successfully");
+        toast.success("Sub Category saved successfully");
       } else if (modalType === "edit" && selectedSubCategory?.id) {
         // Edit: Use POST + _method=PUT for Laravel multipart/form-data
         submitData.append("_method", "PUT");
@@ -201,7 +201,7 @@ const SubCategories = () => {
           { headers: { "Content-Type": "multipart/form-data" } }
         );
 
-        toast.success("Category updated successfully");
+        toast.success("Sub Category updated successfully");
       }
 
       setIsSubmitting(false);
@@ -475,7 +475,7 @@ const SubCategories = () => {
                 exportFileName="SubCategories"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search permission..."
+                searchPlaceholder="Search sub-category..."
                 refreshTrigger={refreshTrigger} // Add this prop
                 onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
                 allowExportAll={true} // allow export all data
