@@ -29,7 +29,7 @@ import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 
-const SubCategories = () => {
+const Stores = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
     null
   );
@@ -46,7 +46,7 @@ const SubCategories = () => {
 
   const formRef = useRef<any>(null);
 
-  const [companies, setCategories] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
 
 
   const [perPage, setPerPage] = useState(10);
@@ -56,11 +56,11 @@ const SubCategories = () => {
   });
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCompanies = async () => {
       const res = await api.get("/configure/companies");
-      setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
+      setCompanies(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
     };
-    fetchCategories();
+    fetchCompanies();
   }, []);
 
   const fetchLookups = async () => {
@@ -372,6 +372,12 @@ const SubCategories = () => {
       selector: (row) => row.company_name,
       sortable: true,
     },
+    
+    {
+      name: "Code",
+      selector: (row) => row.code,
+      sortable: true,
+    },
     {
       name: "Address",
       selector: (row) => row.address,
@@ -477,6 +483,7 @@ const SubCategories = () => {
                 exportColumns={[
                   { name: "Name", selector: "name" },
                   { name: "Company Name", selector: "company_name" },
+                  { name: "Code", selector: "code" },
                   { name: "Address", selector: "address" },
                   {
                     name: "Status",
@@ -485,7 +492,7 @@ const SubCategories = () => {
                   },
                   { name: "Created at", selector: "created_at" },
                 ]}
-                exportFileName="SubCategories"
+                exportFileName="Stores"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search stores..."
@@ -596,4 +603,4 @@ const SubCategories = () => {
   );
 };
 
-export default SubCategories;
+export default Stores;
