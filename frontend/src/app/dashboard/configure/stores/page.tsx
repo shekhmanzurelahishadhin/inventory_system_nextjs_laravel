@@ -62,10 +62,6 @@ const Stores = () => {
     );
   };
 
-  useEffect(() => {
-    fetchCompanies();
-  }, []);
-
   const fetchLookups = async () => {
     try {
       const type = "active_status";
@@ -76,6 +72,7 @@ const Stores = () => {
     }
   };
   useEffect(() => {
+    fetchCompanies();
     fetchLookups();
   }, []);
 

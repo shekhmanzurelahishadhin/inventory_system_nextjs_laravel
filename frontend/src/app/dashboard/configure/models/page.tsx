@@ -56,23 +56,27 @@ const Models = () => {
     page: 1,
     perPage: 10
   });
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await api.get("/configure/categories");
-      const brandRes = await api.get("/configure/brands");
+  const fetchDatas = async () => {
+      const res = await api.get("/configure/categories", {
+      params: { status: true }, // only status = active categories
+    });
+      const brandRes = await api.get("/configure/brands", {
+      params: { status: true }, // only status = active brands
+    });
       setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
       setBrands(brandRes.data.data.map((b: any) => ({ value: b.id, label: b.name })));
     };
-    fetchCategories();
+  useEffect(() => {
+    fetchDatas();
   }, []);
 
   // When form changes
     const handleFormChange = async (updated: Record<string, any>) => {
       // Category selected → fetch sub-categories
       if (updated.category_id) {
-        const res = await api.get(`/configure/sub-categories?category_id=${updated.category_id}`);
-        console.log(res);
+        const res = await api.get(`/configure/sub-categories?category_id=${updated.category_id}`, {
+      params: { status: true }, // only status = active sub-categories
+    });
         setSubCategories(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
       }
     };
@@ -193,6 +197,8 @@ const Models = () => {
     setSelectedModel(model);
     setBackendErrors({});
     setIsSubmitting(false);
+    fetchDatas();
+    setSubCategories([]); // reset sub-categories
   };
 
   const closeModal = () => {

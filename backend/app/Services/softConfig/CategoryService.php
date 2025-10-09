@@ -10,7 +10,14 @@ class CategoryService
 {
     public function getCategories($filters = [], $perPage)
     {
-        $query = Category::withTrashed();
+        $query = Category::query();
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status'] ? 1 : 0);
+        } else {
+            $query->withTrashed();
+        }
+
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];

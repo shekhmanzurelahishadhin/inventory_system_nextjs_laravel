@@ -10,7 +10,13 @@ class SubCategoryService
 {
     public function getSubCategories($filters = [], $perPage, $categoryId)
     {
-        $query = SubCategory::withTrashed();
+        $query = SubCategory::query();
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status'] ? 1 : 0);
+        } else {
+            $query->withTrashed();
+        }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];

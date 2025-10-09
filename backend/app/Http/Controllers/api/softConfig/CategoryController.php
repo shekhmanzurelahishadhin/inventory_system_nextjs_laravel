@@ -25,7 +25,7 @@ class CategoryController extends Controller
     public function index(Request $request, CategoryService $categoryService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search');
+        $filters = $request->only('search','status');
 
         $categories = $categoryService->getCategories($filters, $perPage);
 
