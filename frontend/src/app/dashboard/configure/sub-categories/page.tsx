@@ -54,12 +54,13 @@ const SubCategories = () => {
     page: 1,
     perPage: 10
   });
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const res = await api.get("/configure/categories");
+const fetchCategories = async () => {
+      const res = await api.get("/configure/categories", {
+      params: { status: true }, // only status = active brands
+    });
       setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
     };
+  useEffect(() => {
     fetchCategories();
   }, []);
 
@@ -149,6 +150,7 @@ const SubCategories = () => {
     setSelectedSubCategory(subCategory);
     setBackendErrors({});
     setIsSubmitting(false);
+    fetchCategories();
   };
 
   const closeModal = () => {
