@@ -28,6 +28,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const Brands = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -50,6 +51,9 @@ const Brands = () => {
     page: 1,
     perPage: 10,
   });
+  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
+    setRefreshTrigger((prev) => prev + 1)
+  );  
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
@@ -209,133 +213,6 @@ const fetchLookups = async () => {
     }
   };
 
-  // Delete brand function with SweetAlert2 confirmation
-  // Soft Delete (Move to Trash)
-  const handleSoftDelete = async (brand: any) => {
-    const confirmed = await confirmAction({
-      title: "Move to Trash?",
-      text: `You are about to move the brand "${brand.name}" to trash.`,
-      confirmButtonText: "Yes, move to trash!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Moving to Trash...",
-        text: `Please wait while we move the brand`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/brands/trash/${brand.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Moved!",
-        text: `Brand "${brand.name}" has been moved to trash.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message || "Failed to move brand to trash",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Force Delete (Permanent)
-  const handleForceDelete = async (brand: any) => {
-    const confirmed = await confirmAction({
-      title: "Delete Permanently?",
-      text: `You are about to permanently delete the brand "${brand.name}". This cannot be undone!`,
-      confirmButtonText: "Yes, delete permanently!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Deleting permanently...",
-        text: `Please wait while we delete the brand permanently`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.delete(`/configure/brands/${brand.id}`); // force delete
-
-      Swal.close();
-      Swal.fire({
-        title: "Deleted!",
-        text: `Brand "${brand.name}" has been permanently deleted.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message ||
-          "Failed to delete brand permanently",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Restore (Undo Soft Delete)
-  const handleRestore = async (brand: any) => {
-    const confirmed = await confirmAction({
-      title: "Restore Brand?",
-      text: `You are about to restore the brand "${brand.name}".`,
-      confirmButtonText: "Yes, restore it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Restoring...",
-        text: `Please wait while we restore the brand`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/brands/restore/${brand.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Restored!",
-        text: `Brand "${brand.name}" has been restored successfully.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to restore brand",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
   // Columns for DataTable
   const columns = [
     {
@@ -386,7 +263,7 @@ const fetchLookups = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
+                r.deleted_at ? handleForceDelete(r, "/configure/brands", "brand") : handleSoftDelete(r, "/configure/brands", "brand"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("brand.delete"),
@@ -394,7 +271,7 @@ const fetchLookups = async () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r),
+              onClick: (r) => handleRestore(r, "/configure/brands", "brand"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,

@@ -28,6 +28,7 @@ import FormSkeleton from "@/app/components/ui/FormSkeleton";
 import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const Stores = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -53,6 +54,9 @@ const Stores = () => {
     page: 1,
     perPage: 10,
   });
+  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
+    setRefreshTrigger((prev) => prev + 1)
+  );  
   const fetchCompanies = async () => {
     const res = await api.get("/configure/companies", {
       params: { status: true }, // only status = active companies
@@ -219,132 +223,6 @@ const Stores = () => {
       }
     }
   };
-
-  // Delete Store function with SweetAlert2 confirmation
-  // Soft Delete (Move to Trash)
-  const handleSoftDelete = async (store: any) => {
-    const confirmed = await confirmAction({
-      title: "Move to Trash?",
-      text: `You are about to move the Store "${store.name}" to trash.`,
-      confirmButtonText: "Yes, move to trash!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Moving to Trash...",
-        text: `Please wait while we move the store`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/stores/trash/${store.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Moved!",
-        text: `Store "${store.name}" has been moved to trash.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to move store to trash",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Force Delete (Permanent)
-  const handleForceDelete = async (store: any) => {
-    const confirmed = await confirmAction({
-      title: "Delete Permanently?",
-      text: `You are about to permanently delete the store "${store.name}". This cannot be undone!`,
-      confirmButtonText: "Yes, delete permanently!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Deleting permanently...",
-        text: `Please wait while we delete the store permanently`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.delete(`/configure/stores/${store.id}`); // force delete
-
-      Swal.close();
-      Swal.fire({
-        title: "Deleted!",
-        text: `Store "${store.name}" has been permanently deleted.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message || "Failed to delete store permanently",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Restore (Undo Soft Delete)
-  const handleRestore = async (store: any) => {
-    const confirmed = await confirmAction({
-      title: "Restore Store?",
-      text: `You are about to restore the store "${store.name}".`,
-      confirmButtonText: "Yes, restore it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Restoring...",
-        text: `Please wait while we restore the store`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/stores/restore/${store.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Restored!",
-        text: `Store "${store.name}" has been restored successfully.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to restore store",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
   // Columns for DataTable
   const columns = [
     {
@@ -411,7 +289,7 @@ const Stores = () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
+                r.deleted_at ? handleForceDelete(r, "/configure/stores", "store") : handleSoftDelete(r, "/configure/stores", "store"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("store.delete"),
@@ -419,7 +297,7 @@ const Stores = () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r),
+              onClick: (r) => handleRestore(r, "/configure/stores", "store"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,

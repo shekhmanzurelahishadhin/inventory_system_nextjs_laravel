@@ -28,6 +28,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const Units = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -50,6 +51,7 @@ const Units = () => {
     page: 1,
     perPage: 10,
   });
+  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1)); 
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
@@ -223,133 +225,6 @@ const fetchLookups = async () => {
     }
   };
 
-  // Delete unit function with SweetAlert2 confirmation
-  // Soft Delete (Move to Trash)
-  const handleSoftDelete = async (unit: any) => {
-    const confirmed = await confirmAction({
-      title: "Move to Trash?",
-      text: `You are about to move the unit "${unit.name}" to trash.`,
-      confirmButtonText: "Yes, move to trash!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Moving to Trash...",
-        text: `Please wait while we move the unit`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/units/trash/${unit.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Moved!",
-        text: `Unit "${unit.name}" has been moved to trash.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message || "Failed to move unit to trash",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Force Delete (Permanent)
-  const handleForceDelete = async (unit: any) => {
-    const confirmed = await confirmAction({
-      title: "Delete Permanently?",
-      text: `You are about to permanently delete the unit "${unit.name}". This cannot be undone!`,
-      confirmButtonText: "Yes, delete permanently!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Deleting permanently...",
-        text: `Please wait while we delete the unit permanently`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.delete(`/configure/units/${unit.id}`); // force delete
-
-      Swal.close();
-      Swal.fire({
-        title: "Deleted!",
-        text: `Unit "${unit.name}" has been permanently deleted.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message ||
-          "Failed to delete unit permanently",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Restore (Undo Soft Delete)
-  const handleRestore = async (unit: any) => {
-    const confirmed = await confirmAction({
-      title: "Restore Unit?",
-      text: `You are about to restore the unit "${unit.name}".`,
-      confirmButtonText: "Yes, restore it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Restoring...",
-        text: `Please wait while we restore the unit`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/units/restore/${unit.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Restored!",
-        text: `Unit "${unit.name}" has been restored successfully.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to restore unit",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
   // Columns for DataTable
   const columns = [
     {
@@ -405,7 +280,7 @@ const fetchLookups = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
+                r.deleted_at ? handleForceDelete(r,"/configure/units", "unit") : handleSoftDelete(r, "/configure/units", "unit"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("unit.delete"),
@@ -413,7 +288,7 @@ const fetchLookups = async () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r),
+              onClick: (r) => handleRestore(r, "/configure/units", "unit"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,
