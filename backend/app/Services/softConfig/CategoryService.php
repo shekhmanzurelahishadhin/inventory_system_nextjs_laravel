@@ -25,7 +25,7 @@ class CategoryService
                 ->orWhere('description', 'like', "%{$search}%");
         }
 
-        $query->orderBy('id','desc');
+        $query->with(['productModels:id,name,category_id','subCategories:id,name,category_id'])->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
 

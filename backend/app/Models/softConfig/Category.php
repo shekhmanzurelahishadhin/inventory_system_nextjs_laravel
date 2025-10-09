@@ -18,14 +18,18 @@ class Category extends Model
     {
         return $this->hasMany(SubCategory::class);
     }
-
-    protected static function booted()
+    public function productModels()
     {
-        static::deleting(function ($category) {
-            if (!$category->isForceDeleting()) {
-                // Soft delete all sub categories
-                $category->subCategories()->delete();
-            }
-        });
+        return $this->hasMany(ProductModel::class);
     }
+
+//    protected static function booted()
+//    {
+//        static::deleting(function ($category) {
+//            if (!$category->isForceDeleting()) {
+//                // Soft delete all sub categories
+//                $category->subCategories()->delete();
+//            }
+//        });
+//    }
 }

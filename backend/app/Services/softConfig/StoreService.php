@@ -10,7 +10,13 @@ class StoreService
 {
     public function getStores($filters = [], $perPage, $companyId)
     {
-        $query = Store::withTrashed();
+        $query = Store::query();
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status'] ? 1 : 0);
+        } else {
+            $query->withTrashed();
+        }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];

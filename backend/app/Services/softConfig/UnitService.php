@@ -10,7 +10,13 @@ class UnitService
 {
     public function getUnits($filters = [], $perPage)
     {
-        $query = Unit::withTrashed();
+        $query = Unit::query();
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status'] ? 1 : 0);
+        } else {
+            $query->withTrashed();
+        }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];

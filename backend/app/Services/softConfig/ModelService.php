@@ -10,7 +10,13 @@ class ModelService
 {
     public function getModels($filters = [], $perPage)
     {
-        $query = ProductModel::withTrashed();
+        $query = ProductModel::query();
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status'] ? 1 : 0);
+        } else {
+            $query->withTrashed();
+        }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
@@ -26,7 +32,7 @@ class ModelService
                 });
         }
 
-        $query->with('brand:id,name')->with('category:id,name')->with('subCategory:id,name')->orderBy('id','desc');
+        $query->with(['brand:id,name','category:id,name','subCategory:id,name'])->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
 

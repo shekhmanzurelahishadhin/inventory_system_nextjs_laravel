@@ -22,7 +22,7 @@ class StoreController extends Controller
     public function index(Request $request, StoreService $storeService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search');
+        $filters = $request->only('search','status');
         $companyId = $request->query('company_id');
 
         $stores = $storeService->getStores($filters, $perPage, $companyId);
