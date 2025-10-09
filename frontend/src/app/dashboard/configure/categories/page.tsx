@@ -103,12 +103,12 @@ const Companies = () => {
       type: "radio",
       required: true,
       options: status.map(opt => ({
-      ...opt,
-      className:
-        opt.value === "1"
-          ? "px-2 py-1 bg-green-100 text-green-700 rounded"
-          : "px-2 py-1 bg-red-100 text-red-700 rounded",
-    })),
+        ...opt,
+        className:
+          opt.value === "1"
+            ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+            : "px-2 py-1 bg-red-100 text-red-700 rounded",
+      })),
       showOn: "view",
     },
     {
@@ -131,7 +131,7 @@ const Companies = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-const fetchLookups = async () => {
+  const fetchLookups = async () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
@@ -229,16 +229,17 @@ const fetchLookups = async () => {
     const confirmed = await confirmAction({
       title: "Move to Trash?",
       text: `You are about to move the category "${category.name}" to trash.`,
-      confirmButtonText: "Yes, move to trash!",
+      confirmButtonText: "Yes, trash!",
       cancelButtonText: "Cancel",
     });
 
     if (!confirmed) return;
 
     try {
-      Swal.fire({
+      // Show loading briefly but skip an extra alert layer
+      const loading = Swal.fire({
         title: "Moving to Trash...",
-        text: `Please wait while we move the category`,
+        text: "Please wait a moment.",
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
@@ -246,14 +247,12 @@ const fetchLookups = async () => {
       await api.post(`/configure/categories/trash/${category.id}`);
 
       Swal.close();
-      Swal.fire({
-        title: "Moved!",
-        text: `Category "${category.name}" has been moved to trash.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
       setRefreshTrigger((prev) => prev + 1);
+
+      // Toast-style alert for success — non-blocking and faster
+      toast.success(`"${category.name}" moved to trash.`, {
+        autoClose: 1000, // 1 seconds
+      });
     } catch (error: any) {
       Swal.close();
       Swal.fire({
@@ -271,7 +270,7 @@ const fetchLookups = async () => {
     const confirmed = await confirmAction({
       title: "Delete Permanently?",
       text: `You are about to permanently delete the category "${category.name}". This cannot be undone!`,
-      confirmButtonText: "Yes, delete permanently!",
+      confirmButtonText: "Yes, delete!",
       cancelButtonText: "Cancel",
     });
 
@@ -288,14 +287,10 @@ const fetchLookups = async () => {
       await api.delete(`/configure/categories/${category.id}`); // force delete
 
       Swal.close();
-      Swal.fire({
-        title: "Deleted!",
-        text: `Category "${category.name}" has been permanently deleted.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
       setRefreshTrigger((prev) => prev + 1);
+      toast.success(`Category "${category.name}" has been permanently deleted.`, {
+        autoClose: 1000, // 1 seconds
+      });
     } catch (error: any) {
       Swal.close();
       Swal.fire({
@@ -314,7 +309,7 @@ const fetchLookups = async () => {
     const confirmed = await confirmAction({
       title: "Restore Category?",
       text: `You are about to restore the category "${category.name}".`,
-      confirmButtonText: "Yes, restore it!",
+      confirmButtonText: "Yes, restore!",
       cancelButtonText: "Cancel",
     });
 
@@ -331,14 +326,11 @@ const fetchLookups = async () => {
       await api.post(`/configure/categories/restore/${category.id}`);
 
       Swal.close();
-      Swal.fire({
-        title: "Restored!",
-        text: `Category "${category.name}" has been restored successfully.`,
-        icon: "success",
-        confirmButtonText: "OK",
+      setRefreshTrigger((prev) => prev + 1);
+      toast.success(`Category "${category.name}" has been restored successfully.`, {
+        autoClose: 1000, // 1 seconds
       });
 
-      setRefreshTrigger((prev) => prev + 1);
     } catch (error: any) {
       Swal.close();
       Swal.fire({
@@ -498,8 +490,8 @@ const fetchLookups = async () => {
             modalType === "create"
               ? "Create Category"
               : modalType === "edit"
-              ? "Edit Category"
-              : "View Category"
+                ? "Edit Category"
+                : "View Category"
           }
           footer={
             modalType === "view" ? (
@@ -515,11 +507,10 @@ const fetchLookups = async () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
-                      ? "opacity-60 cursor-not-allowed"
-                      : "opacity-100"
-                  }`}
+                  className={`${isSubmitting
+                    ? "opacity-60 cursor-not-allowed"
+                    : "opacity-100"
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -550,8 +541,8 @@ const fetchLookups = async () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )
