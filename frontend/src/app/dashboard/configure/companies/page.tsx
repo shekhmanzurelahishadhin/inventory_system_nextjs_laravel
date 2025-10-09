@@ -280,132 +280,123 @@ const fetchLookups = async () => {
   };
 
   // Delete company function with SweetAlert2 confirmation
-  // Soft Delete (Move to Trash)
-  const handleSoftDelete = async (company: any) => {
-    const confirmed = await confirmAction({
-      title: "Move to Trash?",
-      text: `You are about to move the company "${company.name}" to trash.`,
-      confirmButtonText: "Yes, move to trash!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Moving to Trash...",
-        text: `Please wait while we move the company`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
+ // Soft Delete (Move to Trash)
+    const handleSoftDelete = async (company: any) => {
+      const confirmed = await confirmAction({
+        title: "Move to Trash?",
+        text: `You are about to move the company "${company.name}" to trash.`,
+        confirmButtonText: "Yes, trash!",
+        cancelButtonText: "Cancel",
       });
-
-      await api.post(`/configure/companies/trash/${company.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Moved!",
-        text: `Company "${company.name}" has been moved to trash.`,
-        icon: "success",
-        confirmButtonText: "OK",
+  
+      if (!confirmed) return;
+  
+      try {
+        // Show loading briefly but skip an extra alert layer
+        const loading = Swal.fire({
+          title: "Moving to Trash...",
+          text: "Please wait a moment.",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+  
+        await api.post(`/configure/companies/trash/${company.id}`);
+  
+        Swal.close();
+        setRefreshTrigger((prev) => prev + 1);
+  
+        // Toast-style alert for success — non-blocking and faster
+        toast.success(`"${company.name}" moved to trash.`, {
+          autoClose: 1000, // 1 seconds
+        });
+      } catch (error: any) {
+        Swal.close();
+        Swal.fire({
+          title: "Error!",
+          text:
+            error.response?.data?.message || "Failed to move company to trash",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    };
+  
+    // Force Delete (Permanent)
+    const handleForceDelete = async (company: any) => {
+      const confirmed = await confirmAction({
+        title: "Delete Permanently?",
+        text: `You are about to permanently delete the company "${company.name}". This cannot be undone!`,
+        confirmButtonText: "Yes, delete!",
+        cancelButtonText: "Cancel",
       });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message || "Failed to move company to trash",
-        icon: "error",
-        confirmButtonText: "OK",
+  
+      if (!confirmed) return;
+  
+      try {
+        Swal.fire({
+          title: "Deleting permanently...",
+          text: `Please wait while we delete the company permanently`,
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+  
+        await api.delete(`/configure/companies/${company.id}`); // force delete
+  
+        Swal.close();
+        setRefreshTrigger((prev) => prev + 1);
+        toast.success(`Company "${company.name}" has been permanently deleted.`, {
+          autoClose: 1000, // 1 seconds
+        });
+      } catch (error: any) {
+        Swal.close();
+        Swal.fire({
+          title: "Error!",
+          text:
+            error.response?.data?.message ||
+            "Failed to delete company permanently",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    };
+  
+    // Restore (Undo Soft Delete)
+    const handleRestore = async (company: any) => {
+      const confirmed = await confirmAction({
+        title: "Restore Company?",
+        text: `You are about to restore the company "${company.name}".`,
+        confirmButtonText: "Yes, restore!",
+        cancelButtonText: "Cancel",
       });
-    }
-  };
-
-  // Force Delete (Permanent)
-  const handleForceDelete = async (company: any) => {
-    const confirmed = await confirmAction({
-      title: "Delete Permanently?",
-      text: `You are about to permanently delete the company "${company.name}". This cannot be undone!`,
-      confirmButtonText: "Yes, delete permanently!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Deleting permanently...",
-        text: `Please wait while we delete the company permanently`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.delete(`/configure/companies/${company.id}`); // force delete
-
-      Swal.close();
-      Swal.fire({
-        title: "Deleted!",
-        text: `Company "${company.name}" has been permanently deleted.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message ||
-          "Failed to delete company permanently",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Restore (Undo Soft Delete)
-  const handleRestore = async (company: any) => {
-    const confirmed = await confirmAction({
-      title: "Restore Company?",
-      text: `You are about to restore the company "${company.name}".`,
-      confirmButtonText: "Yes, restore it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Restoring...",
-        text: `Please wait while we restore the company`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/companies/restore/${company.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Restored!",
-        text: `Company "${company.name}" has been restored successfully.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to restore company",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
+  
+      if (!confirmed) return;
+  
+      try {
+        Swal.fire({
+          title: "Restoring...",
+          text: `Please wait while we restore the company`,
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+  
+        await api.post(`/configure/companies/restore/${company.id}`);
+  
+        Swal.close();
+        setRefreshTrigger((prev) => prev + 1);
+        toast.success(`Company "${company.name}" has been restored successfully.`, {
+          autoClose: 1000, // 1 seconds
+        });
+  
+      } catch (error: any) {
+        Swal.close();
+        Swal.fire({
+          title: "Error!",
+          text: error.response?.data?.message || "Failed to restore company",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    };
   // Columns for DataTable
   const columns = [
     {
