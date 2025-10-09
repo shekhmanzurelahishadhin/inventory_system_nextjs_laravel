@@ -26,7 +26,7 @@ class CompanyController extends Controller
     public function index(Request $request, CompanyService $companyService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search');
+        $filters = $request->only('search','status');
 
         $companies = $companyService->getCompanies($filters, $perPage);
 

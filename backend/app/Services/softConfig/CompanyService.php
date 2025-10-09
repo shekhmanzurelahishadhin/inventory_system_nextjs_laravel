@@ -14,7 +14,14 @@ class CompanyService
 
     public function getCompanies($filters = [], $perPage)
     {
-        $query = Company::withTrashed();
+        $query = Company::query();
+
+        // Apply "status" filter if passed
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status'] ? 1 : 0);
+        } else {
+            $query->withTrashed();
+        }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];

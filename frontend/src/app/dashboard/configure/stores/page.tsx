@@ -48,18 +48,21 @@ const Stores = () => {
 
   const [companies, setCompanies] = useState<any[]>([]);
 
-
   const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
     page: 1,
-    perPage: 10
+    perPage: 10,
   });
+  const fetchCompanies = async () => {
+    const res = await api.get("/configure/companies", {
+      params: { status: true }, // only status = active companies
+    });
+    setCompanies(
+      res.data.data.map((c: any) => ({ value: c.id, label: c.name }))
+    );
+  };
 
   useEffect(() => {
-    const fetchCompanies = async () => {
-      const res = await api.get("/configure/companies");
-      setCompanies(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
-    };
     fetchCompanies();
   }, []);
 
@@ -67,9 +70,7 @@ const Stores = () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
-      setStatus(
-        res.data.map((m: any) => ({ value: m.value, label: m.label }))
-      );
+      setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
     } catch (error) {
       console.error("Failed to fetch lookups", error);
     }
@@ -127,7 +128,7 @@ const Stores = () => {
       key: "status",
       type: "radio",
       required: true,
-      options: status.map(opt => ({
+      options: status.map((opt) => ({
         ...opt,
         className:
           opt.value === "1"
@@ -148,14 +149,12 @@ const Stores = () => {
     setIsMounted(true);
   }, []);
 
-  const openModal = (
-    type: "create" | "edit" | "view",
-    store: any = null
-  ) => {
+  const openModal = (type: "create" | "edit" | "view", store: any = null) => {
     setModalType(type);
     setSelectedStore(store);
     setBackendErrors({});
     setIsSubmitting(false);
+    fetchCompanies();
   };
 
   const closeModal = () => {
@@ -202,11 +201,9 @@ const Stores = () => {
         submitData.append("_method", "PUT");
         console.log(formData);
 
-        await api.post(
-          `/configure/stores/${selectedStore.id}`,
-          submitData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        await api.post(`/configure/stores/${selectedStore.id}`, submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
         toast.success("Store updated successfully");
       }
@@ -225,7 +222,6 @@ const Stores = () => {
       }
     }
   };
-
 
   // Delete Store function with SweetAlert2 confirmation
   // Soft Delete (Move to Trash)
@@ -262,8 +258,7 @@ const Stores = () => {
       Swal.close();
       Swal.fire({
         title: "Error!",
-        text:
-          error.response?.data?.message || "Failed to move store to trash",
+        text: error.response?.data?.message || "Failed to move store to trash",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -305,8 +300,7 @@ const Stores = () => {
       Swal.fire({
         title: "Error!",
         text:
-          error.response?.data?.message ||
-          "Failed to delete store permanently",
+          error.response?.data?.message || "Failed to delete store permanently",
         icon: "error",
         confirmButtonText: "OK",
       });
@@ -358,7 +352,8 @@ const Stores = () => {
   const columns = [
     {
       name: "#",
-      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
+      cell: (row, index) =>
+        (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -372,7 +367,7 @@ const Stores = () => {
       selector: (row) => row.company_name,
       sortable: true,
     },
-    
+
     {
       name: "Code",
       selector: (row) => row.code,
@@ -497,7 +492,9 @@ const Stores = () => {
                 defaultPerPage={perPage}
                 searchPlaceholder="Search stores..."
                 refreshTrigger={refreshTrigger} // Add this prop
-                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
+                onPaginationChange={(page, perPage) =>
+                  setPagination({ page, perPage })
+                }
                 allowExportAll={true} // allow export all data
               />
             </div>
@@ -513,8 +510,8 @@ const Stores = () => {
             modalType === "create"
               ? "Create Store"
               : modalType === "edit"
-                ? "Edit Store"
-                : "View Store"
+              ? "Edit Store"
+              : "View Store"
           }
           footer={
             modalType === "view" ? (
@@ -530,10 +527,11 @@ const Stores = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${isSubmitting
-                    ? "opacity-60 cursor-not-allowed"
-                    : "opacity-100"
-                    }`}
+                  className={`${
+                    isSubmitting
+                      ? "opacity-60 cursor-not-allowed"
+                      : "opacity-100"
+                  }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -564,18 +562,15 @@ const Stores = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                      ? "Create"
-                      : "Update"}
+                    ? "Create"
+                    : "Update"}
                 </Button>
               </>
             )
           }
         >
           {modalType === "view" && (
-            <DynamicViewTable
-              data={selectedStore}
-              fields={storeFields}
-            />
+            <DynamicViewTable data={selectedStore} fields={storeFields} />
           )}
 
           {(modalType === "create" || modalType === "edit") && (
