@@ -41,7 +41,7 @@ const Roles = () => {
 
   const formRef = useRef<any>(null); // Ref for DynamicForm
   const router = useRouter(); // Next.js router
-const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 10
@@ -152,18 +152,11 @@ const [perPage, setPerPage] = useState(10);
       await api.delete(`/roles/${role.id}`);
 
       Swal.close(); // close loading
-
-      // Success message
-      Swal.fire({
-        title: "Deleted!",
-        text: `Role "${role.name}" has been deleted successfully.`,
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-
       // Refresh table
       setRefreshTrigger((prev) => prev + 1);
+      toast.success(`Role "${role.name}" has been deleted.`, {
+        autoClose: 1000, // 1 seconds
+      });
     } catch (error: any) {
       Swal.close();
       Swal.fire({
@@ -177,7 +170,7 @@ const [perPage, setPerPage] = useState(10);
   };
   // Columns for DataTable
   const columns = [
-     {
+    {
       name: "#",
       cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
@@ -312,8 +305,8 @@ const [perPage, setPerPage] = useState(10);
             modalType === "create"
               ? "Create Role"
               : modalType === "edit"
-              ? "Edit Role"
-              : "View Role"
+                ? "Edit Role"
+                : "View Role"
           }
           footer={
             modalType === "view" ? (
@@ -329,13 +322,12 @@ const [perPage, setPerPage] = useState(10);
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
-                   {isSubmitting ?
+                  {isSubmitting ?
                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -346,8 +338,8 @@ const [perPage, setPerPage] = useState(10);
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

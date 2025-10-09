@@ -189,18 +189,11 @@ const Users = () => {
       await api.delete(`/users/${user.id}`);
 
       Swal.close(); // close loading
-
-      // Success message
-      Swal.fire({
-        title: "Deleted!",
-        text: `User "${user.name}" has been deleted successfully.`,
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-
       // Refresh table
       setRefreshTrigger((prev) => prev + 1);
+      toast.success(`User "${user.name}" has been deleted.`, {
+        autoClose: 1000, // 1 seconds
+      });
     } catch (error: any) {
       Swal.close();
       Swal.fire({
@@ -355,8 +348,8 @@ const Users = () => {
             modalType === "create"
               ? "Create User"
               : modalType === "edit"
-              ? "Edit User"
-              : "View User"
+                ? "Edit User"
+                : "View User"
           }
           footer={
             modalType === "view" ? (
@@ -372,11 +365,10 @@ const Users = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -407,8 +399,8 @@ const Users = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

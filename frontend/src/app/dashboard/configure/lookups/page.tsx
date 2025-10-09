@@ -205,131 +205,124 @@ const Lookups = () => {
   };
 
   // Delete lookup function with SweetAlert2 confirmation
-   // Soft Delete (Move to Trash)
-   const handleSoftDelete = async (lookup: any) => {
-     const confirmed = await confirmAction({
-       title: "Move to Trash?",
-       text: `You are about to move the lookup "${lookup.name}" to trash.`,
-       confirmButtonText: "Yes, move to trash!",
-       cancelButtonText: "Cancel",
-     });
- 
-     if (!confirmed) return;
- 
-     try {
-       Swal.fire({
-         title: "Moving to Trash...",
-         text: `Please wait while we move the lookup`,
-         allowOutsideClick: false,
-         didOpen: () => Swal.showLoading(),
-       });
- 
-       await api.post(`/configure/lookups/trash/${lookup.id}`);
- 
-       Swal.close();
-       Swal.fire({
-         title: "Moved!",
-         text: `lookup "${lookup.name}" has been moved to trash.`,
-         icon: "success",
-         confirmButtonText: "OK",
-       });
-       await fetchLookups();
-       setRefreshTrigger((prev) => prev + 1);
-     } catch (error: any) {
-       Swal.close();
-       Swal.fire({
-         title: "Error!",
-         text:
-           error.response?.data?.message || "Failed to move lookup to trash",
-         icon: "error",
-         confirmButtonText: "OK",
-       });
-     }
-   };
- 
-   // Force Delete (Permanent)
-   const handleForceDelete = async (lookup: any) => {
-     const confirmed = await confirmAction({
-       title: "Delete Permanently?",
-       text: `You are about to permanently delete the lookup "${lookup.name}". This cannot be undone!`,
-       confirmButtonText: "Yes, delete permanently!",
-       cancelButtonText: "Cancel",
-     });
- 
-     if (!confirmed) return;
- 
-     try {
-       Swal.fire({
-         title: "Deleting permanently...",
-         text: `Please wait while we delete the lookup permanently`,
-         allowOutsideClick: false,
-         didOpen: () => Swal.showLoading(),
-       });
- 
-       await api.delete(`/configure/lookups/${lookup.id}`); // force delete
- 
-       Swal.close();
-       Swal.fire({
-         title: "Deleted!",
-         text: `lookup "${lookup.name}" has been permanently deleted.`,
-         icon: "success",
-         confirmButtonText: "OK",
-       });
-       await fetchLookups();
-       setRefreshTrigger((prev) => prev + 1);
-     } catch (error: any) {
-       Swal.close();
-       Swal.fire({
-         title: "Error!",
-         text:
-           error.response?.data?.message ||
-           "Failed to delete lookup permanently",
-         icon: "error",
-         confirmButtonText: "OK",
-       });
-     }
-   };
- 
-   // Restore (Undo Soft Delete)
-   const handleRestore = async (lookup: any) => {
-     const confirmed = await confirmAction({
-       title: "Restore lookup?",
-       text: `You are about to restore the lookup "${lookup.name}".`,
-       confirmButtonText: "Yes, restore it!",
-       cancelButtonText: "Cancel",
-     });
- 
-     if (!confirmed) return;
- 
-     try {
-       Swal.fire({
-         title: "Restoring...",
-         text: `Please wait while we restore the lookup`,
-         allowOutsideClick: false,
-         didOpen: () => Swal.showLoading(),
-       });
- 
-       await api.post(`/configure/lookups/restore/${lookup.id}`);
- 
-       Swal.close();
-       Swal.fire({
-         title: "Restored!",
-         text: `lookup "${lookup.name}" has been restored successfully.`,
-         icon: "success",
-         confirmButtonText: "OK",
-       });
-       await fetchLookups();
-       setRefreshTrigger((prev) => prev + 1);
-     } catch (error: any) {
-       Swal.close();
-       Swal.fire({
-         title: "Error!",
-         text: error.response?.data?.message || "Failed to restore lookup",
-         icon: "error",
-         confirmButtonText: "OK",
-       });
-     }
-   };
+  // Soft Delete (Move to Trash)
+    const handleSoftDelete = async (lookup: any) => {
+      const confirmed = await confirmAction({
+        title: "Move to Trash?",
+        text: `You are about to move the lookup "${lookup.name}" to trash.`,
+        confirmButtonText: "Yes, trash!",
+        cancelButtonText: "Cancel",
+      });
+  
+      if (!confirmed) return;
+  
+      try {
+        // Show loading briefly but skip an extra alert layer
+        const loading = Swal.fire({
+          title: "Moving to Trash...",
+          text: "Please wait a moment.",
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+  
+        await api.post(`/configure/lookups/trash/${lookup.id}`);
+  
+        Swal.close();
+        setRefreshTrigger((prev) => prev + 1);
+  
+        // Toast-style alert for success — non-blocking and faster
+        toast.success(`"${lookup.name}" moved to trash.`, {
+          autoClose: 1000, // 1 seconds
+        });
+      } catch (error: any) {
+        Swal.close();
+        Swal.fire({
+          title: "Error!",
+          text:
+            error.response?.data?.message || "Failed to move lookup to trash",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    };
+  
+    // Force Delete (Permanent)
+    const handleForceDelete = async (lookup: any) => {
+      const confirmed = await confirmAction({
+        title: "Delete Permanently?",
+        text: `You are about to permanently delete the lookup "${lookup.name}". This cannot be undone!`,
+        confirmButtonText: "Yes, delete!",
+        cancelButtonText: "Cancel",
+      });
+  
+      if (!confirmed) return;
+  
+      try {
+        Swal.fire({
+          title: "Deleting permanently...",
+          text: `Please wait while we delete the lookup permanently`,
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+  
+        await api.delete(`/configure/lookups/${lookup.id}`); // force delete
+  
+        Swal.close();
+        setRefreshTrigger((prev) => prev + 1);
+        toast.success(`Lookup "${lookup.name}" has been permanently deleted.`, {
+          autoClose: 1000, // 1 seconds
+        });
+      } catch (error: any) {
+        Swal.close();
+        Swal.fire({
+          title: "Error!",
+          text:
+            error.response?.data?.message ||
+            "Failed to delete lookup permanently",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    };
+  
+    // Restore (Undo Soft Delete)
+    const handleRestore = async (lookup: any) => {
+      const confirmed = await confirmAction({
+        title: "Restore Lookup?",
+        text: `You are about to restore the lookup "${lookup.name}".`,
+        confirmButtonText: "Yes, restore!",
+        cancelButtonText: "Cancel",
+      });
+  
+      if (!confirmed) return;
+  
+      try {
+        Swal.fire({
+          title: "Restoring...",
+          text: `Please wait while we restore the lookup`,
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
+  
+        await api.post(`/configure/lookups/restore/${lookup.id}`);
+  
+        Swal.close();
+        setRefreshTrigger((prev) => prev + 1);
+        toast.success(`Lookup "${lookup.name}" has been restored successfully.`, {
+          autoClose: 1000, // 1 seconds
+        });
+  
+      } catch (error: any) {
+        Swal.close();
+        Swal.fire({
+          title: "Error!",
+          text: error.response?.data?.message || "Failed to restore lookup",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
+    };
+  
   // Columns for DataTable
   const columns = [
     {

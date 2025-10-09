@@ -51,12 +51,11 @@ const Permissions = () => {
     page: 1,
     perPage: 10
   });
-
-  useEffect(() => {
-    const fetchModules = async () => {
+const fetchModules = async () => {
       const res = await api.get("/modules");
       setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
     };
+  useEffect(() => {
     fetchModules();
   }, []);
 
@@ -155,20 +154,15 @@ const Permissions = () => {
     setSelectedPermission(permission);
     setBackendErrors({});
     setIsSubmitting(false);
-
+    fetchModules();
     if (type === "edit" && permission) {
       setLoadingDropdowns(true);
       (async () => {
         try {
-          const [modRes, menuRes, subMenuRes] = await Promise.all([
-            api.get("/modules"),
+          const [ menuRes, subMenuRes] = await Promise.all([
             api.get(`/menus?module_id=${permission.module_id}`),
             api.get(`/sub-menus?menu_id=${permission.menu_id}`),
           ]);
-
-          setModules(
-            modRes.data.map((m: any) => ({ value: m.id, label: m.name }))
-          );
           setMenus(
             menuRes.data.map((m: any) => ({ value: m.id, label: m.name }))
           );
@@ -243,18 +237,11 @@ const Permissions = () => {
       await api.delete(`/permissions/${permission.id}`);
 
       Swal.close(); // close loading
-
-      // Success message
-      Swal.fire({
-        title: "Deleted!",
-        text: `Pemission "${permission.name}" has been deleted successfully.`,
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-
       // Refresh table
       setRefreshTrigger((prev) => prev + 1);
+        toast.success(`Permission "${permission.name}" has been deleted.`, {
+                    autoClose: 1000, // 1 seconds
+                  });
     } catch (error: any) {
       Swal.close();
       Swal.fire({
