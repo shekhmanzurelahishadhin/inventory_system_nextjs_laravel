@@ -25,6 +25,7 @@ import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const Roles = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -46,7 +47,7 @@ const Roles = () => {
     page: 1,
     perPage: 10
   });
-
+ const { handleForceDelete } = useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1)); 
   // Breadcrumb items
   const breadcrumbItems = [
     { label: "User Role", href: "#" },
@@ -128,46 +129,7 @@ const Roles = () => {
     }
   };
 
-  // Delete role function with SweetAlert2 confirmation
-  const handleDeleteRole = async (role: any) => {
-    const confirmed = await confirmAction({
-      title: "Are you sure?",
-      text: `You are about to delete the role "${role.name}".!`,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      // Show loading
-      Swal.fire({
-        title: "Deleting...",
-        text: `Please wait while we delete the role`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      // API call
-      await api.delete(`/roles/${role.id}`);
-
-      Swal.close(); // close loading
-      // Refresh table
-      setRefreshTrigger((prev) => prev + 1);
-      toast.success(`Role "${role.name}" has been deleted.`, {
-        autoClose: 1000, // 1 seconds
-      });
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to delete role",
-        icon: "error",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-    }
-  };
+  
   // Columns for DataTable
   const columns = [
     {
@@ -224,7 +186,7 @@ const Roles = () => {
             },
             {
               icon: faTrash,
-              onClick: (r) => handleDeleteRole(r),
+              onClick: (r) => handleForceDelete(r, "/roles", "role"),
               variant: "danger",
               size: "sm",
               show: (r) =>

@@ -28,6 +28,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const Companies = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -50,6 +51,9 @@ const Companies = () => {
     page: 1,
     perPage: 10,
   });
+  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
+    setRefreshTrigger((prev) => prev + 1)
+  );  
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
@@ -223,125 +227,6 @@ const Companies = () => {
     }
   };
 
-  // Delete category function with SweetAlert2 confirmation
-  // Soft Delete (Move to Trash)
-  const handleSoftDelete = async (category: any) => {
-    const confirmed = await confirmAction({
-      title: "Move to Trash?",
-      text: `You are about to move the category "${category.name}" to trash.`,
-      confirmButtonText: "Yes, trash!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      // Show loading briefly but skip an extra alert layer
-      const loading = Swal.fire({
-        title: "Moving to Trash...",
-        text: "Please wait a moment.",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/categories/trash/${category.id}`);
-
-      Swal.close();
-      setRefreshTrigger((prev) => prev + 1);
-
-      // Toast-style alert for success — non-blocking and faster
-      toast.success(`"${category.name}" moved to trash.`, {
-        autoClose: 1000, // 1 seconds
-      });
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message || "Failed to move category to trash",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Force Delete (Permanent)
-  const handleForceDelete = async (category: any) => {
-    const confirmed = await confirmAction({
-      title: "Delete Permanently?",
-      text: `You are about to permanently delete the category "${category.name}". This cannot be undone!`,
-      confirmButtonText: "Yes, delete!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Deleting permanently...",
-        text: `Please wait while we delete the category permanently`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.delete(`/configure/categories/${category.id}`); // force delete
-
-      Swal.close();
-      setRefreshTrigger((prev) => prev + 1);
-      toast.success(`Category "${category.name}" has been permanently deleted.`, {
-        autoClose: 1000, // 1 seconds
-      });
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message ||
-          "Failed to delete category permanently",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Restore (Undo Soft Delete)
-  const handleRestore = async (category: any) => {
-    const confirmed = await confirmAction({
-      title: "Restore Category?",
-      text: `You are about to restore the category "${category.name}".`,
-      confirmButtonText: "Yes, restore!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Restoring...",
-        text: `Please wait while we restore the category`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/categories/restore/${category.id}`);
-
-      Swal.close();
-      setRefreshTrigger((prev) => prev + 1);
-      toast.success(`Category "${category.name}" has been restored successfully.`, {
-        autoClose: 1000, // 1 seconds
-      });
-
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to restore category",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
   // Columns for DataTable
   const columns = [
     {
@@ -397,7 +282,7 @@ const Companies = () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
+                r.deleted_at ? handleForceDelete(r, "/configure/categories", "category") : handleSoftDelete(r, "/configure/categories", "category"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("category.delete"),
@@ -405,7 +290,7 @@ const Companies = () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r),
+              onClick: (r) => handleRestore(r, "/configure/categories", "category"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,

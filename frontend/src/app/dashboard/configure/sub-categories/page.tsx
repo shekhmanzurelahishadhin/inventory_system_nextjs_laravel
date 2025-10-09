@@ -28,6 +28,7 @@ import FormSkeleton from "@/app/components/ui/FormSkeleton";
 import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const SubCategories = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -54,6 +55,9 @@ const SubCategories = () => {
     page: 1,
     perPage: 10
   });
+  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
+    setRefreshTrigger((prev) => prev + 1)
+  );  
 const fetchCategories = async () => {
       const res = await api.get("/configure/categories", {
       params: { status: true }, // only status = active brands
@@ -221,134 +225,6 @@ const fetchCategories = async () => {
     }
   };
 
-
-  // Delete Sub Category function with SweetAlert2 confirmation
-  // Soft Delete (Move to Trash)
-  const handleSoftDelete = async (subCategory: any) => {
-    const confirmed = await confirmAction({
-      title: "Move to Trash?",
-      text: `You are about to move the Sub Category "${subCategory.name}" to trash.`,
-      confirmButtonText: "Yes, move to trash!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Moving to Trash...",
-        text: `Please wait while we move the sub category`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/sub-categories/trash/${subCategory.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Moved!",
-        text: `Sub Category "${subCategory.name}" has been moved to trash.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message || "Failed to move sub category to trash",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Force Delete (Permanent)
-  const handleForceDelete = async (subCategory: any) => {
-    const confirmed = await confirmAction({
-      title: "Delete Permanently?",
-      text: `You are about to permanently delete the sub category "${subCategory.name}". This cannot be undone!`,
-      confirmButtonText: "Yes, delete permanently!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Deleting permanently...",
-        text: `Please wait while we delete the sub category permanently`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.delete(`/configure/sub-categories/${subCategory.id}`); // force delete
-
-      Swal.close();
-      Swal.fire({
-        title: "Deleted!",
-        text: `Category "${subCategory.name}" has been permanently deleted.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text:
-          error.response?.data?.message ||
-          "Failed to delete sub category permanently",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
-  // Restore (Undo Soft Delete)
-  const handleRestore = async (subCategory: any) => {
-    const confirmed = await confirmAction({
-      title: "Restore Category?",
-      text: `You are about to restore the sub category "${subCategory.name}".`,
-      confirmButtonText: "Yes, restore it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      Swal.fire({
-        title: "Restoring...",
-        text: `Please wait while we restore the sub category`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      await api.post(`/configure/sub-categories/restore/${subCategory.id}`);
-
-      Swal.close();
-      Swal.fire({
-        title: "Restored!",
-        text: `Category "${subCategory.name}" has been restored successfully.`,
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-
-      setRefreshTrigger((prev) => prev + 1);
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to restore sub category",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
-  };
-
   // Columns for DataTable
   const columns = [
     {
@@ -403,7 +279,7 @@ const fetchCategories = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r) : handleSoftDelete(r),
+                r.deleted_at ? handleForceDelete(r, "/configure/sub-categories","sub category") : handleSoftDelete(r, "/configure/sub-categories","sub category"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("sub-category.delete"),
@@ -411,7 +287,7 @@ const fetchCategories = async () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r),
+              onClick: (r) => handleRestore(r, "/configure/sub-categories","sub category"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,

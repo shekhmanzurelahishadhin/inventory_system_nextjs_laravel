@@ -25,6 +25,7 @@ import { useAuth } from "@/app/context/AuthContext";
 import FormSkeleton from "@/app/components/ui/FormSkeleton";
 import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const Permissions = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -51,6 +52,7 @@ const Permissions = () => {
     page: 1,
     perPage: 10
   });
+  const { handleForceDelete } = useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
 const fetchModules = async () => {
       const res = await api.get("/modules");
       setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
@@ -213,46 +215,7 @@ const fetchModules = async () => {
     }
   };
 
-  // Delete Permission function with SweetAlert2 confirmation
-  const handleDelete = async (permission: any) => {
-    const confirmed = await confirmAction({
-      title: "Are you sure?",
-      text: `You are about to delete the permission "${permission.name}".!`,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    });
 
-    if (!confirmed) return;
-
-    try {
-      // Show loading
-      Swal.fire({
-        title: "Deleting...",
-        text: `Please wait while we delete the Permission`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      // API call
-      await api.delete(`/permissions/${permission.id}`);
-
-      Swal.close(); // close loading
-      // Refresh table
-      setRefreshTrigger((prev) => prev + 1);
-        toast.success(`Permission "${permission.name}" has been deleted.`, {
-                    autoClose: 1000, // 1 seconds
-                  });
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to delete Permission",
-        icon: "error",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-    }
-  };
   // Columns for DataTable
   const columns = [
       {
@@ -312,7 +275,7 @@ const fetchModules = async () => {
             },
             {
               icon: faTrash,
-              onClick: (r) => handleDelete(r),
+              onClick: (r) => handleForceDelete(r, "/permissions", "permission"),
               variant: "danger",
               size: "sm",
               tooltip: "Delete",

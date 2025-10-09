@@ -25,6 +25,7 @@ import AccessRoute from "@/app/routes/AccessRoute";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
 const Users = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -43,6 +44,9 @@ const Users = () => {
     page: 1,
     perPage: 10,
   });
+  const { handleForceDelete } = useActionConfirmAlert(() =>
+    setRefreshTrigger((prev) => prev + 1)
+  ); // Custom hook for delete with confirmation
 
   const { hasPermission } = useAuth(); // Access control
 
@@ -165,46 +169,6 @@ const Users = () => {
     }
   };
 
-  // Delete user function with SweetAlert2 confirmation
-  const handleDeleteUser = async (user: any) => {
-    const confirmed = await confirmAction({
-      title: "Are you sure?",
-      text: `You are about to delete the user "${user.name}".!`,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-    });
-
-    if (!confirmed) return;
-
-    try {
-      // Show loading
-      Swal.fire({
-        title: "Deleting...",
-        text: `Please wait while we delete the user`,
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
-
-      // API call
-      await api.delete(`/users/${user.id}`);
-
-      Swal.close(); // close loading
-      // Refresh table
-      setRefreshTrigger((prev) => prev + 1);
-      toast.success(`User "${user.name}" has been deleted.`, {
-        autoClose: 1000, // 1 seconds
-      });
-    } catch (error: any) {
-      Swal.close();
-      Swal.fire({
-        title: "Error!",
-        text: error.response?.data?.message || "Failed to delete user",
-        icon: "error",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "OK",
-      });
-    }
-  };
   // Columns for DataTable
   const columns = [
     {
@@ -271,7 +235,7 @@ const Users = () => {
             },
             {
               icon: faTrash,
-              onClick: (user) => handleDeleteUser(user),
+              onClick: (user) => handleForceDelete(user, "/users", "user"),
               variant: "danger",
               size: "sm",
               show: (user) =>

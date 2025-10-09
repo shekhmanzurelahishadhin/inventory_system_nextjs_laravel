@@ -370,7 +370,7 @@ const fetchLookups = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r, "companies", "company") : handleSoftDelete(r, "companies", "company"),
+                r.deleted_at ? handleForceDelete(r, "/configure/companies", "company") : handleSoftDelete(r, "/configure/companies", "company"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("company.delete"),
@@ -378,7 +378,7 @@ const fetchLookups = async () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r, "companies", "company"),
+              onClick: (r) => handleRestore(r, "/configure/companies", "company"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,

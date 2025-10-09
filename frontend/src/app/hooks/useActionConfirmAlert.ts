@@ -23,7 +23,7 @@ export const useActionConfirmAlert = (refresh: () => void) => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/configure/${module}/trash/${entity.id}`);
+      await api.post(`${module}/trash/${entity.id}`);
 
       Swal.close();
       refresh();
@@ -61,7 +61,7 @@ export const useActionConfirmAlert = (refresh: () => void) => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.delete(`/configure/${module}/${entity.id}`);
+      await api.delete(`${module}/${entity.id}`);
 
       Swal.close();
       refresh();
@@ -99,7 +99,7 @@ export const useActionConfirmAlert = (refresh: () => void) => {
         didOpen: () => Swal.showLoading(),
       });
 
-      await api.post(`/configure/${module}/restore/${entity.id}`);
+      await api.post(`${module}/restore/${entity.id}`);
 
       Swal.close();
       refresh();
