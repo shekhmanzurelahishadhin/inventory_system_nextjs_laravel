@@ -1,5 +1,6 @@
 import React from "react";
 import Select from "react-select";
+import makeAnimated from 'react-select/animated';
 
 interface Option {
   value: string | number;
@@ -23,9 +24,11 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
   padding = "0.5rem", // default padding
   // disabled = false,
 }) => {
+  const animatedComponents = makeAnimated();
   return (
     <Select
-      isMulti
+      isMulti // enable multi-select
+      components={animatedComponents} // use animated components
       value={options.filter((opt) => value.includes(opt.value))}
       onChange={(selected) =>
         onChange(selected.map((s: any) => s.value))
