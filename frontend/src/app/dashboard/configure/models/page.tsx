@@ -82,6 +82,8 @@ const Models = () => {
       params: { status: true }, // only status = active sub-categories
     });
         setSubCategories(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
+      }else{
+        setSubCategories([]);
       }
     };
 
@@ -226,6 +228,7 @@ const Models = () => {
     setSelectedModel(null);
     setBackendErrors({});
     setIsSubmitting(false);
+    setSubCategories([]);
   };
 
   const handleFormSubmit = async (formData: Record<string, any>) => {

@@ -48,6 +48,7 @@ const Locations = () => {
   const formRef = useRef<any>(null);
 
   const [stores, setStores] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
 
 
   const [perPage, setPerPage] = useState(10);
@@ -57,16 +58,29 @@ const Locations = () => {
   });
   const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
     setRefreshTrigger((prev) => prev + 1)
-  );  
-const fetchStores = async () => {
-      const res = await api.get("/configure/stores", {
-      params: { status: true }, // only status = active brands
+  );
+  const fetchCompanies = async () => {
+    const res = await api.get("/configure/companies", {
+      params: { status: true }, // only status = active companies
     });
-      setStores(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
-    };
+    setCompanies(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
+  };
   useEffect(() => {
-    fetchStores();
+    fetchCompanies();
   }, []);
+
+  // When form changes
+  const handleFormChange = async (updated: Record<string, any>) => {
+    // Category selected → fetch stores
+    if (updated.company_id) {
+      const res = await api.get(`/configure/stores?company_id=${updated.company_id}`, {
+        params: { status: true }, // only status = active stores
+      });
+      setStores(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
+    } else {
+      setStores([]);
+    }
+  };
 
   const fetchLookups = async () => {
     try {
@@ -91,6 +105,14 @@ const fetchStores = async () => {
 
   const locationFields = [
     {
+      label: "Companies",
+      key: "company_id",
+      type: "select",
+      required: true,
+      showOn: "both",
+      options: companies,
+    },
+    {
       label: "Stores",
       key: "store_id",
       type: "select",
@@ -103,6 +125,13 @@ const fetchStores = async () => {
       key: "name",
       type: "text",
       required: true,
+      showOn: "all",
+    },
+    {
+      label: "Description",
+      key: "description",
+      type: "textarea",
+      required: false,
       showOn: "all",
     },
     {
@@ -154,7 +183,25 @@ const fetchStores = async () => {
     setSelectedLocation(location);
     setBackendErrors({});
     setIsSubmitting(false);
-    fetchStores();
+    fetchCompanies();
+
+    if (type === "edit" && location) {
+      setLoadingDropdowns(true);
+      (async () => {
+        try {
+          const [res] = await Promise.all([
+            api.get(`/configure/stores?company_id=${location.company_id}`, {
+              params: { status: true }, // only status = active companies
+            }),
+          ]);
+          setStores(
+            res.data.data.map((m: any) => ({ value: m.id, label: m.name }))
+          );
+        } finally {
+          setLoadingDropdowns(false);
+        }
+      })();
+    }
   };
 
   const closeModal = () => {
@@ -162,6 +209,7 @@ const fetchStores = async () => {
     setSelectedLocation(null);
     setBackendErrors({});
     setIsSubmitting(false);
+    setStores([]);
   };
 
   const handleFormSubmit = async (formData: Record<string, any>) => {
@@ -239,8 +287,18 @@ const fetchStores = async () => {
       sortable: true,
     },
     {
+      name: "Company Name",
+      selector: (row) => row.company_name,
+      sortable: true,
+    },
+    {
       name: "Store Name",
       selector: (row) => row.store_name,
+      sortable: true,
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
       sortable: true,
     },
     {
@@ -279,7 +337,7 @@ const fetchStores = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r, "/configure/locations","location") : handleSoftDelete(r, "/configure/locations","location"),
+                r.deleted_at ? handleForceDelete(r, "/configure/locations", "location") : handleSoftDelete(r, "/configure/locations", "location"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("location.delete"),
@@ -287,7 +345,7 @@ const fetchStores = async () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r, "/configure/locations","location"),
+              onClick: (r) => handleRestore(r, "/configure/locations", "location"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,
@@ -342,7 +400,9 @@ const fetchStores = async () => {
                 apiEndpoint="/configure/locations"
                 exportColumns={[
                   { name: "Name", selector: "name" },
+                  { name: "Company Name", selector: "company_name" },
                   { name: "Store Name", selector: "store_name" },
+                  { name: "Description", selector: "description" },
                   {
                     name: "Status",
                     selector: (row) =>
@@ -387,8 +447,8 @@ const fetchStores = async () => {
                 <Button
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
-                  disabled={isSubmitting}
-                  className={`${isSubmitting
+                  disabled={isSubmitting || loadingDropdowns}
+                  className={`${(isSubmitting || loadingDropdowns)
                     ? "opacity-60 cursor-not-allowed"
                     : "opacity-100"
                     }`}
@@ -438,17 +498,13 @@ const fetchStores = async () => {
 
           {(modalType === "create" || modalType === "edit") && (
             <>
-              {loadingDropdowns ? (
-                <div className="p-6 text-center">
-                  {/* <FormSkeleton fields={locationFields} mode={modalType} /> */}
-                  <DatatableLoader />
-                </div>
-              ) : (
+              {(
                 <DynamicForm
                   ref={formRef}
                   data={modalType === "edit" ? selectedLocation : null}
                   fields={locationFields}
                   onSubmit={handleFormSubmit}
+                  onChange={handleFormChange}
                   backendErrors={backendErrors}
                   mode={modalType}
                 />

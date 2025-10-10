@@ -68,12 +68,17 @@ const fetchModules = async () => {
       const res = await api.get(`/menus?module_id=${updated.module_id}`);
       setMenus(res.data.map((m: any) => ({ value: m.id, label: m.name })));
       setSubMenus([]); // reset sub menus
+    }else{
+      setMenus([]);
+      setSubMenus([]);
     }
 
     // Menu selected → fetch sub menus
     if (updated.menu_id) {
       const res = await api.get(`/sub-menus?menu_id=${updated.menu_id}`);
       setSubMenus(res.data.map((s: any) => ({ value: s.id, label: s.name })));
+    }else{
+      setSubMenus([]);
     }
   };
 

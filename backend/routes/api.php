@@ -14,6 +14,7 @@ use App\Http\Controllers\api\softConfig\BrandController;
 use App\Http\Controllers\api\softConfig\ProductModelController;
 use App\Http\Controllers\api\softConfig\UnitController;
 use App\Http\Controllers\api\softConfig\StoreController;
+use App\Http\Controllers\api\softConfig\LocationController;
 
 
 Route::prefix('v1')->group(function () {
@@ -157,13 +158,13 @@ Route::prefix('v1')->group(function () {
             });
             // Stores Route
             Route::prefix('locations')->group(function () {
-                Route::get('/', [StoreController::class, 'index']);
-                Route::post('/', [StoreController::class, 'store']);
-                Route::get('/{store}', [StoreController::class, 'show']);
-                Route::put('/{store}', [StoreController::class, 'update']);
-                Route::post('trash/{store}', [StoreController::class, 'trash']); // soft delete
-                Route::post('/restore/{id}', [StoreController::class, 'restore']);
-                Route::delete('/{id}', [StoreController::class, 'destroy']); // force delete
+                Route::get('/', [LocationController::class, 'index']);
+                Route::post('/', [LocationController::class, 'store']);
+                Route::get('/{store}', [LocationController::class, 'show']);
+                Route::put('/{store}', [LocationController::class, 'update']);
+                Route::post('trash/{store}', [LocationController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [LocationController::class, 'restore']);
+                Route::delete('/{id}', [LocationController::class, 'destroy']); // force delete
             });
         });
     });
