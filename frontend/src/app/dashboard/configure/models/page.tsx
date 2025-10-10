@@ -202,7 +202,23 @@ const Models = () => {
     setBackendErrors({});
     setIsSubmitting(false);
     fetchDatas();
-    setSubCategories([]); // reset sub-categories
+       if (type === "edit" && model) {
+          setLoadingDropdowns(true);
+          (async () => {
+            try {
+              const [ res] = await Promise.all([
+                api.get(`/configure/sub-categories?category_id=${model.category_id}`, {
+      params: { status: true }, // only status = active sub-categories
+    }),
+              ]);
+              setSubCategories(
+                res.data.data.map((m: any) => ({ value: m.id, label: m.name }))
+              );
+            } finally {
+              setLoadingDropdowns(false);
+            }
+          })();
+        }
   };
 
   const closeModal = () => {
@@ -447,8 +463,8 @@ const Models = () => {
                 <Button
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
-                  disabled={isSubmitting}
-                  className={`${isSubmitting
+                  disabled={isSubmitting || loadingDropdowns}
+                  className={`${(isSubmitting || loadingDropdowns)
                     ? "opacity-60 cursor-not-allowed"
                     : "opacity-100"
                     }`}
@@ -498,12 +514,7 @@ const Models = () => {
 
           {(modalType === "create" || modalType === "edit") && (
             <>
-              {loadingDropdowns ? (
-                <div className="p-6 text-center">
-                  {/* <FormSkeleton fields={modelFields} mode={modalType} /> */}
-                  <DatatableLoader />
-                </div>
-              ) : (
+              {(
                 <DynamicForm
                   ref={formRef}
                   data={modalType === "edit" ? selectedModel : null}

@@ -155,6 +155,16 @@ Route::prefix('v1')->group(function () {
                 Route::post('/restore/{id}', [StoreController::class, 'restore']);
                 Route::delete('/{id}', [StoreController::class, 'destroy']); // force delete
             });
+            // Stores Route
+            Route::prefix('locations')->group(function () {
+                Route::get('/', [StoreController::class, 'index']);
+                Route::post('/', [StoreController::class, 'store']);
+                Route::get('/{store}', [StoreController::class, 'show']);
+                Route::put('/{store}', [StoreController::class, 'update']);
+                Route::post('trash/{store}', [StoreController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [StoreController::class, 'restore']);
+                Route::delete('/{id}', [StoreController::class, 'destroy']); // force delete
+            });
         });
     });
 

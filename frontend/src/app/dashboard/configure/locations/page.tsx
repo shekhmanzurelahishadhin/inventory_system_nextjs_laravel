@@ -6,6 +6,8 @@ import {
   faEdit,
   faTrash,
   faEye,
+  faTrashRestore,
+  faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 
 import Button from "@/app/components/ui/Button";
@@ -25,13 +27,14 @@ import { useAuth } from "@/app/context/AuthContext";
 import FormSkeleton from "@/app/components/ui/FormSkeleton";
 import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
+import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
 
-const Permissions = () => {
+const Locations = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
     null
   );
-  const [selectedPermission, setSelectedPermission] = useState<any>(null);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [backendErrors, setBackendErrors] = useState<Record<string, string[]>>(
     {}
@@ -40,100 +43,96 @@ const Permissions = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0); // Add this line
   const { hasPermission } = useAuth();
   const [loadingDropdowns, setLoadingDropdowns] = useState(false);
+  const [status, setStatus] = useState<any[]>([]);
 
   const formRef = useRef<any>(null);
 
-  const [modules, setModules] = useState<any[]>([]);
-  const [menus, setMenus] = useState<any[]>([]);
-  const [subMenus, setSubMenus] = useState<any[]>([]);
+  const [stores, setStores] = useState<any[]>([]);
+
 
   const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
     page: 1,
     perPage: 10
   });
-  const { handleForceDelete } = useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
-const fetchModules = async () => {
-      const res = await api.get("/modules");
-      setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
+    setRefreshTrigger((prev) => prev + 1)
+  );  
+const fetchStores = async () => {
+      const res = await api.get("/configure/stores", {
+      params: { status: true }, // only status = active brands
+    });
+      setStores(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
     };
   useEffect(() => {
-    fetchModules();
+    fetchStores();
   }, []);
 
-  // When form changes
-  const handleFormChange = async (updated: Record<string, any>) => {
-    // Module selected → fetch menus
-    if (updated.module_id) {
-      const res = await api.get(`/menus?module_id=${updated.module_id}`);
-      setMenus(res.data.map((m: any) => ({ value: m.id, label: m.name })));
-      setSubMenus([]); // reset sub menus
-    }
-
-    // Menu selected → fetch sub menus
-    if (updated.menu_id) {
-      const res = await api.get(`/sub-menus?menu_id=${updated.menu_id}`);
-      setSubMenus(res.data.map((s: any) => ({ value: s.id, label: s.name })));
+  const fetchLookups = async () => {
+    try {
+      const type = "active_status";
+      const res = await api.get(`/configure/get-lookup-list/${type}`);
+      setStatus(
+        res.data.map((m: any) => ({ value: m.value, label: m.label }))
+      );
+    } catch (error) {
+      console.error("Failed to fetch lookups", error);
     }
   };
+  useEffect(() => {
+    fetchLookups();
+  }, []);
 
   // Breadcrumb items
   const breadcrumbItems = [
-    { label: "User Role", href: "#" },
-    { label: "Permissions", href: "#" },
+    { label: "Configure", href: "#" },
+    { label: "Locations", href: "#" },
   ];
 
-  const permissionFields = [
+  const locationFields = [
+    {
+      label: "Stores",
+      key: "store_id",
+      type: "select",
+      required: true,
+      showOn: "both",
+      options: stores,
+    },
     {
       label: "Name",
       key: "name",
       type: "text",
       required: true,
-      showOn: "both",
+      showOn: "all",
     },
     {
-      label: "Module",
-      key: "module_name",
-      type: "text",
-      readOnly: true,
-      showOn: "view",
-    },
-    {
-      label: "Module",
-      key: "module_id",
-      type: "select",
+      label: "Status",
+      key: "status",
+      type: "radio",
       required: true,
-      showOn: "both",
-      options: modules,
+      options: status,
+      showOn: "edit", // edit only
     },
     {
-      label: "Menu",
-      key: "menu_name",
+      label: "Store Name",
+      key: "store_name",
       type: "text",
       readOnly: true,
       showOn: "view",
     },
     {
-      label: "Menu",
-      key: "menu_id",
-      type: "select",
+      label: "Status",
+      key: "status",
+      type: "radio",
       required: true,
-      showOn: "both",
-      options: menus,
-    },
-    {
-      label: "Sub Menu",
-      key: "sub_menu_name",
-      type: "text",
-      readOnly: true,
+      options: status.map(opt => ({
+        ...opt,
+        className:
+          opt.value === "1"
+            ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+            : "px-2 py-1 bg-red-100 text-red-700 rounded",
+      })),
       showOn: "view",
-    },
-    {
-      label: "Sub Menu",
-      key: "sub_menu_id",
-      type: "select",
-      showOn: "both",
-      options: subMenus,
     },
     {
       label: "Created At",
@@ -143,71 +142,82 @@ const fetchModules = async () => {
       showOn: "view",
     },
   ];
-
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
   const openModal = (
     type: "create" | "edit" | "view",
-    permission: any = null
+    location: any = null
   ) => {
     setModalType(type);
-    setSelectedPermission(permission);
+    setSelectedLocation(location);
     setBackendErrors({});
     setIsSubmitting(false);
-    fetchModules();
-    if (type === "edit" && permission) {
-      setLoadingDropdowns(true);
-      (async () => {
-        try {
-          const [ menuRes, subMenuRes] = await Promise.all([
-            api.get(`/menus?module_id=${permission.module_id}`),
-            api.get(`/sub-menus?menu_id=${permission.menu_id}`),
-          ]);
-          setMenus(
-            menuRes.data.map((m: any) => ({ value: m.id, label: m.name }))
-          );
-          setSubMenus(
-            subMenuRes.data.map((s: any) => ({ value: s.id, label: s.name }))
-          );
-        } finally {
-          setLoadingDropdowns(false);
-        }
-      })();
-    }
+    fetchStores();
   };
 
   const closeModal = () => {
     setModalType(null);
-    setSelectedPermission(null);
+    setSelectedLocation(null);
     setBackendErrors({});
     setIsSubmitting(false);
-    setMenus([]);
-    setSubMenus([]);
   };
 
   const handleFormSubmit = async (formData: Record<string, any>) => {
+    console.log("Form Data Submitted:", formData);
+
     try {
       setIsSubmitting(true);
       setBackendErrors({});
 
+      // Prepare FormData
+      const submitData = new FormData();
+
+      Object.keys(formData).forEach((key) => {
+        const value = formData[key];
+
+        if (value instanceof File) {
+          // Only append if user selected a new file
+          submitData.append(key, value);
+        } else if (value !== null && value !== undefined) {
+          // Convert booleans to 1/0 strings, everything else to string
+          if (typeof value === "boolean") {
+            submitData.append(key, value ? "1" : "0");
+          } else {
+            submitData.append(key, String(value));
+          }
+        }
+      });
+
       if (modalType === "create") {
-        await api.post("/permissions", formData);
-        toast.success("Permission saved successfully");
-      } else if (modalType === "edit" && selectedPermission?.id) {
-        await api.put(`/permissions/${selectedPermission.id}`, formData);
-        toast.success("Permission updated successfully");
+        // Create
+        await api.post("/configure/locations", submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        toast.success("Location saved successfully");
+      } else if (modalType === "edit" && selectedLocation?.id) {
+        // Edit: Use POST + _method=PUT for Laravel multipart/form-data
+        submitData.append("_method", "PUT");
+        console.log(formData);
+
+        await api.post(
+          `/configure/locations/${selectedLocation.id}`,
+          submitData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+
+        toast.success("Location updated successfully");
       }
 
       setIsSubmitting(false);
       closeModal();
-
-      // Force table to refetch by updating refreshTrigger
-      setRefreshTrigger((prev) => prev + 1);
+      setRefreshTrigger((prev) => prev + 1); // refresh table
     } catch (error: any) {
       setIsSubmitting(false);
+
       if (error.response?.status === 422) {
+        // Laravel validation errors
         setBackendErrors(error.response.data.errors);
       } else {
         toast.error(error.response?.data.message || "Failed to save data");
@@ -215,10 +225,9 @@ const fetchModules = async () => {
     }
   };
 
-
   // Columns for DataTable
   const columns = [
-      {
+    {
       name: "#",
       cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
@@ -230,20 +239,14 @@ const fetchModules = async () => {
       sortable: true,
     },
     {
-      name: "Module Name",
-      selector: (row) => row.module_name,
+      name: "Store Name",
+      selector: (row) => row.store_name,
       sortable: true,
     },
-
     {
-      name: "Menu Name",
-      selector: (row) => row.menu_name,
-      sortable: true,
-    },
-
-    {
-      name: "Sub Menu Name",
-      selector: (row) => row.sub_menu_name,
+      name: "Status",
+      selector: (row) =>
+        formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
       sortable: true,
     },
     {
@@ -263,7 +266,7 @@ const fetchModules = async () => {
               variant: "primary",
               size: "sm",
               tooltip: "View",
-              show: (r) => hasPermission("permission.view"),
+              show: (r) => hasPermission("location.view"),
             },
             {
               icon: faEdit,
@@ -271,15 +274,24 @@ const fetchModules = async () => {
               variant: "secondary",
               size: "sm",
               tooltip: "Edit",
-              show: (r) => hasPermission("permission.edit"),
+              show: (r) => hasPermission("location.edit") && !r.deleted_at,
             },
             {
-              icon: faTrash,
-              onClick: (r) => handleForceDelete(r, "/permissions", "permission"),
+              icon: row.deleted_at ? faTrashRestore : faTrash,
+              onClick: (r) =>
+                r.deleted_at ? handleForceDelete(r, "/configure/locations","location") : handleSoftDelete(r, "/configure/locations","location"),
               variant: "danger",
               size: "sm",
-              tooltip: "Delete",
-              show: (r) => hasPermission("permission.delete"),
+              show: (r) => hasPermission("location.delete"),
+              tooltip: row.deleted_at ? "Delete Permanently" : "Move to Trash",
+            },
+            {
+              icon: faUndo,
+              onClick: (r) => handleRestore(r, "/configure/locations","location"),
+              variant: "success",
+              size: "sm",
+              show: (r) => r.deleted_at,
+              tooltip: "Restore",
             },
           ]}
         />
@@ -293,14 +305,14 @@ const fetchModules = async () => {
     <>
       <AccessRoute
         requiredPermissions={[
-          "permission.view",
-          "permission.create",
-          "permission.edit",
-          "permission.delete",
+          "location.view",
+          "location.create",
+          "location.edit",
+          "location.delete",
         ]}
       >
         <PageHeader
-          title="Permissions Management"
+          title="Locations Management"
           breadcrumbItems={breadcrumbItems}
         />
 
@@ -308,7 +320,7 @@ const fetchModules = async () => {
           <div className="max-w-8xl mx-auto">
             <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-800">
-                Permissions List
+                Locations List
               </h2>
 
               <Button
@@ -317,7 +329,7 @@ const fetchModules = async () => {
                 size="md"
                 className="mt-2 sm:mt-0"
                 onClick={() => openModal("create")}
-                show={hasPermission("permission.create")}
+                show={hasPermission("location.create")}
               >
                 Add New
               </Button>
@@ -327,18 +339,21 @@ const fetchModules = async () => {
             <div className="bg-white shadow overflow-hidden pt-8">
               <DynamicDataTable
                 columns={columns}
-                apiEndpoint="/permissions"
+                apiEndpoint="/configure/locations"
                 exportColumns={[
                   { name: "Name", selector: "name" },
-                  { name: "Module Name", selector: "module_name" },
-                  { name: "Menu Name", selector: "menu_name" },
-                  { name: "Sub Menu Name", selector: "sub_menu_name" },
+                  { name: "Store Name", selector: "store_name" },
+                  {
+                    name: "Status",
+                    selector: (row) =>
+                      row.status === 1 ? "Active" : "Inactive",
+                  },
                   { name: "Created at", selector: "created_at" },
                 ]}
-                exportFileName="Permissions"
+                exportFileName="Locations"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search permission..."
+                searchPlaceholder="Search location..."
                 refreshTrigger={refreshTrigger} // Add this prop
                 onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
                 allowExportAll={true} // allow export all data
@@ -354,10 +369,10 @@ const fetchModules = async () => {
           size="lg"
           title={
             modalType === "create"
-              ? "Create Permission"
+              ? "Create Location"
               : modalType === "edit"
-              ? "Edit Permission"
-              : "View Permission"
+                ? "Edit Location"
+                : "View Location"
           }
           footer={
             modalType === "view" ? (
@@ -372,12 +387,11 @@ const fetchModules = async () => {
                 <Button
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
-                  disabled={isSubmitting || loadingDropdowns}
-                  className={`${
-                    (isSubmitting || loadingDropdowns)
-                      ? "opacity-60 cursor-not-allowed"
-                      : "opacity-100"
-                  }`}
+                  disabled={isSubmitting}
+                  className={`${isSubmitting
+                    ? "opacity-60 cursor-not-allowed"
+                    : "opacity-100"
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -408,8 +422,8 @@ const fetchModules = async () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )
@@ -417,20 +431,24 @@ const fetchModules = async () => {
         >
           {modalType === "view" && (
             <DynamicViewTable
-              data={selectedPermission}
-              fields={permissionFields}
+              data={selectedLocation}
+              fields={locationFields}
             />
           )}
 
           {(modalType === "create" || modalType === "edit") && (
             <>
-              {(
+              {loadingDropdowns ? (
+                <div className="p-6 text-center">
+                  {/* <FormSkeleton fields={locationFields} mode={modalType} /> */}
+                  <DatatableLoader />
+                </div>
+              ) : (
                 <DynamicForm
                   ref={formRef}
-                  data={modalType === "edit" ? selectedPermission : null}
-                  fields={permissionFields}
+                  data={modalType === "edit" ? selectedLocation : null}
+                  fields={locationFields}
                   onSubmit={handleFormSubmit}
-                  onChange={handleFormChange}
                   backendErrors={backendErrors}
                   mode={modalType}
                 />
@@ -443,4 +461,4 @@ const fetchModules = async () => {
   );
 };
 
-export default Permissions;
+export default Locations;
