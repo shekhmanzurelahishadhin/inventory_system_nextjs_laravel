@@ -23,6 +23,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import AccessRoute from "@/app/routes/AccessRoute";
+import SingleSelectField from "@/app/components/ui/SingleSelectField";
 
 const UserPermissionsPage = () => {
   const { userId } = useParams();
@@ -33,21 +34,21 @@ const UserPermissionsPage = () => {
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const { hasPermission,refreshUser, user:currentUser } = useAuth();
-  
+  const { hasPermission, refreshUser, user: currentUser } = useAuth();
+
   // State for dropdown selections
   const [selectedModule, setSelectedModule] = useState<string>("");
   const [selectedMenu, setSelectedMenu] = useState<string>("");
   const [selectedSubMenu, setSelectedSubMenu] = useState<string>("");
-  
+
   // Options for dropdowns
   const [moduleOptions, setModuleOptions] = useState<string[]>([]);
   const [menuOptions, setMenuOptions] = useState<string[]>([]);
   const [subMenuOptions, setSubMenuOptions] = useState<string[]>([]);
-  
+
   // Filtered permissions based on selections
   const [filteredPermissions, setFilteredPermissions] = useState<any[]>([]);
-  
+
   const breadcrumbItems = [
     { label: "Users", href: "/dashboard/users" },
     { label: "Assign Permissions", href: "#" },
@@ -63,7 +64,7 @@ const UserPermissionsPage = () => {
         ]);
         setUser(userRes.data.user);
         setSelectedPermissions(userRes.data.permissions || []);
-        
+
         // Organize permissions and extract options
         processPermissions(permissionsRes.data.data || []);
       } catch (error: any) {
@@ -79,11 +80,11 @@ const UserPermissionsPage = () => {
   // Process permissions and extract dropdown options
   const processPermissions = (perms: any[]) => {
     setPermissions(perms);
-    
+
     // Extract unique modules
     const modules = [...new Set(perms.map(p => p.module_name || "Other"))];
     setModuleOptions(modules);
-    
+
     // Set default module selection if available
     if (modules.length > 0 && !selectedModule) {
       setSelectedModule(modules[0]);
@@ -93,7 +94,7 @@ const UserPermissionsPage = () => {
   // Update menu options when module changes
   useEffect(() => {
     if (!selectedModule) return;
-    
+
     const menus = [
       ...new Set(
         permissions
@@ -102,7 +103,7 @@ const UserPermissionsPage = () => {
       )
     ];
     setMenuOptions(menus);
-    
+
     // Reset menu and submenu selections
     setSelectedMenu(menus.length > 0 ? menus[0] : "");
     setSelectedSubMenu("");
@@ -111,19 +112,19 @@ const UserPermissionsPage = () => {
   // Update submenu options when menu changes
   useEffect(() => {
     if (!selectedModule || !selectedMenu) return;
-    
+
     const submenus = [
       ...new Set(
         permissions
-          .filter(p => 
-            (p.module_name || "Other") === selectedModule && 
+          .filter(p =>
+            (p.module_name || "Other") === selectedModule &&
             (p.menu_name || "General") === selectedMenu
           )
           .map(p => p.sub_menu_name || "Default")
       )
     ];
     setSubMenuOptions(submenus);
-    
+
     // Reset submenu selection
     setSelectedSubMenu(submenus.length > 0 ? submenus[0] : "");
   }, [selectedModule, selectedMenu, permissions]);
@@ -134,23 +135,23 @@ const UserPermissionsPage = () => {
       setFilteredPermissions([]);
       return;
     }
-    
-    let filtered = permissions.filter(p => 
+
+    let filtered = permissions.filter(p =>
       (p.module_name || "Other") === selectedModule
     );
-    
+
     if (selectedMenu) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         (p.menu_name || "General") === selectedMenu
       );
     }
-    
+
     if (selectedSubMenu) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         (p.sub_menu_name || "Default") === selectedSubMenu
       );
     }
-    
+
     setFilteredPermissions(filtered);
   }, [selectedModule, selectedMenu, selectedSubMenu, permissions]);
 
@@ -176,7 +177,7 @@ const UserPermissionsPage = () => {
   // Deselect all currently filtered permissions
   const deselectAllFiltered = () => {
     const filteredPermNames = filteredPermissions.map(p => p.name);
-    setSelectedPermissions(prev => 
+    setSelectedPermissions(prev =>
       prev.filter(perm => !filteredPermNames.includes(perm))
     );
   };
@@ -184,7 +185,7 @@ const UserPermissionsPage = () => {
   // Check if all filtered permissions are selected
   const areAllFilteredSelected = () => {
     if (filteredPermissions.length === 0) return false;
-    return filteredPermissions.every(perm => 
+    return filteredPermissions.every(perm =>
       selectedPermissions.includes(perm.name)
     );
   };
@@ -207,10 +208,10 @@ const UserPermissionsPage = () => {
         permissions: selectedPermissions,
       });
       toast.success("Permissions updated successfully");
-       if (currentUser && currentUser.id === parseInt(userId)) {
-      console.log("Refreshing current user permissions...");
-      await refreshUser(); // Refresh the user's permissions in context
-    }
+      if (currentUser && currentUser.id === parseInt(userId)) {
+        console.log("Refreshing current user permissions...");
+        await refreshUser(); // Refresh the user's permissions in context
+      }
       router.push("/dashboard/users");
     } catch (error: any) {
       toast.error(
@@ -285,7 +286,7 @@ const UserPermissionsPage = () => {
                     <FontAwesomeIcon icon={faFilter} className="mr-2 text-blue-500" />
                     <h3 className="text-lg font-medium text-gray-800">Filter Permissions</h3>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
@@ -293,73 +294,60 @@ const UserPermissionsPage = () => {
                         Module
                       </label>
                       <div className="relative">
-                        <select
+                        <SingleSelectField
                           value={selectedModule}
-                          onChange={(e) => setSelectedModule(e.target.value)}
-                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                        >
-                          {moduleOptions.map(module => (
-                            <option key={module} value={module}>
-                              {module}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                          <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
-                        </div>
+                          onChange={(val) => setSelectedModule(val)}
+                          options={moduleOptions.map((module) => ({ value: module, label: module }))}
+                          placeholder="Select Module"
+                          isDisabled={false}
+                          isClearable={true}
+                        />
+
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                         <FontAwesomeIcon icon={faBars} className="mr-2 text-blue-500 text-xs" />
                         Menu
                       </label>
                       <div className="relative">
-                        <select
+                        <SingleSelectField
                           value={selectedMenu}
-                          onChange={(e) => setSelectedMenu(e.target.value)}
-                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                          disabled={!selectedModule}
-                        >
-                          {menuOptions.map(menu => (
-                            <option key={menu} value={menu}>
-                              {menu}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                          <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
-                        </div>
+                          onChange={(val) => setSelectedMenu(val)}
+                          options={menuOptions.map((menu) => ({ value: menu, label: menu }))}
+                          placeholder="Select Menu"
+                          isDisabled={!selectedModule}  // disable if no module selected
+                          isClearable={true}
+                        />
+
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
                         <FontAwesomeIcon icon={faFolderTree} className="mr-2 text-blue-500 text-xs" />
                         Sub Menu
                       </label>
                       <div className="relative">
-                        <select
+                        <SingleSelectField
                           value={selectedSubMenu}
-                          onChange={(e) => setSelectedSubMenu(e.target.value)}
-                          className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
-                          disabled={!selectedMenu}
-                        >
-                          <option value="">All Submenus</option>
-                          {subMenuOptions.map(submenu => (
-                            <option key={submenu} value={submenu}>
-                              {submenu === "Default" ? "General" : submenu}
-                            </option>
-                          ))}
-                        </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                          <FontAwesomeIcon icon={faChevronDown} className="text-xs" />
-                        </div>
+                          onChange={(val) => setSelectedSubMenu(val)}
+                          options={[
+                            { value: "", label: "All Submenus" }, // default option
+                            ...subMenuOptions.map((submenu) => ({
+                              value: submenu,
+                              label: submenu === "Default" ? "General" : submenu,
+                            })),
+                          ]}
+                          placeholder="Select Submenu"
+                          isDisabled={!selectedMenu}    // disable if no menu selected
+                          isClearable={true}
+                        />
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6 p-4 bg-blue-50 rounded-md border border-blue-100">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium text-blue-800">Filtered Permissions</span>
@@ -386,8 +374,8 @@ const UserPermissionsPage = () => {
                       </Button>
                     </div>
                     <div className="flex items-center justify-center mt-3">
-                      <FontAwesomeIcon 
-                        icon={areAllFilteredSelected() ? faCheckCircle : faSquare} 
+                      <FontAwesomeIcon
+                        icon={areAllFilteredSelected() ? faCheckCircle : faSquare}
                         className={areAllFilteredSelected() ? "text-green-500" : "text-gray-400"}
                       />
                       <span className="text-xs text-gray-600 ml-2">
@@ -407,7 +395,7 @@ const UserPermissionsPage = () => {
                       Available Permissions
                     </h3>
                   </div>
-                  
+
                   {filteredPermissions.length === 0 ? (
                     <div className="text-center py-10">
                       <div className="text-gray-300 text-4xl mb-4">
@@ -421,18 +409,16 @@ const UserPermissionsPage = () => {
                       {filteredPermissions.map(perm => (
                         <div
                           key={perm.name}
-                          className={`flex items-center p-3 rounded-md border cursor-pointer transition-all ${
-                            selectedPermissions.includes(perm.name)
+                          className={`flex items-center p-3 rounded-md border cursor-pointer transition-all ${selectedPermissions.includes(perm.name)
                               ? "bg-blue-50 border-blue-200"
                               : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                          }`}
+                            }`}
                           onClick={() => togglePermission(perm.name)}
                         >
-                          <div className={`flex items-center justify-center h-5 w-5 rounded border mr-3 ${
-                            selectedPermissions.includes(perm.name)
+                          <div className={`flex items-center justify-center h-5 w-5 rounded border mr-3 ${selectedPermissions.includes(perm.name)
                               ? "bg-blue-500 border-blue-500 text-white"
                               : "bg-white border-gray-300"
-                          }`}>
+                            }`}>
                             {selectedPermissions.includes(perm.name) && (
                               <FontAwesomeIcon icon={faCheck} className="text-xs" />
                             )}
@@ -465,7 +451,7 @@ const UserPermissionsPage = () => {
                       </span>
                     </h3>
                   </div>
-                  
+
                   {selectedPermissions.length === 0 ? (
                     <div className="text-center py-8 bg-gray-50 rounded-md">
                       <div className="text-gray-300 text-4xl mb-3">
@@ -503,17 +489,17 @@ const UserPermissionsPage = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="mt-6 flex justify-end space-x-4">
-                    <Button 
-                      variant="secondary" 
+                    <Button
+                      variant="secondary"
                       onClick={() => router.back()}
                     >
                       Cancel
                     </Button>
-                    <Button 
-                      variant="primary" 
-                      onClick={handleSave} 
+                    <Button
+                      variant="primary"
+                      onClick={handleSave}
                       disabled={saving}
                       icon={saving ? undefined : faCheck}
                     >
