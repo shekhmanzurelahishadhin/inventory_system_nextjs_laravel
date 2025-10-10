@@ -75,17 +75,27 @@ const Models = () => {
   }, []);
 
   // When form changes
-    const handleFormChange = async (updated: Record<string, any>) => {
-      // Category selected → fetch sub-categories
-      if (updated.category_id) {
-        const res = await api.get(`/configure/sub-categories?category_id=${updated.category_id}`, {
-      params: { status: true }, // only status = active sub-categories
-    });
-        setSubCategories(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
-      }else{
-        setSubCategories([]);
-      }
-    };
+  const handleFormChange = async (updated: Record<string, any>) => {
+  // Category selected → fetch sub-categories
+  if (updated.category_id) {
+    setLoadingDropdowns(true); // start loader
+    try {
+      const res = await api.get(`/configure/sub-categories?category_id=${updated.category_id}`, {
+        params: { status: true }, // only status = active sub-categories
+      });
+      setSubCategories(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
+    } catch (error) {
+      console.error("Failed to fetch sub-categories", error);
+      setSubCategories([]);
+    } finally {
+      setLoadingDropdowns(false); // stop loader after fetch finishes
+    }
+  } else {
+    setSubCategories([]);      // clear sub-categories if no category selected
+    setLoadingDropdowns(false); // stop loader immediately
+  }
+};
+
 
   const fetchLookups = async () => {
     try {

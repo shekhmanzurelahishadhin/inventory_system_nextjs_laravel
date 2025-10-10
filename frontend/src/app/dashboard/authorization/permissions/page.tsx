@@ -53,34 +53,45 @@ const Permissions = () => {
     perPage: 10
   });
   const { handleForceDelete } = useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
-const fetchModules = async () => {
-      const res = await api.get("/modules");
-      setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
-    };
+  const fetchModules = async () => {
+    const res = await api.get("/modules");
+    setModules(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+  };
   useEffect(() => {
     fetchModules();
   }, []);
 
   // When form changes
   const handleFormChange = async (updated: Record<string, any>) => {
-    // Module selected → fetch menus
-    if (updated.module_id) {
-      const res = await api.get(`/menus?module_id=${updated.module_id}`);
-      setMenus(res.data.map((m: any) => ({ value: m.id, label: m.name })));
-      setSubMenus([]); // reset sub menus
-    }else{
+    setLoadingDropdowns(true); // start loader
+
+    try {
+      // Module selected → fetch menus
+      if (updated.module_id) {
+        const res = await api.get(`/menus?module_id=${updated.module_id}`);
+        setMenus(res.data.map((m: any) => ({ value: m.id, label: m.name })));
+        setSubMenus([]); // reset sub-menus
+      } else {
+        setMenus([]);
+        setSubMenus([]);
+      }
+
+      // Menu selected → fetch sub-menus
+      if (updated.menu_id) {
+        const res = await api.get(`/sub-menus?menu_id=${updated.menu_id}`);
+        setSubMenus(res.data.map((s: any) => ({ value: s.id, label: s.name })));
+      } else {
+        setSubMenus([]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch menus or sub-menus", error);
       setMenus([]);
       setSubMenus([]);
-    }
-
-    // Menu selected → fetch sub menus
-    if (updated.menu_id) {
-      const res = await api.get(`/sub-menus?menu_id=${updated.menu_id}`);
-      setSubMenus(res.data.map((s: any) => ({ value: s.id, label: s.name })));
-    }else{
-      setSubMenus([]);
+    } finally {
+      setLoadingDropdowns(false); // stop loader after all fetches
     }
   };
+
 
   // Breadcrumb items
   const breadcrumbItems = [
@@ -127,6 +138,7 @@ const fetchModules = async () => {
       showOn: "both",
       options: menus,
       watch: true, // watch this field for changes
+      isLoading: loadingDropdowns,
     },
     {
       label: "Sub Menu",
@@ -141,6 +153,7 @@ const fetchModules = async () => {
       type: "reactselect",
       showOn: "both",
       options: subMenus,
+      isLoading: loadingDropdowns,
     },
     {
       label: "Created At",
@@ -168,7 +181,7 @@ const fetchModules = async () => {
       setLoadingDropdowns(true);
       (async () => {
         try {
-          const [ menuRes, subMenuRes] = await Promise.all([
+          const [menuRes, subMenuRes] = await Promise.all([
             api.get(`/menus?module_id=${permission.module_id}`),
             api.get(`/sub-menus?menu_id=${permission.menu_id}`),
           ]);
@@ -225,7 +238,7 @@ const fetchModules = async () => {
 
   // Columns for DataTable
   const columns = [
-      {
+    {
       name: "#",
       cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
@@ -363,8 +376,8 @@ const fetchModules = async () => {
             modalType === "create"
               ? "Create Permission"
               : modalType === "edit"
-              ? "Edit Permission"
-              : "View Permission"
+                ? "Edit Permission"
+                : "View Permission"
           }
           footer={
             modalType === "view" ? (
@@ -380,11 +393,10 @@ const fetchModules = async () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting || loadingDropdowns}
-                  className={`${
-                    (isSubmitting || loadingDropdowns)
+                  className={`${(isSubmitting || loadingDropdowns)
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -415,8 +427,8 @@ const fetchModules = async () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

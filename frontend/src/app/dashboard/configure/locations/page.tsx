@@ -72,16 +72,26 @@ const Locations = () => {
 
   // When form changes
   const handleFormChange = async (updated: Record<string, any>) => {
-    // Category selected → fetch stores
+    // Company (company) selected → fetch stores
     if (updated.company_id) {
-      const res = await api.get(`/configure/stores?company_id=${updated.company_id}`, {
-        params: { status: true }, // only status = active stores
-      });
-      setStores(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
+      setLoadingDropdowns(true); // start loader
+      try {
+        const res = await api.get(`/configure/stores?company_id=${updated.company_id}`, {
+          params: { status: true }, // only active stores
+        });
+        setStores(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
+      } catch (error) {
+        console.error("Failed to fetch stores", error);
+        setStores([]);
+      } finally {
+        setLoadingDropdowns(false); // stop loader after fetch finishes
+      }
     } else {
-      setStores([]);
+      setStores([]);              // clear stores if no company selected
+      setLoadingDropdowns(false); // stop loader immediately
     }
   };
+
 
   const fetchLookups = async () => {
     try {
@@ -121,6 +131,7 @@ const Locations = () => {
       required: true,
       showOn: "both",
       options: stores,
+      isLoading: loadingDropdowns,
     },
     {
       label: "Name",
