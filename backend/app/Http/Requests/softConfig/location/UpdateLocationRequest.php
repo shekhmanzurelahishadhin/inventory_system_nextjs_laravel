@@ -3,6 +3,7 @@
 namespace App\Http\Requests\softConfig\location;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLocationRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateLocationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,37 @@ class UpdateLocationRequest extends FormRequest
      */
     public function rules(): array
     {
+        // Get the ID of the location being updated
+        $locationId = $this->route('location'); // assumes route parameter is {location}
+
         return [
-            //
+            'company_id' => 'required|exists:companies,id',
+            'store_id' => 'required|exists:stores,id',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('product_models', 'name')->ignore($locationId),
+            ],
+            'description' => 'nullable|string',
+            'status' => 'boolean',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'company_id.required' => 'Please select a company.',
+            'company_id.exists' => 'The selected company is invalid.',
+
+            'store_id.required' => 'Please select a store.',
+            'store_id.exists' => 'The selected store is invalid.',
+
+            'name.required' => 'Location name is required.',
+            'name.unique' => 'This model name already exists.',
+            'name.max' => 'Location name cannot be longer than 255 characters.',
+            'description.string' => 'The description must be valid text.',
+            'status.boolean' => 'The active status must be true or false.',
         ];
     }
 }

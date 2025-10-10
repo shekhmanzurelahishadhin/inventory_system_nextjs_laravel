@@ -29,6 +29,7 @@ import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
+import { watch } from "fs";
 
 const Locations = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -111,6 +112,7 @@ const Locations = () => {
       required: true,
       showOn: "both",
       options: companies,
+      watch: true, // watch this field for changes
     },
     {
       label: "Stores",

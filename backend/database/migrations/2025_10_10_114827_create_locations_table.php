@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->foreignId('store_id')->constrained('stores')->onDelete('cascade');
             $table->string('name');
+            $table->string('slug')->nullable();
             $table->string('code')->unique();
             $table->text('description')->nullable();
             $table->boolean('status')->default(true);

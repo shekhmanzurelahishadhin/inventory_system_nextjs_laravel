@@ -11,7 +11,7 @@ class CreateLocationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,25 @@ class CreateLocationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'company_id' => 'required|exists:companies,id',
+            'store_id' => 'required|exists:stores,id',
+            'name' => 'required|string|max:255|unique:product_models,name',
+            'description' => 'nullable|string',
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'company_id.required' => 'Please select a company.',
+            'company_id.exists' => 'The selected company is invalid.',
+
+            'store_id.required' => 'Please select a store.',
+            'store_id.exists' => 'The selected store is invalid.',
+
+            'name.required' => 'Location name is required.',
+            'name.unique' => 'This model name already exists.',
+            'name.max' => 'Location name cannot be longer than 255 characters.',
+            'description.string' => 'The description must be valid text.',
         ];
     }
 }

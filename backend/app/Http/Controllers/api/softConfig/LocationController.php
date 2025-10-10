@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\softConfig\location\CreateLocationRequest;
+use App\Http\Requests\softConfig\location\UpdateLocationRequest;
 use App\Http\Resources\softConfig\location\LocationResource;
+use App\Models\softConfig\Location;
 use App\Services\softConfig\LocationService;
 use Illuminate\Http\Request;
 
@@ -42,5 +45,85 @@ class LocationController extends Controller
             'current_page' => 1,
             'per_page' => $locations->count(),
         ]);
+    }
+
+    /**
+     * Location a newly created resource in storage.
+     */
+    public function store(CreateLocationRequest $request, LocationService $locationService)
+    {
+        $validatedData = $request->validated();
+
+        $location  = $locationService->createLocation($validatedData);
+
+        return response()->json([
+            'message' => 'Location created successfully',
+            'data' => new LocationResource($location),
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateLocationRequest $request, LocationService $locationService, Location $location)
+    {
+        $location  = $locationService->updateLocation($location , $request->validated());
+
+        return response()->json([
+            'message' => 'Update updated successfully',
+            'data' => new LocationResource($location),
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+
+    // Soft delete (move to trash)
+    public function trash(Location $location , LocationService $locationService)
+    {
+        $locationService->softDeleteLocation($location);
+
+        return response()->json([
+            'message' => 'Location moved to trash successfully',
+        ]);
+    }
+
+    // Restore soft-deleted location
+    public function restore($id, LocationService $locationService)
+    {
+        $location  = Location::withTrashed()->findOrFail($id);
+
+        $location  = $locationService->restoreLocation($location);
+
+        return response()->json([
+            'message' => 'Location restored successfully',
+            'data' => $location ,
+        ]);
+    }
+
+    // Force delete permanently
+    public function destroy($id, LocationService $locationService)
+    {
+        $location  = Location::withTrashed()->findOrFail($id);
+        $deleted = $locationService->forceDeleteLocation($location);
+
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Location permanently deleted',
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Location is not in trash',
+        ], 400);
     }
 }

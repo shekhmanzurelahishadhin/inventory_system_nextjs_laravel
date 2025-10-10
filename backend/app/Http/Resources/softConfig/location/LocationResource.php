@@ -23,7 +23,7 @@ class LocationResource extends JsonResource
             'company_id' => $this->company?->id ?? null,
             'company_name' => $this->company?->name ?? null,
             'status' => $this->status,
-            'address' => $this->address,
+            'description' => $this->description,
             'created_by' => $this->created_by,
             'updated_by' => $this->updated_by,
             'deleted_by' => $this->deleted_by,

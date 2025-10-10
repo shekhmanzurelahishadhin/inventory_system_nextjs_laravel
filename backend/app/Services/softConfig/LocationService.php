@@ -37,4 +37,40 @@ class LocationService
         $query->with(['store:id,name','company:id,name'])->orderBy('id','desc');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
+    public function createLocation(array $data)
+    {
+        $data['code'] = generateCode('LCN', 'locations', 'code');
+        return Location::create($data);
+    }
+
+    public function updateLocation(Location $location, array $data)
+    {
+        $data['code'] = generateCode('LCN', 'locations', 'code');
+        $location->update($data); // updates the model
+        return $location;         // return the model itself
+    }
+
+
+    public function softDeleteLocation(Location $location)
+    {
+        $location->delete();
+    }
+
+    public function restoreLocation(Location $location)
+    {
+        if ($location->trashed()) {
+            $location->restore();
+        }
+        return $location;
+    }
+
+    public function forceDeleteLocation(Location $location)
+    {
+        if ($location->trashed()) {
+            $location->forceDelete();
+            return true;
+        }
+        return false;
+    }
 }

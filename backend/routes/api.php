@@ -160,9 +160,9 @@ Route::prefix('v1')->group(function () {
             Route::prefix('locations')->group(function () {
                 Route::get('/', [LocationController::class, 'index']);
                 Route::post('/', [LocationController::class, 'store']);
-                Route::get('/{store}', [LocationController::class, 'show']);
-                Route::put('/{store}', [LocationController::class, 'update']);
-                Route::post('trash/{store}', [LocationController::class, 'trash']); // soft delete
+                Route::get('/{location}', [LocationController::class, 'show']);
+                Route::put('/{location}', [LocationController::class, 'update']);
+                Route::post('trash/{location}', [LocationController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [LocationController::class, 'restore']);
                 Route::delete('/{id}', [LocationController::class, 'destroy']); // force delete
             });

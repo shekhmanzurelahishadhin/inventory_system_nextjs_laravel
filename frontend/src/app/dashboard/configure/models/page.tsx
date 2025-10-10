@@ -116,6 +116,7 @@ const Models = () => {
       required: true,
       showOn: "both",
       options: categories,
+      watch : true, // watch this field for changes
     },
      {
       label: "Sub Category",

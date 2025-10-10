@@ -55,9 +55,12 @@ const DynamicForm = forwardRef(
     const handleChange = (key: string, value: any) => {
       const updated = { ...formData, [key]: value };
       setFormData(updated);
-      if (onChange) onChange(updated);
 
+       // Check if this field is marked as watch
       const field = fields.find((f) => f.key === key);
+      if (field?.watch && onChange) {
+        onChange(updated); // only call onChange for watched fields
+      }
       if (field) {
         const error = validateField(field, value);
         setErrors((prev) => ({ ...prev, [key]: error || "" }));

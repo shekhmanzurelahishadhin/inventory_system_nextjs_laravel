@@ -110,6 +110,7 @@ const fetchModules = async () => {
       required: true,
       showOn: "both",
       options: modules,
+      watch: true, // watch this field for changes
     },
     {
       label: "Menu",
@@ -125,6 +126,7 @@ const fetchModules = async () => {
       required: true,
       showOn: "both",
       options: menus,
+      watch: true, // watch this field for changes
     },
     {
       label: "Sub Menu",
