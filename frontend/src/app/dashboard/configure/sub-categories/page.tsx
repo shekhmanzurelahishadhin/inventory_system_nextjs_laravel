@@ -93,7 +93,7 @@ const fetchCategories = async () => {
     {
       label: "Category",
       key: "category_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: categories,

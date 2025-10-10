@@ -90,7 +90,7 @@ const Stores = () => {
     {
       label: "Company",
       key: "company_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: companies,

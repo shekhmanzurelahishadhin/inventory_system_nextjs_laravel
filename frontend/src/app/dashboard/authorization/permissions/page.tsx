@@ -106,7 +106,7 @@ const fetchModules = async () => {
     {
       label: "Module",
       key: "module_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: modules,
@@ -122,7 +122,7 @@ const fetchModules = async () => {
     {
       label: "Menu",
       key: "menu_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: menus,
@@ -138,7 +138,7 @@ const fetchModules = async () => {
     {
       label: "Sub Menu",
       key: "sub_menu_id",
-      type: "select",
+      type: "reactselect",
       showOn: "both",
       options: subMenus,
     },

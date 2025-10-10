@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { FieldConfigArray } from "../common/FieldConfig";
 import MultiSelectField from "./MultiSelectField";
+import SingleSelectField from "./SingleSelectField";
 
 interface DynamicFormProps {
   data?: Record<string, any> | null;
@@ -56,7 +57,7 @@ const DynamicForm = forwardRef(
       const updated = { ...formData, [key]: value };
       setFormData(updated);
 
-       // Check if this field is marked as watch
+      // Check if this field is marked as watch
       const field = fields.find((f) => f.key === key);
       if (field?.watch && onChange) {
         onChange(updated); // only call onChange for watched fields
@@ -189,73 +190,85 @@ const DynamicForm = forwardRef(
                       </option>
                     ))}
                   </select>
-                ) : field.type === "multiselect" ? (
-                  <MultiSelectField
-                    value={formData[field.key] || []}
+                ) : field.type === "reactselect" ? (
+                  <SingleSelectField
+                    value={formData[field.key] ?? null}
                     options={field.options || []}
-                    onChange={(vals) =>
-                      !isReadOnly && handleChange(field.key, vals)
-                    }
+                    onChange={(val) => !isReadOnly && handleChange(field.key, val)}
                     placeholder={field.placeholder || `Select ${field.label}`}
-                    disabled={isReadOnly}
-                  />
-                ) : field.type === "checkbox" ? (
-                  <input
-                    type="checkbox"
-                    checked={!!value}
-                    onChange={(e) =>
-                      !isReadOnly && handleChange(field.key, e.target.checked)
-                    }
-                    disabled={isReadOnly}
-                  />
-                ) : field.type === "radio" ? (
-                  <div className="flex gap-4">
-                    {field.options?.map((opt) => (
-                      <label
-                        key={opt.value}
-                        className="flex items-center gap-2"
-                      >
-                        <input
-                          type="radio"
-                          name={field.key}
-                          value={opt.value}
-                          checked={value == opt.value}
-                          onChange={(e) =>
-                            !isReadOnly &&
-                            handleChange(field.key, e.target.value)
-                          }
-                          disabled={isReadOnly}
-                        />
-                        {opt.label}
-                      </label>
-                    ))}
-                  </div>
-                ) : field.type === "file" ? (
-                  <div>
+                    isDisabled={isReadOnly || field.isDisabled}
+                    isLoading={field.isLoading}
+                    isClearable={field.isClearable}
+                    isRtl={field.isRtl}
+                    isSearchable={field.isSearchable}
+                    name={field.name || field.key}
+                  />) : field.type === "multiselect" ? (
+                    <MultiSelectField
+                      value={formData[field.key] || []}
+                      options={field.options || []}
+                      onChange={(vals) =>
+                        !isReadOnly && handleChange(field.key, vals)
+                      }
+                      placeholder={field.placeholder || `Select ${field.label}`}
+                    // disabled={isReadOnly}
+                    />
+                  ) : field.type === "checkbox" ? (
                     <input
-                      type="file"
+                      type="checkbox"
+                      checked={!!value}
                       onChange={(e) =>
-                        !isReadOnly &&
-                        handleChange(field.key, e.target.files?.[0] || null)
+                        !isReadOnly && handleChange(field.key, e.target.checked)
                       }
                       disabled={isReadOnly}
-                      className={inputClasses(field.key)}
-                      accept={field.accept || "*"} // Add accept attribute
                     />
-                    {/* Show current file name if editing */}
-                    {mode === "edit" && value instanceof File && (
-                      <p className="text-sm text-gray-600 mt-1">
-                        Selected: {value.name}
-                      </p>
-                    )}
-                    {/* Show existing file info if editing and no new file selected */}
-                    {mode === "edit" && typeof value === "string" && value && (
-                      <p className="text-sm text-gray-600 mt-1">
-                        Current: {value.split("/").pop()}
-                      </p>
-                    )}
-                  </div>
-                ) : (
+                  ) : field.type === "radio" ? (
+                    <div className="flex gap-4">
+                      {field.options?.map((opt) => (
+                        <label
+                          key={opt.value}
+                          className="flex items-center gap-2"
+                        >
+                          <input
+                            type="radio"
+                            name={field.key}
+                            value={opt.value}
+                            checked={value == opt.value}
+                            onChange={(e) =>
+                              !isReadOnly &&
+                              handleChange(field.key, e.target.value)
+                            }
+                            disabled={isReadOnly}
+                          />
+                          {opt.label}
+                        </label>
+                      ))}
+                    </div>
+                  ) : field.type === "file" ? (
+                    <div>
+                      <input
+                        type="file"
+                        onChange={(e) =>
+                          !isReadOnly &&
+                          handleChange(field.key, e.target.files?.[0] || null)
+                        }
+                        disabled={isReadOnly}
+                        className={inputClasses(field.key)}
+                        accept={field.accept || "*"} // Add accept attribute
+                      />
+                      {/* Show current file name if editing */}
+                      {mode === "edit" && value instanceof File && (
+                        <p className="text-sm text-gray-600 mt-1">
+                          Selected: {value.name}
+                        </p>
+                      )}
+                      {/* Show existing file info if editing and no new file selected */}
+                      {mode === "edit" && typeof value === "string" && value && (
+                        <p className="text-sm text-gray-600 mt-1">
+                          Current: {value.split("/").pop()}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
                   <input
                     type={field.type || "text"}
                     value={value}

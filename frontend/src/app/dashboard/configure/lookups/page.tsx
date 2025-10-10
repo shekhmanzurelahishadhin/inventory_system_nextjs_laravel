@@ -86,7 +86,7 @@ const Lookups = () => {
     {
       name: "is_new",
       label: "Is New Type",
-      type: "select",
+      type: "reactselect",
       key: "is_new",
       options: [
         { value: "1", label: "Yes" },
@@ -106,7 +106,7 @@ const Lookups = () => {
     {
       name: "type_select",
       label: "Type",
-      type: "select",
+      type: "reactselect",
       key: "type_select",
       options: lookups,
       required: (formData) => formData.is_new === "0", // 👈 condition

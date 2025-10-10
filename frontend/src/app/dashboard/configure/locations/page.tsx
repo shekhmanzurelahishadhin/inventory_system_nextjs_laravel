@@ -108,7 +108,7 @@ const Locations = () => {
     {
       label: "Companies",
       key: "company_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: companies,
@@ -117,7 +117,7 @@ const Locations = () => {
     {
       label: "Stores",
       key: "store_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: stores,

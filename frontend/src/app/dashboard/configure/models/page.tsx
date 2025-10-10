@@ -112,7 +112,7 @@ const Models = () => {
     {
       label: "Category",
       key: "category_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: categories,
@@ -121,15 +121,16 @@ const Models = () => {
      {
       label: "Sub Category",
       key: "sub_category_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: subCategories,
+      isLoading: loadingDropdowns,
     },
     {
       label: "Brand",
       key: "brand_id",
-      type: "select",
+      type: "reactselect",
       required: true,
       showOn: "both",
       options: brands,
