@@ -53,7 +53,7 @@ const Companies = () => {
   });
   const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
     setRefreshTrigger((prev) => prev + 1)
-  );  
+  );
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
@@ -226,6 +226,26 @@ const Companies = () => {
       }
     }
   };
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    { name: "description", selector: "description" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.status === 1 ? "Active" : "Inactive",
+    },
+    { name: "Created at", selector: "created_at" },
+  ];
+  const filterColumns = [
+    { 'name': 'name', 'label': 'Category Name', 'type': 'text' },
+    { 'name': 'description', 'label': 'Description', 'type': 'text' },
+    {
+      name: "status", label: "Status", type: "reactselect", options: [
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ]
+    },
+  ];
 
   // Columns for DataTable
   const columns = [
@@ -343,16 +363,8 @@ const Companies = () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/categories"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "description", selector: "description" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                      row.status === 1 ? "Active" : "Inactive",
-                  },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
+                filterFields={filterColumns}
                 exportFileName="categories"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}

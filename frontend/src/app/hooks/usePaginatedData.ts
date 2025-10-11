@@ -10,6 +10,7 @@ interface UsePaginatedDataOptions<T> {
   perPage?: number;
   currentPage?: number;
   extraParams?: Record<string, any>;
+  filters?: Record<string, any>;
 }
 
 interface PaginatedResponse<T> {
@@ -24,6 +25,7 @@ export function usePaginatedData<T>({
   perPage = 10,
   currentPage = 1,
   extraParams = {},
+  filters = {},
 }: UsePaginatedDataOptions<T>) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(false);
@@ -52,6 +54,7 @@ export function usePaginatedData<T>({
           page: currentPage,
           per_page: perPage,
           ...extraParams,
+          ...filters,
         },
         signal: signal,
       });
