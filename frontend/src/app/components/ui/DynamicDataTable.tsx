@@ -49,7 +49,7 @@ const DynamicDataTable = <T extends any>({
   const [searchTerm, setSearchTerm] = useState("");
   const [perPage, setPerPage] = useState(defaultPerPage);
   const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState<Record<string, string>>({});
+  const [filters, setFilters] = useState<Record<string, string | number>>({});
 
   const { data, loading, totalRows, error, refetch } = usePaginatedData<T>({
     apiEndpoint,
@@ -78,7 +78,8 @@ const DynamicDataTable = <T extends any>({
     }
   }, [currentPage, perPage]);
 
- const handleFilterChange = (name: string, value: string) => {
+ const handleFilterChange = (name: string, value: string | number) => {
+  console.log("Filter changed:", name, value);
     setFilters((prev) => ({ ...prev, [name]: value }));
     setCurrentPage(1);
   };

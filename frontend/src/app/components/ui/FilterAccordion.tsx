@@ -8,7 +8,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import SingleSelectField from "./SingleSelectField";
 
-interface FilterField {
+export interface FilterField {
   name: string;
   label: string;
   type: "text" | "select" | "date" | "reactselect";
@@ -23,8 +23,8 @@ interface FilterField {
 interface FilterAccordionProps {
   title?: string;
   fields: FilterField[];
-  values: Record<string, string>;
-  onChange: (name: string, value: string) => void;
+  values: Record<string, string | number>;
+  onChange: (name: string, value: string | number) => void;
 }
 
 const FilterAccordion: React.FC<FilterAccordionProps> = ({
@@ -77,36 +77,25 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
                   ))}
                 </select>
               ) : field.type === "reactselect" ? (
-                <div className="text-left">
-                  <SingleSelectField
-                    value={
-                      field.options?.find(
-                        (opt) => opt.value.toString() === values[field.name]
-                      ) || null
-                    }
-                    options={field.options || []}
-                    onChange={(val) =>
-                      onChange(
-                        field.name,
-                        val && val.value !== undefined ? String(val.value) : ""
-                      )
-                    }
-                    placeholder={field.placeholder || `Select ${field.label}`}
-                    isDisabled={field.isDisabled}
-                    isLoading={field.isLoading}
-                    isClearable={field.isClearable ?? true}
-                    isSearchable={field.isSearchable ?? true}
-                    isRtl={false} // ✅ Force left alignment
-                    name={field.name}
-                  />
-                </div>
+                <SingleSelectField
+                  value={values[field.name] || null}
+                  options={field.options || []}
+                  onChange={(val) => onChange(field.name, val ?? "")}
+                  placeholder={field.placeholder || `Select ${field.label}`}
+                  isDisabled={field.isDisabled}
+                  isLoading={field.isLoading}
+                  isClearable={field.isClearable ?? true}
+                  isSearchable={field.isSearchable ?? true}
+                  isRtl={false}
+                  name={field.name}
+                />
               ) : (
                 <input
                   type={field.type}
                   className="mt-1 block w-full p-3 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                   value={values[field.name] || ""}
                   onChange={(e) => onChange(field.name, e.target.value)}
-                  placeholder={field.label}
+                  placeholder={field.placeholder || field.label}
                 />
               )}
             </div>
