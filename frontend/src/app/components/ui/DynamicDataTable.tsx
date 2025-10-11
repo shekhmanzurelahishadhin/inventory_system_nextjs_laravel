@@ -79,7 +79,6 @@ const DynamicDataTable = <T extends any>({
   }, [currentPage, perPage]);
 
  const handleFilterChange = (name: string, value: string | number) => {
-  console.log("Filter changed:", name, value);
     setFilters((prev) => ({ ...prev, [name]: value }));
     setCurrentPage(1);
   };
