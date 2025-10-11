@@ -40,13 +40,12 @@ class LocationService
 
     public function createLocation(array $data)
     {
-        $data['code'] = generateCode('LCN', 'locations', 'code');
+        $data['code'] = generateCode('LOC', 'locations', 'code');
         return Location::create($data);
     }
 
     public function updateLocation(Location $location, array $data)
     {
-        $data['code'] = generateCode('LCN', 'locations', 'code');
         $location->update($data); // updates the model
         return $location;         // return the model itself
     }

@@ -40,7 +40,6 @@ class StoreService
 
     public function updateStore(Store $store, array $data)
     {
-        $data['code'] = generateCode('STR', 'stores', 'code');
         $store->update($data); // updates the model
         return $store;         // return the model itself
     }
