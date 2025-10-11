@@ -47,7 +47,6 @@ const MultiSelectField: React.FC<MultiSelectFieldProps> = ({
         }),
            multiValueLabel: (provided) => ({
       ...provided,
-      whiteSpace: "normal", // allow wrapping
       overflow: "visible", // prevent clipping
       textOverflow: "unset",
     }),
