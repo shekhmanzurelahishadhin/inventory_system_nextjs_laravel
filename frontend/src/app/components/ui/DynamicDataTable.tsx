@@ -77,6 +77,24 @@ const fetchAllData = async (): Promise<T[]> => {
   }
 };
 
+const customStyles = {
+  headCells: {
+    style: {
+      backgroundColor: "#8371f5ff", // light gray
+      color: "#ffffffff", // dark text
+      fontWeight: "600",
+      fontSize: "14px",
+      marginTop: "20px",
+      padding: "15px",
+    },
+  },
+  header: {
+    style: {
+      backgroundColor: "#8371f5ff", // optional for overall header area
+    },
+  },
+};
+
 
   return (
     <div>
@@ -91,6 +109,7 @@ const fetchAllData = async (): Promise<T[]> => {
           columns={columns}
           data={data}
           // progressPending={loading}
+           customStyles={customStyles}
           pagination // Enable pagination
           paginationServer // Server-side pagination
           paginationTotalRows={totalRows}
