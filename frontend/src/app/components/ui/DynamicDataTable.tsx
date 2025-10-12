@@ -68,10 +68,6 @@ const DynamicDataTable = <T extends any>({
     }
   }, [refreshTrigger]);
 
-    useEffect(() => {
-    refetch();
-  }, [filters]);
-
   useEffect(() => {
     if (onPaginationChange) {
       onPaginationChange(currentPage, perPage);

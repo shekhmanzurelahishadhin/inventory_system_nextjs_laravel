@@ -36,6 +36,7 @@ export function usePaginatedData<T>({
 
   // Debounced search term
   const debouncedSearch = useDebounce(searchTerm, 500);
+  const debouncedFilters = useDebounce(filters, 500);
 
   // Create a refetch function that can be called manually
   const fetchData = useCallback(async (signal?: AbortSignal) => {
@@ -54,7 +55,7 @@ export function usePaginatedData<T>({
           page: currentPage,
           per_page: perPage,
           ...extraParams,
-          ...filters,
+          ...debouncedFilters,
         },
         signal: signal,
       });
@@ -77,7 +78,7 @@ export function usePaginatedData<T>({
     } finally {
       setLoading(false);
     }
-  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams),JSON.stringify(filters), data]);
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams),JSON.stringify(debouncedFilters), data]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -89,7 +90,7 @@ export function usePaginatedData<T>({
 
     // Cancel request on cleanup
     return () => controller.abort();
-  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams),JSON.stringify(filters)]);
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams),JSON.stringify(debouncedFilters)]);
 
   // Return the refetch function
   const refetch = useCallback(() => {
@@ -97,7 +98,7 @@ export function usePaginatedData<T>({
     fetchData(controller.signal);
 
     return () => controller.abort();
-  }, [fetchData, filters]);
+  }, [fetchData, debouncedFilters]);
 
   return { data, loading, totalRows, error, refetch };
 }
