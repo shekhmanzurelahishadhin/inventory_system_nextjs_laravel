@@ -8,26 +8,41 @@ use App\Models\softConfig\Category;
 
 class CategoryService
 {
-    public function getCategories($filters = [], $perPage)
+    public function getCategories($filters = [], $perPage = null)
     {
         $query = Category::query();
 
-        if (isset($filters['status'])) {
+        // Apply filters safely
+        if (isset($filters['status']) && $filters['status'] !== '') {
             $query->where('status', $filters['status']);
-        } else {
+        }else {
             $query->withTrashed();
         }
 
+        if (!empty($filters['name'])) {
+            $query->where('name', 'like', "%{$filters['name']}%");
+        }
+
+        if (!empty($filters['description'])) {
+            $query->where('description', 'like', "%{$filters['description']}%");
+        }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('description', 'like', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
         }
 
-        $query->with(['productModels:id,name,category_id','subCategories:id,name,category_id'])->orderBy('id','desc');
+        $query->with([
+            'productModels:id,name,category_id',
+            'subCategories:id,name,category_id'
+        ])->orderBy('id', 'desc');
+
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
     public function createCategory(array $data)
     {
