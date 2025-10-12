@@ -77,7 +77,7 @@ export function usePaginatedData<T>({
     } finally {
       setLoading(false);
     }
-  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams), data]);
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams),JSON.stringify(filters), data]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -89,7 +89,7 @@ export function usePaginatedData<T>({
 
     // Cancel request on cleanup
     return () => controller.abort();
-  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams)]);
+  }, [apiEndpoint, debouncedSearch, currentPage, perPage, JSON.stringify(extraParams),JSON.stringify(filters)]);
 
   // Return the refetch function
   const refetch = useCallback(() => {
@@ -97,7 +97,7 @@ export function usePaginatedData<T>({
     fetchData(controller.signal);
 
     return () => controller.abort();
-  }, [fetchData]);
+  }, [fetchData, filters]);
 
   return { data, loading, totalRows, error, refetch };
 }

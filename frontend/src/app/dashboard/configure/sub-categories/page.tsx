@@ -60,7 +60,7 @@ const SubCategories = () => {
   );  
 const fetchCategories = async () => {
       const res = await api.get("/configure/categories", {
-      params: { status: true }, // only status = active brands
+      params: { status: 1 }, 
     });
       setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
     };
