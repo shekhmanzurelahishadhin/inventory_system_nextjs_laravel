@@ -31,15 +31,25 @@ class CategoryService
             $query->where('description', 'like', "%{$filters['description']}%");
         }
 
+        if (!empty($filters['created_by'])) {
+            $query->whereHas('createdBy', function ($q) use ($filters) {
+                $q->where('name', 'like', "%{$filters['created_by']}%");
+            });
+        }
+
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhereHas('createdBy', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $query->with([
+            'createdBy:id,name',
             'productModels:id,name,category_id',
             'subCategories:id,name,category_id'
         ])->orderBy('id', 'desc');

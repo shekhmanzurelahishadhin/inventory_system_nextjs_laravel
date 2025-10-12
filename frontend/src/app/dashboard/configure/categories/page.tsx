@@ -246,6 +246,7 @@ const Companies = () => {
         { value: "0", label: "Inactive" },
       ]
     },
+     { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
   ];
 
   // Columns for DataTable
@@ -271,6 +272,11 @@ const Companies = () => {
       name: "Status",
       selector: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
+      sortable: true,
+    },
+    {
+      name: "Created By",
+      selector: (row) => row.created_by,
       sortable: true,
     },
     {
@@ -371,6 +377,7 @@ const Companies = () => {
                 defaultPerPage={perPage}
                 searchPlaceholder="Search categories..."
                 refreshTrigger={refreshTrigger}
+                gridCols={5}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }

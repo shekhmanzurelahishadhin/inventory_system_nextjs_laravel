@@ -2,6 +2,7 @@
 
 namespace App\Models\softConfig;
 
+use App\Models\User;
 use App\Traits\SetSlugAndAuditing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,10 @@ class Category extends Model
     {
         return $this->hasMany(ProductModel::class);
     }
-
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
 //    protected static function booted()
 //    {
 //        static::deleting(function ($category) {

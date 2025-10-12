@@ -25,6 +25,7 @@ interface FilterAccordionProps {
   fields: FilterField[];
   values: Record<string, string | number>;
   onChange: (name: string, value: string | number) => void;
+   gridCols?: number; // prop for grid columns
 }
 
 const FilterAccordion: React.FC<FilterAccordionProps> = ({
@@ -32,9 +33,22 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
   fields,
   values,
   onChange,
+  gridCols = 8, // default to 8 columns
 }) => {
   const [open, setOpen] = useState(false);
-
+    const gridColClassMap: Record<number, string> = {
+    1: "lg:grid-cols-1",
+    2: "lg:grid-cols-2",
+    3: "lg:grid-cols-3",
+    4: "lg:grid-cols-4",
+    5: "lg:grid-cols-5",
+    6: "lg:grid-cols-6",
+    7: "lg:grid-cols-7",
+    8: "lg:grid-cols-8",
+  };
+  const gridClass = `p-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 ${
+    gridColClassMap[gridCols] || "lg:grid-cols-8"
+  } gap-4 text-left`;
   return (
     <div className="w-full border border-gray-200 rounded-lg mt-3 bg-white shadow-sm text-left">
       {/* Header */}
@@ -56,7 +70,7 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
 
       {/* Content */}
       {open && (
-        <div className="p-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
+          <div className={gridClass}>
           {fields.map((field) => (
             <div key={field.name} className="flex flex-col text-left">
               <label className="text-sm text-gray-700 mb-1 font-medium text-left">
