@@ -14,7 +14,11 @@ class CategoryService
 
         // Apply filters safely
         if (isset($filters['status']) && $filters['status'] !== '') {
-            $query->where('status', $filters['status']);
+            if($filters['status'] == 'trash'){;
+                $query->onlyTrashed();
+            }else{
+                $query->where('status', $filters['status']);
+            }
         }else {
             $query->withTrashed();
         }

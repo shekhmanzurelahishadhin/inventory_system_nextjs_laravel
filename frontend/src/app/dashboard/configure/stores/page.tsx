@@ -346,7 +346,7 @@ const Stores = () => {
             </div>
 
             {/* DataTable */}
-            <div className="bg-white shadow overflow-hidden pt-8">
+            <div className="bg-white shadow pt-8">
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/stores"

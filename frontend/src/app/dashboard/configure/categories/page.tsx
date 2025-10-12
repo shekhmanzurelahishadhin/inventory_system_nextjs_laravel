@@ -241,6 +241,7 @@ const Companies = () => {
     { 'name': 'description', 'label': 'Description', 'type': 'text' },
     {
       name: "status", label: "Status", type: "reactselect", options: [
+        { value: "trash", label: "Trashed" },
         { value: "1", label: "Active" },
         { value: "0", label: "Inactive" },
       ]
@@ -359,7 +360,7 @@ const Companies = () => {
             </div>
 
             {/* DataTable */}
-            <div className="bg-white shadow overflow-hidden pt-8">
+            <div className="bg-white shadow pt-8">
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/categories"
