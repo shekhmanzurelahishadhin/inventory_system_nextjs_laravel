@@ -12,8 +12,8 @@ class ModelService
     {
         $query = ProductModel::query();
 
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status'] ? 1 : 0);
+        if (isset($filters['status'])) {
+            $query->where('status', $filters['status']);
         } else {
             $query->withTrashed();
         }

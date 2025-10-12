@@ -62,10 +62,10 @@ const Models = () => {
   );
   const fetchDatas = async () => {
       const res = await api.get("/configure/categories", {
-      params: { status: true }, // only status = active categories
+      params: { status: 1 }, // only status = active categories
     });
       const brandRes = await api.get("/configure/brands", {
-      params: { status: true }, // only status = active brands
+      params: { status: 1 }, // only status = active brands
     });
       setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
       setBrands(brandRes.data.data.map((b: any) => ({ value: b.id, label: b.name })));
