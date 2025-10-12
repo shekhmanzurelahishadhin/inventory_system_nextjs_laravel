@@ -11,22 +11,28 @@ trait SetSlugAndAuditing
     {
         static::creating(function ($model) {
             if (empty($model->slug) && isset($model->name)) {
-                $model->slug = \Str::slug($model->name);
+                $model->slug = Str::slug($model->name);
             }
 
             if (isset($model->created_by) || true) {
-                $model->created_by = \Auth::id();
+                $model->created_by = Auth::id();
             }
         });
 
         static::updating(function ($model) {
-            $model->updated_by = \Auth::id();
+            $model->updated_by = Auth::id();
         });
 
         static::deleting(function ($model) {
             if (!$model->isForceDeleting()) {
-                $model->deleted_by = \Auth::id();
+                $model->deleted_by = Auth::id();
                 $model->save();
+            }
+        });
+
+        static::restoring(function ($model) {
+            if (isset($model->deleted_by)) {
+                $model->deleted_by = null;
             }
         });
     }
