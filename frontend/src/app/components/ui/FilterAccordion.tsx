@@ -5,8 +5,16 @@ import {
   faChevronDown,
   faChevronUp,
   faFilter,
+  faCalendarAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import SingleSelectField from "./SingleSelectField";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export interface FilterField {
   name: string;
@@ -25,7 +33,7 @@ interface FilterAccordionProps {
   fields: FilterField[];
   values: Record<string, string | number>;
   onChange: (name: string, value: string | number) => void;
-   gridCols?: number; // prop for grid columns
+  gridCols?: number; // prop for grid columns
 }
 
 const FilterAccordion: React.FC<FilterAccordionProps> = ({
@@ -36,7 +44,13 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
   gridCols = 8, // default to 8 columns
 }) => {
   const [open, setOpen] = useState(false);
-    const gridColClassMap: Record<number, string> = {
+  // Track open state for each date field separately
+  const [datePopovers, setDatePopovers] = useState<Record<string, boolean>>({});
+
+  const toggleDatePopover = (name: string, open: boolean) => {
+    setDatePopovers((prev) => ({ ...prev, [name]: open }));
+  };
+  const gridColClassMap: Record<number, string> = {
     1: "lg:grid-cols-1",
     2: "lg:grid-cols-2",
     3: "lg:grid-cols-3",
@@ -70,7 +84,7 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
 
       {/* Content */}
       {open && (
-          <div className={gridClass}>
+        <div className={gridClass}>
           {fields.map((field) => (
             <div key={field.name} className="flex flex-col text-left">
               <label className="text-sm text-gray-700 mb-1 font-medium text-left">
@@ -103,6 +117,43 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
                   isRtl={false}
                   name={field.name}
                 />
+              ) : field.type === "date" ? (
+                <Popover
+                  open={!!datePopovers[field.name]}
+                  onOpenChange={(open) => toggleDatePopover(field.name, open)}
+                >
+                  <PopoverTrigger asChild>
+                    <div className="mt-1 flex items-center justify-between w-full px-3 py-3 border border-gray-300 rounded-sm text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
+                      <span
+                        className={!values[field.name] ? "text-gray-400" : ""}
+                      >
+                        {values[field.name]
+                          ? new Date(values[field.name]).toLocaleDateString()
+                          : field.placeholder || "Select date"}
+                      </span>
+                      <FontAwesomeIcon
+                        icon={faCalendarAlt}
+                        className="ml-2 text-gray-500"
+                      />
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={
+                        values[field.name]
+                          ? new Date(values[field.name] as string)
+                          : undefined
+                      }
+                      onSelect={(date) => {
+                        onChange(field.name, date?.toISOString() ?? "");
+                        toggleDatePopover(field.name, false);
+                      }}
+                      initialFocus
+                      captionLayout="dropdown"
+                    />
+                  </PopoverContent>
+                </Popover>
               ) : (
                 <input
                   type={field.type}

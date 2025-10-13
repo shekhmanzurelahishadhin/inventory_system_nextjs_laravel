@@ -247,6 +247,7 @@ const Companies = () => {
       ]
     },
      { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
+     { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
   ];
 
   // Columns for DataTable
