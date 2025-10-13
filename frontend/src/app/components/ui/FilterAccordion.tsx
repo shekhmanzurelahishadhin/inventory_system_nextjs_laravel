@@ -152,6 +152,19 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
                       initialFocus
                       captionLayout="dropdown"
                     />
+                    {/* Clear button */}
+                    {values[field.name] && (
+                      <button
+                        type="button"
+                        className="mt-2 w-full text-sm text-red-600 hover:text-red-800"
+                        onClick={() => {
+                          onChange(field.name, "");
+                          toggleDatePopover(field.name, false);
+                        }}
+                      >
+                        Clear
+                      </button>
+                    )}
                   </PopoverContent>
                 </Popover>
               ) : (

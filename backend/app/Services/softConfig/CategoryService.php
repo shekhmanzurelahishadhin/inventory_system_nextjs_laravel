@@ -37,6 +37,12 @@ class CategoryService
             });
         }
 
+        if (!empty($filters['created_at'])) {
+            $date = date('Y-m-d', strtotime($filters['created_at']));
+            $query->whereDate('created_at', $date);
+        }
+
+
         if (!empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
