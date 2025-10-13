@@ -8,60 +8,64 @@ use App\Models\softConfig\Category;
 
 class CategoryService
 {
-    public function getCategories($filters = [], $perPage = null)
+    public function getCategories(array $filters = [], $perPage = null)
     {
-        $query = Category::query();
+        $query = Category::query()->select(
+            'id',
+            'name',
+            'description',
+            'status',
+            'created_by',
+            'created_at',
+            'deleted_at'
+        );
 
-        // Apply filters safely
-        if (isset($filters['status']) && $filters['status'] !== '') {
-            if($filters['status'] == 'trash'){;
-                $query->onlyTrashed();
-            }else{
-                $query->where('status', $filters['status']);
-            }
-        }else {
+        // Handle status / trash logic
+        if (($filters['status'] ?? '') === 'trash') {
+            $query->onlyTrashed();
+        } elseif (isset($filters['status']) && $filters['status'] !== '') {
+            $query->where('status', $filters['status']);
+        } else {
             $query->withTrashed();
         }
 
-        if (!empty($filters['name'])) {
-            $query->where('name', 'like', "%{$filters['name']}%");
-        }
+        // Apply filters
+        $query
+            ->when($filters['name'] ?? null, fn($q, $name) =>
+            $q->where('name', 'like', "%{$name}%")
+            )
+            ->when($filters['description'] ?? null, fn($q, $desc) =>
+            $q->where('description', 'like', "%{$desc}%")
+            )
+            ->when($filters['created_by'] ?? null, fn($q, $createdBy) =>
+            $q->whereHas('createdBy', fn($sub) =>
+            $sub->where('name', 'like', "%{$createdBy}%")
+            )
+            )
+            ->when($filters['created_at'] ?? null, fn($q, $createdAt) =>
+            $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt)))
+            )
+            ->when($filters['search'] ?? null, fn($q, $term) =>
+            $q->where(function ($sub) use ($term) {
+                $sub->where('name', 'like', "%{$term}%")
+                    ->orWhere('description', 'like', "%{$term}%")
+                    ->orWhereHas('createdBy', fn($user) =>
+                    $user->where('name', 'like', "%{$term}%")
+                    );
+            })
+            );
 
-        if (!empty($filters['description'])) {
-            $query->where('description', 'like', "%{$filters['description']}%");
-        }
-
-        if (!empty($filters['created_by'])) {
-            $query->whereHas('createdBy', function ($q) use ($filters) {
-                $q->where('name', 'like', "%{$filters['created_by']}%");
-            });
-        }
-
-        if (!empty($filters['created_at'])) {
-            $date = date('Y-m-d', strtotime($filters['created_at']));
-            $query->whereDate('created_at', $date);
-        }
-
-
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhereHas('createdBy', function ($q) use ($search) {
-                        $q->where('name', 'like', "%{$search}%");
-                    });
-            });
-        }
-
+        // Eager load common relations
         $query->with([
             'createdBy:id,name',
             'productModels:id,name,category_id',
             'subCategories:id,name,category_id'
-        ])->orderBy('id', 'desc');
+        ])->orderByDesc('id');
 
+        // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
 
     public function createCategory(array $data)

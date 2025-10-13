@@ -27,11 +27,11 @@ interface Props<T> {
   exportFileName?: string;
   paginationRowsPerPageOptions?: number[];
   defaultPerPage?: number;
-  refreshTrigger?: number; 
+  refreshTrigger?: number;
   gridCols?: number; // prop for grid columns in FilterAccordion
-  onPaginationChange?: (page: number, perPage: number) => void; 
-   allowExportAll?: boolean; //allow export all data
-   filterFields?: FilterField[]; // prop for filter fields
+  onPaginationChange?: (page: number, perPage: number) => void;
+  allowExportAll?: boolean; //allow export all data
+  filterFields?: FilterField[]; // prop for filter fields
 }
 
 const DynamicDataTable = <T extends any>({
@@ -42,7 +42,7 @@ const DynamicDataTable = <T extends any>({
   exportFileName = "export",
   paginationRowsPerPageOptions = [5, 10, 25, 50, 100],
   defaultPerPage = 10,
-  refreshTrigger = 0, 
+  refreshTrigger = 0,
   gridCols = 8, // default to 8 columns in FilterAccordion
   onPaginationChange,
   allowExportAll = false,
@@ -76,41 +76,41 @@ const DynamicDataTable = <T extends any>({
     }
   }, [currentPage, perPage]);
 
- const handleFilterChange = (name: string, value: string | number) => {
+  const handleFilterChange = (name: string, value: string | number) => {
     setFilters((prev) => ({ ...prev, [name]: value }));
     setCurrentPage(1);
   };
-  
-// inside DynamicDataTable component
-const fetchAllData = async (): Promise<T[]> => {
-  try {
-    // no params sent at all (backend returns all)
-    const response = await api.get(apiEndpoint);
-    // handle both paginate & non-paginate responses
-    return response.data.data ?? response.data;
-  } catch (error) {
-    console.error("Failed to fetch all data", error);
-    return [];
-  }
-};
 
-const customStyles = {
-  headCells: {
-    style: {
-      backgroundColor: "#8371f5ff", // light gray
-      color: "#ffffffff", // dark text
-      fontWeight: "600",
-      fontSize: "14px",
-      marginTop: "20px",
-      padding: "15px",
+  // inside DynamicDataTable component
+  const fetchAllData = async (): Promise<T[]> => {
+    try {
+      // no params sent at all (backend returns all)
+      const response = await api.get(apiEndpoint);
+      // handle both paginate & non-paginate responses
+      return response.data.data ?? response.data;
+    } catch (error) {
+      console.error("Failed to fetch all data", error);
+      return [];
+    }
+  };
+
+  const customStyles = {
+    headCells: {
+      style: {
+        backgroundColor: "#8371f5ff", // light gray
+        color: "#ffffffff", // dark text
+        fontWeight: "600",
+        fontSize: "14px",
+        marginTop: "20px",
+        padding: "15px",
+      },
     },
-  },
-  header: {
-    style: {
-      backgroundColor: "#8371f5ff", // optional for overall header area
+    header: {
+      style: {
+        backgroundColor: "#8371f5ff", // optional for overall header area
+      },
     },
-  },
-};
+  };
 
 
   return (
@@ -121,12 +121,12 @@ const customStyles = {
         </div>
       )}
       <div className="relative">
-         {(data.length === 0 && !loading) && <DatatableLoader />}
+        {(data.length === 0 && !loading) && <DatatableLoader />}
         <DataTable
           columns={columns}
           data={data}
           // progressPending={loading}
-           customStyles={customStyles}
+          customStyles={customStyles}
           pagination // Enable pagination
           paginationServer // Server-side pagination
           paginationTotalRows={totalRows}
@@ -140,7 +140,7 @@ const customStyles = {
           highlightOnHover
           pointerOnHover
           subHeader
-                   subHeaderComponent={
+          subHeaderComponent={
             <div className="flex flex-col w-full space-y-2">
               <div className="flex flex-col sm:flex-row justify-between items-center w-full space-y-2 sm:space-y-0">
                 {exportColumns && (

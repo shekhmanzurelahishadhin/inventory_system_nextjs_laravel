@@ -116,6 +116,13 @@ const Companies = () => {
       showOn: "view",
     },
     {
+      label: "Created By",
+      key: "created_by",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
       label: "Created At",
       key: "created_at",
       type: "date",
@@ -234,6 +241,7 @@ const Companies = () => {
       selector: (row) =>
         row.status === 1 ? "Active" : "Inactive",
     },
+    { name: "Created by", selector: "created_by" },
     { name: "Created at", selector: "created_at" },
   ];
   const filterColumns = [
