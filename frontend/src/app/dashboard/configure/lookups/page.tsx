@@ -52,16 +52,16 @@ const Lookups = () => {
   });
   const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
     setRefreshTrigger((prev) => prev + 1)
-  );  
-  const [lookups, setLookups] = useState<any[]>([]);
+  );
+  const [lookupTypes, setLookupTypes] = useState<any[]>([]);
   const fetchLookups = async () => {
     try {
       const res = await api.get("/configure/get-lookup-type/lists");
-      setLookups(
+      setLookupTypes(
         res.data.map((m: any) => ({ value: m.value, label: m.label }))
       );
     } catch (error) {
-      console.error("Failed to fetch lookups", error);
+      console.error("Failed to fetch lookupTypes", error);
     }
   };
   useEffect(() => {
@@ -108,7 +108,7 @@ const Lookups = () => {
       label: "Type",
       type: "reactselect",
       key: "type_select",
-      options: lookups,
+      options: lookupTypes,
       required: (formData) => formData.is_new === "0", // 👈 condition
       hidden: (formData) => formData.is_new !== "0", // dynamic hidden false to show when is_new=0 0!==0 => false => show
     },
@@ -140,6 +140,13 @@ const Lookups = () => {
           className: "px-2 py-1 bg-red-100 text-red-700 rounded",
         },
       ],
+      showOn: "view",
+    },
+       {
+      label: "Created By",
+      key: "created_by",
+      type: "text",
+      readOnly: true,
       showOn: "view",
     },
     {
@@ -225,6 +232,11 @@ const Lookups = () => {
       cell: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }), // or statusMap[row.status]
     },
+       {
+      name: "Created By",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
     {
       name: "Created At",
       selector: (row) => formatDateTime(row.created_at),
@@ -277,6 +289,33 @@ const Lookups = () => {
     },
   ];
 
+  const filterColumns = [
+    { 'name': 'name', 'label': 'Lookups Name', 'type': 'text' },
+     { 'name': 'type', 'label': 'Type', 'type': 'reactselect', options: lookupTypes },
+    { 'name': 'code', 'label': 'Code', 'type': 'text' },
+   
+    {
+      name: "status", label: "Status", type: "reactselect", options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ]
+    },
+    { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
+    { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
+  ];
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    { name: "Type", selector: "type" },
+    { name: "Code", selector: "code" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.status === 1 ? "Active" : "Inactive",
+    },
+    { name: "Created by", selector: "created_by" },
+    { name: "Created at", selector: "created_at" },
+  ];
   return (
     <>
       <AccessRoute
@@ -316,23 +355,15 @@ const Lookups = () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/lookups"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "Type", selector: "type" },
-                  { name: "Code", selector: "code" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                      row.status === 1 ? "Active" : "Inactive",
-                  },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
+                filterFields={filterColumns}
                 exportFileName="lookups"
                 allowExportAll={true} // Allow exporting all data
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search lookups..."
                 refreshTrigger={refreshTrigger}
+                filterGridCols={6}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }
@@ -350,8 +381,8 @@ const Lookups = () => {
             modalType === "create"
               ? "Create Lookup"
               : modalType === "edit"
-              ? "Edit Lookup"
-              : "View Lookup"
+                ? "Edit Lookup"
+                : "View Lookup"
           }
           footer={
             modalType === "view" ? (
@@ -367,11 +398,10 @@ const Lookups = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -402,8 +432,8 @@ const Lookups = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

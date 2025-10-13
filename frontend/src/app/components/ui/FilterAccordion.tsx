@@ -33,7 +33,7 @@ interface FilterAccordionProps {
   fields: FilterField[];
   values: Record<string, string | number>;
   onChange: (name: string, value: string | number) => void;
-  gridCols?: number; // prop for grid columns
+  filterGridCols?: number; // prop for grid columns
 }
 
 const FilterAccordion: React.FC<FilterAccordionProps> = ({
@@ -41,7 +41,7 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
   fields,
   values,
   onChange,
-  gridCols = 8, // default to 8 columns
+  filterGridCols = 8, // default to 8 columns
 }) => {
   const [open, setOpen] = useState(false);
   // Track open state for each date field separately
@@ -61,7 +61,7 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
     8: "lg:grid-cols-8",
   };
   const gridClass = `p-4 border-t border-gray-200 grid grid-cols-1 sm:grid-cols-2 ${
-    gridColClassMap[gridCols] || "lg:grid-cols-8"
+    gridColClassMap[filterGridCols] || "lg:grid-cols-8"
   } gap-4 text-left`;
   return (
     <div className="w-full border border-gray-200 rounded-lg mt-3 bg-white shadow-sm text-left">

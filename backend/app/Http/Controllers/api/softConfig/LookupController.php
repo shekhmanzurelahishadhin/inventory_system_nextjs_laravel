@@ -24,7 +24,7 @@ class LookupController extends Controller
     public function index(Request $request, LookupService $lookupService)
     {
         $perPage = $request->get('per_page'); // can be null
-        $filters = $request->only('search');
+        $filters = $request->only('search','status','name','type','code','created_by','created_at');
 
         $lookups = $lookupService->getLookups($filters, $perPage);
 

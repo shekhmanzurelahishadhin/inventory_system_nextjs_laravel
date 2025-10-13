@@ -28,7 +28,7 @@ interface Props<T> {
   paginationRowsPerPageOptions?: number[];
   defaultPerPage?: number;
   refreshTrigger?: number;
-  gridCols?: number; // prop for grid columns in FilterAccordion
+  filterGridCols?: number; // prop for grid columns in FilterAccordion
   onPaginationChange?: (page: number, perPage: number) => void;
   allowExportAll?: boolean; //allow export all data
   filterFields?: FilterField[]; // prop for filter fields
@@ -43,7 +43,7 @@ const DynamicDataTable = <T extends any>({
   paginationRowsPerPageOptions = [5, 10, 25, 50, 100],
   defaultPerPage = 10,
   refreshTrigger = 0,
-  gridCols = 8, // default to 8 columns in FilterAccordion
+  filterGridCols = 8, // default to 8 columns in FilterAccordion
   onPaginationChange,
   allowExportAll = false,
   filterFields = [],
@@ -169,7 +169,7 @@ const DynamicDataTable = <T extends any>({
                   fields={filterFields}
                   values={filters}
                   onChange={handleFilterChange}
-                  gridCols={gridCols}
+                  filterGridCols={filterGridCols}
                 />
               )}
             </div>

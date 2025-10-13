@@ -386,7 +386,7 @@ const Companies = () => {
                 defaultPerPage={perPage}
                 searchPlaceholder="Search categories..."
                 refreshTrigger={refreshTrigger}
-                gridCols={5}
+                filterGridCols={5}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }

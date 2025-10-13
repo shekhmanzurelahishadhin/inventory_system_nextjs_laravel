@@ -6,23 +6,71 @@ namespace App\Services\softConfig;
 
 use App\Models\softConfig\Lookup;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class LookupService
 {
-    public function getLookups($filters = [], $perPage)
+    public function getLookups(array $filters = [], $perPage = null)
     {
-        $query = Lookup::withTrashed();;
+        $query = Lookup::query()->select(
+            'id',
+            'name',
+            'type',
+            'code',
+            'status',
+            'created_by',
+            'created_at',
+            'deleted_at'
+        );
 
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('type', 'like', "%{$search}%")
-                ->orWhere('code', 'like', "%{$search}%");
+        // Handle status / trash logic
+        if (($filters['status'] ?? '') === 'trash') {
+            $query->onlyTrashed();
+        } elseif (isset($filters['status']) && $filters['status'] !== '') {
+            $query->where('status', $filters['status']);
+        } else {
+            $query->withTrashed();
         }
 
-        $query->orderBy('id','desc');
+        // Apply filters
+        $query
+            ->when($filters['name'] ?? null, fn($q, $name) =>
+            $q->where('name', 'like', "%{$name}%")
+            )
+            ->when($filters['type'] ?? null, fn($q, $type) =>
+            $q->where('type',  "{$type}")
+            )
+            ->when($filters['code'] ?? null, fn($q, $code) =>
+            $q->where('code', 'like', "%{$code}%")
+            )
+            ->when($filters['created_by'] ?? null, fn($q, $createdBy) =>
+            $q->whereHas('createdBy', fn($sub) =>
+            $sub->where('name', 'like', "%{$createdBy}%")
+            )
+            )
+            ->when($filters['created_at'] ?? null, fn($q, $createdAt) =>
+            $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt)))
+            )
+            ->when($filters['search'] ?? null, fn($q, $term) =>
+            $q->where(function ($sub) use ($term) {
+                $sub->where('name', 'like', "%{$term}%")
+                    ->orWhere('type', 'like', "%{$term}%")
+                    ->orWhere('code', 'like', "%{$term}%")
+                    ->orWhereHas('createdBy', fn($user) =>
+                    $user->where('name', 'like', "%{$term}%")
+                    );
+            })
+            );
+
+        // Eager load common relations
+        $query->with([
+            'createdBy:id,name',
+        ])->orderByDesc('id');
+
+        // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
     public function store($request)
     {
@@ -40,7 +88,8 @@ class LookupService
                         'name' => trim($request->name),
                         'type' => trim(str_replace(" ", "_", $request->type_write)),
                         'code' => 1,
-                        'created_at' => Carbon::now()
+                        'created_by' => Auth::id(),
+                        'created_at' => Carbon::now(),
                     ]);
                     return [
                         'success' => true,
@@ -55,6 +104,7 @@ class LookupService
                     'name' => trim($request->name),
                     'type' => $request->type_select,
                     'code' => Lookup::where('type', $request->type_select)->max('code') + 1,
+                    'created_by' => Auth::id(),
                     'created_at' => Carbon::now()
                 ]);
                 return [
@@ -80,6 +130,7 @@ class LookupService
             $lookup = $lookup->update([
                 'name' => $request->name,
                 'status' => $request->status,
+                'updated_by' => Auth::id(),
                 'updated_at' => Carbon::now()
             ]);
             return [

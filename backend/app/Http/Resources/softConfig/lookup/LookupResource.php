@@ -22,7 +22,7 @@ class LookupResource extends JsonResource
             'status'      => (int) $this->status,
             'status_text' => $this->status == 1 ? 'Active' : 'Inactive',
 
-            'created_by'  => $this->created_by,
+            'created_by' => $this->createdBy?->name,
             'updated_by'  => $this->updated_by,
             'created_at'  => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
             'updated_at'  => $this->updated_at ? $this->updated_at->format('Y-m-d H:i:s') : null,
