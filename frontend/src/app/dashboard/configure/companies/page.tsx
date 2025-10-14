@@ -51,7 +51,7 @@ const Companies = () => {
     page: 1,
     perPage: 10,
   });
-  const { handleSoftDelete, handleForceDelete, handleRestore }= useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
+  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
@@ -161,15 +161,15 @@ const Companies = () => {
       type: "radio",
       required: true,
       options: status.map(opt => ({
-      ...opt,
-      className:
-        opt.value === "1"
-          ? "px-2 py-1 bg-green-100 text-green-700 rounded"
-          : "px-2 py-1 bg-red-100 text-red-700 rounded",
-    })),
+        ...opt,
+        className:
+          opt.value === "1"
+            ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+            : "px-2 py-1 bg-red-100 text-red-700 rounded",
+      })),
       showOn: "view",
     },
-       {
+    {
       label: "Created By",
       key: "created_by",
       type: "text",
@@ -196,7 +196,7 @@ const Companies = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-const fetchLookups = async () => {
+  const fetchLookups = async () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
@@ -347,7 +347,7 @@ const fetchLookups = async () => {
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
       sortable: true,
     },
-     {
+    {
       name: "Created By",
       selector: (row) => row.created_by,
       sortable: true,
@@ -403,6 +403,33 @@ const fetchLookups = async () => {
       ignoreRowClick: true,
     },
   ];
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    { name: "Email", selector: "email" },
+    { name: "Code", selector: "code" },
+    { name: "address", selector: "address" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.deleted_at ? 'Trash' : (row.status === 1 ? "Active" : "Inactive"),
+    },
+    { name: "Created at", selector: "created_at" },
+  ];
+  const filterColumns = [
+    { 'name': 'name', 'label': 'Company Name', 'type': 'text' },
+    { 'name': 'email', 'label': 'Email', 'type': 'text' },
+    { 'name': 'code', 'label': 'Code', 'type': 'text' },
+    { 'name': 'address', 'label': 'Address', 'type': 'text' },
+    {
+      name: "status", label: "Status", type: "reactselect", options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ]
+    },
+    { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
+    { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
+  ];
 
   return (
     <>
@@ -443,23 +470,14 @@ const fetchLookups = async () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/companies"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "Email", selector: "email" },
-                  { name: "Code", selector: "code" },
-                  { name: "address", selector: "address" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                      row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
+                filterFields={filterColumns}
                 exportFileName="companies"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search companys..."
                 refreshTrigger={refreshTrigger}
+                filterGridCols={7}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }
@@ -477,8 +495,8 @@ const fetchLookups = async () => {
             modalType === "create"
               ? "Create Company"
               : modalType === "edit"
-              ? "Edit Company"
-              : "View Company"
+                ? "Edit Company"
+                : "View Company"
           }
           footer={
             modalType === "view" ? (
@@ -494,11 +512,10 @@ const fetchLookups = async () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -529,8 +546,8 @@ const fetchLookups = async () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )
