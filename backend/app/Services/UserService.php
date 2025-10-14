@@ -29,7 +29,7 @@ class UserService
             });
         }
 
-        $query->with(['roles:id,name'])->orderBy('id','desc');
+        $query->with(['roles:id,name','company:id,name'])->orderBy('id','desc');
 
         // Return paginated if perPage is provided, else all
         return $perPage ? $query->paginate($perPage) : $query->get();

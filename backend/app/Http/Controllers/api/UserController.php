@@ -31,6 +31,7 @@ class UserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'company_id' => $user->company_id,
             ],
             'roles' => $user->getRoleNames(), // returns array of role names
             'permissions' => $user->getAllPermissions()->pluck('name'), // returns array of permission names

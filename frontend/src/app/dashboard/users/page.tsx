@@ -194,6 +194,11 @@ const Users = () => {
       sortable: true,
     },
     {
+      name: "Company",
+      selector: (row) => row.company,
+      sortable: true,
+    },
+    {
       name: "Created At",
       selector: (row) => formatDateTime(row.created_at),
       sortable: true,
@@ -289,6 +294,7 @@ const Users = () => {
                   { name: "Name", selector: "name" },
                   { name: "Email", selector: "email" },
                   { name: "Roles", selector: "rolesName" },
+                  { name: "Company", selector: "company" },
                 ]}
                 exportFileName="users"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
