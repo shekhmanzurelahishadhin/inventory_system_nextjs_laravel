@@ -59,7 +59,7 @@ const Stores = () => {
   );  
   const fetchCompanies = async () => {
     const res = await api.get("/configure/companies", {
-      params: { status: true }, // only status = active companies
+      params: { status: 1 }, // only status = active companies
     });
     setCompanies(
       res.data.data.map((c: any) => ({ value: c.id, label: c.name }))

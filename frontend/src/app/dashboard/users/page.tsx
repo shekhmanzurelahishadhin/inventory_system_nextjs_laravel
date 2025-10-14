@@ -38,6 +38,7 @@ const Users = () => {
   ); // Backend validation errors
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [roles, setRoles] = useState<any[]>([]);
+  const [companies, setCompanies] = useState<any[]>([]);
   const [refreshTrigger, setRefreshTrigger] = useState(0); // refresh trigger for DataTable
   const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
@@ -59,16 +60,24 @@ const Users = () => {
     { label: "User", href: "#" },
   ];
 
-  useEffect(() => {
-    const fetchRoles = async () => {
+  const fetchRoles = async () => {
       const res = await api.get("/roles");
       setRoles(
         res.data.data.map((role: any) => ({ value: role.id, label: role.name }))
       );
     };
+    const fetchCompanies = async () => {
+      const res = await api.get("/configure/companies", {
+        params: { status: 1 }, // only status = active companies
+      });
+      setCompanies(
+        res.data.data.map((c: any) => ({ value: c.id, label: c.name }))
+      );
+    };
+  useEffect(() => {
+    fetchCompanies();
     fetchRoles();
   }, []);
-
   const userFields = [
     {
       label: "Name",
@@ -105,6 +114,20 @@ const Users = () => {
       required: true,
       showOn: "both",
       options: roles,
+    },
+    {
+      label: "Company",
+      key: "company_id",
+      type: "reactselect",
+      required: false,
+      showOn: "both",
+      options: companies,
+    },
+    {
+      label: "Company",
+      key: "company",
+      required: true,
+      showOn: "view",
     },
     {
       label: "Roles",

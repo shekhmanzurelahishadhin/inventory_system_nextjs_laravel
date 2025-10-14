@@ -25,6 +25,7 @@ class StoreUserRequest extends FormRequest
             'name' => 'required|string|max:255|unique:users,name',
             'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
+            'company_id' => 'nullable|integer',
             'password_confirmation' => 'required',
             'roles' => 'required|array',
             'roles.*' => 'integer|exists:roles,id',
@@ -41,6 +42,7 @@ class StoreUserRequest extends FormRequest
             'name.string' => 'Name must be a valid string.',
             'name.max' => 'Name may not be greater than 255 characters.',
             'name.unique' => 'This name has already been taken.',
+            'company_id.integer' => 'Enter valid company.',
 
             'email.required' => 'Email is required.',
             'email.email' => 'Please provide a valid email address.',

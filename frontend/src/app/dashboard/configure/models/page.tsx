@@ -81,7 +81,7 @@ const Models = () => {
     setLoadingDropdowns(true); // start loader
     try {
       const res = await api.get(`/configure/sub-categories?category_id=${updated.category_id}`, {
-        params: { status: true }, // only status = active sub-categories
+        params: { status: 1 }, // only status = active sub-categories
       });
       setSubCategories(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
     } catch (error) {

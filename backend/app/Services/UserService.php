@@ -44,6 +44,7 @@ class UserService
             $user = User::create([
                 'name'     => $data['name'],
                 'email'    => $data['email'],
+                'company_id'    => $data['company_id'],
                 'password' => Hash::make($data['password']),
             ]);
 
@@ -75,6 +76,7 @@ class UserService
         try {
             $user->name = $data['name'] ?? $user->name;
             $user->email = $data['email'] ?? $user->email;
+            $user->company_id = $data['company_id'] ?? null;
 
             if (!empty($data['password'])) {
                 $user->password = Hash::make($data['password']);
