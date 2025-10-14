@@ -7,33 +7,84 @@ namespace App\Services\softConfig;
 use App\Models\softConfig\Company;
 use App\Models\softConfig\Lookup;
 use App\Traits\FileUploader;
+use Illuminate\Support\Facades\Auth;
 
 class CompanyService
 {
     use FileUploader;
 
-    public function getCompanies($filters = [], $perPage)
+    public function getCompanies(array $filters = [], $perPage = null)
     {
-        $query = Company::query();
-
-        // Apply "status" filter if passed
-        if (isset($filters['status'])) {
+        $query = Company::query()->select(
+            'id',
+            'name',
+            'email',
+            'address',
+            'code',
+            'logo',
+            'status',
+            'created_by',
+            'created_at',
+            'deleted_at'
+        );
+        // Restrict data if user is not superadmin and has a company_id
+        if (Auth::check() && !Auth::user()->hasRole('Super Admin') && !empty(Auth::user()->company_id)) {
+            $query->where('id', Auth::user()->company_id);
+        }
+        // Handle status / trash logic
+        if (($filters['status'] ?? '') === 'trash') {
+            $query->onlyTrashed();
+        } elseif (isset($filters['status']) && $filters['status'] !== '') {
             $query->where('status', $filters['status']);
         } else {
             $query->withTrashed();
         }
 
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhere('address', 'like', "%{$search}%")
-                ->orWhere('code', 'like', "%{$search}%");
-        }
+        // Apply filters
+        $query
+            ->when($filters['name'] ?? null, fn($q, $name) =>
+            $q->where('name', 'like', "%{$name}%")
+            )
+            ->when($filters['email'] ?? null, fn($q, $email) =>
+            $q->where('email', 'like', "%{$email}%")
+            )
+            ->when($filters['address'] ?? null, fn($q, $address) =>
+            $q->where('address', 'like', "%{$address}%")
+            )
+            ->when($filters['code'] ?? null, fn($q, $code) =>
+            $q->where('code', 'like', "%{$code}%")
+            )
+            ->when($filters['created_by'] ?? null, fn($q, $createdBy) =>
+            $q->whereHas('createdBy', fn($sub) =>
+            $sub->where('name', 'like', "%{$createdBy}%")
+            )
+            )
+            ->when($filters['created_at'] ?? null, fn($q, $createdAt) =>
+            $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt)))
+            )
+            ->when($filters['search'] ?? null, fn($q, $term) =>
+            $q->where(function ($sub) use ($term) {
+                $sub->where('name', 'like', "%{$term}%")
+                    ->orWhere('email', 'like', "%{$term}%")
+                    ->orWhere('address', 'like', "%{$term}%")
+                    ->orWhere('code', 'like', "%{$term}%")
+                    ->orWhereHas('createdBy', fn($user) =>
+                    $user->where('name', 'like', "%{$term}%")
+                    );
+            })
+            );
 
-        $query->orderBy('id','desc');
+        // Eager load common relations
+        $query->with([
+            'createdBy:id,name',
+            'locations:id,name,company_id',
+            'stores:id,name,company_id'
+        ])->orderByDesc('id');
+
+        // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
     public function createCompany(array $data)
     {

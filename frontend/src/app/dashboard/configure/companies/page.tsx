@@ -169,6 +169,13 @@ const Companies = () => {
     })),
       showOn: "view",
     },
+       {
+      label: "Created By",
+      key: "created_by",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
     {
       label: "Created At",
       key: "created_at",
@@ -338,6 +345,11 @@ const fetchLookups = async () => {
       name: "Status",
       selector: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
+      sortable: true,
+    },
+     {
+      name: "Created By",
+      selector: (row) => row.created_by,
       sortable: true,
     },
     {

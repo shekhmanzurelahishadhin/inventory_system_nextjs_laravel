@@ -26,7 +26,7 @@ class CompanyResource extends JsonResource
             'default_currency' => $this->default_currency,
             'timezone' => $this->timezone,
             'status' => $this->status,
-            'created_by' => $this->created_by,
+            'created_by' => $this->createdBy?->name,
             'updated_by' => $this->updated_by,
             'deleted_by' => $this->deleted_by,
             'created_at' => $this->created_at,

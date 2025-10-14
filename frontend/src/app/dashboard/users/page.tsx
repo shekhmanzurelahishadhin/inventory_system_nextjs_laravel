@@ -119,7 +119,7 @@ const Users = () => {
       label: "Company",
       key: "company_id",
       type: "reactselect",
-      required: false,
+      required: true,
       showOn: "both",
       options: companies,
     },
