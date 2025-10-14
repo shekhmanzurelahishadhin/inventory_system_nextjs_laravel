@@ -358,7 +358,7 @@ const Stores = () => {
                   {
                     name: "Status",
                     selector: (row) =>
-                      row.status === 1 ? "Active" : "Inactive",
+                     row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
                   },
                   { name: "Created at", selector: "created_at" },
                 ]}

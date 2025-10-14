@@ -111,10 +111,9 @@ const DynamicDataTable = <T extends any>({
       },
     },
   };
-
-
   return (
     <div>
+      
       {error && (
         <div className="mb-2 p-2 text-sm text-red-600 bg-red-100 rounded">
           {error}

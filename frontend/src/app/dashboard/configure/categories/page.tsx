@@ -239,7 +239,7 @@ const Companies = () => {
     {
       name: "Status",
       selector: (row) =>
-        row.status === 1 ? "Active" : "Inactive",
+        row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
     },
     { name: "Created by", selector: "created_by" },
     { name: "Created at", selector: "created_at" },
@@ -381,6 +381,7 @@ const Companies = () => {
                 apiEndpoint="/configure/categories"
                 exportColumns={exportColumns}
                 filterFields={filterColumns}
+                allowExportAll = {true}
                 exportFileName="categories"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
