@@ -2,6 +2,7 @@
 
 namespace App\Models\softConfig;
 
+use App\Models\User;
 use App\Traits\SetSlugAndAuditing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,5 +17,9 @@ class Store extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
