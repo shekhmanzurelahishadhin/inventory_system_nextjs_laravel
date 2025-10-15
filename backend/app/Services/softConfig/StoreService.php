@@ -24,7 +24,7 @@ class StoreService
         );
         // Restrict data if user is not superadmin and has a company_id
         if (Auth::check() && !Auth::user()->hasRole('Super Admin') && !empty(Auth::user()->company_id)) {
-            $query->where('id', Auth::user()->company_id);
+            $query->where('company_id', Auth::user()->company_id);
         }
         if ($companyId) {
             $query->where('company_id', $companyId);

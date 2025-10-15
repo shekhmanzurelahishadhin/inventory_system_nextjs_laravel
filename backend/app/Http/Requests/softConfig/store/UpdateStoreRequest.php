@@ -24,6 +24,7 @@ class UpdateStoreRequest extends FormRequest
         $storeId = $this->route('store')->id;
 
         return [
+            'company_id' => 'required|exists:companies,id',
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|unique:stores,slug,' . $storeId,
             'code' => 'nullable|string|max:50|unique:stores,code,' . $storeId,
@@ -35,6 +36,8 @@ class UpdateStoreRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'company_id.required' => 'The company field is required.',
+            'company_id.exists'   => 'The selected company is invalid.',
             'name.required' => 'The store name is required.',
             'name.string'   => 'The store name must be a valid string.',
             'name.max'      => 'The store name cannot exceed 255 characters.',
