@@ -141,6 +141,13 @@ const Locations = () => {
       showOn: "all",
     },
     {
+      label: "Code",
+      key: "code",
+      type: "text",
+      required: false,
+      showOn: "view",
+    },
+    {
       label: "Description",
       key: "description",
       type: "textarea",
@@ -177,6 +184,13 @@ const Locations = () => {
       showOn: "view",
     },
     {
+      label: "Created By",
+      key: "created_by",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
       label: "Created At",
       key: "created_at",
       type: "date",
@@ -204,7 +218,7 @@ const Locations = () => {
         try {
           const [res] = await Promise.all([
             api.get(`/configure/stores?company_id=${location.company_id}`, {
-              params: { status: true }, // only status = active companies
+              params: { status: 1 }, // only status = active companies
             }),
           ]);
           setStores(
@@ -310,6 +324,11 @@ const Locations = () => {
       sortable: true,
     },
     {
+      name: "Code",
+      selector: (row) => row.code,
+      sortable: true,
+    },
+    {
       name: "Description",
       selector: (row) => row.description,
       sortable: true,
@@ -318,6 +337,11 @@ const Locations = () => {
       name: "Status",
       selector: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
+      sortable: true,
+    },
+    {
+      name: "Created By",
+      selector: (row) => row.created_by,
       sortable: true,
     },
     {
@@ -372,6 +396,36 @@ const Locations = () => {
     },
   ];
 
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    { name: "Company Name", selector: "company_name" },
+    { name: "Store Name", selector: "store_name" },
+    { name: "Description", selector: "description" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.deleted_at ? 'Trash' : (row.status === 1 ? "Active" : "Inactive"),
+    },
+    { name: "Created by", selector: "created_by" },
+    { name: "Created at", selector: "created_at" },
+  ];
+
+  const filterFields = [
+    { 'name': 'name', 'label': 'Location Name', 'type': 'text' },
+    { 'name': 'company_name', 'label': 'Company Name', 'type': 'text' },
+    { 'name': 'store_name', 'label': 'Store Name', 'type': 'text' },
+    { 'name': 'code', 'label': 'Code', 'type': 'text' },
+    { 'name': 'description', 'label': 'Description', 'type': 'text' },
+    {
+      name: "status", label: "Status", type: "reactselect", options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ]
+    },
+    { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
+    { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
+  ];
   return (
     <>
       <AccessRoute
@@ -411,23 +465,14 @@ const Locations = () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/locations"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "Company Name", selector: "company_name" },
-                  { name: "Store Name", selector: "store_name" },
-                  { name: "Description", selector: "description" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                     row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
+                filterFields={filterFields}
                 exportFileName="Locations"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search location..."
                 refreshTrigger={refreshTrigger} // Add this prop
+                filterGridCols={8}
                 onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
                 allowExportAll={true} // allow export all data
               />

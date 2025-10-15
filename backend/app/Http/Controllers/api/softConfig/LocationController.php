@@ -22,7 +22,7 @@ class LocationController extends Controller
     public function index(Request $request, LocationService $locationService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status');
+        $filters = $request->only('search','status','name','company_name','store_name','code','description','created_at','created_by');
         $companyId = $request->query('company_id');
         $storeId = $request->query('store_id');
 

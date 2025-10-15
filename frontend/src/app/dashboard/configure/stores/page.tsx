@@ -56,7 +56,7 @@ const Stores = () => {
   });
   const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
     setRefreshTrigger((prev) => prev + 1)
-  );  
+  );
   const fetchCompanies = async () => {
     const res = await api.get("/configure/companies", {
       params: { status: 1 }, // only status = active companies
@@ -138,7 +138,7 @@ const Stores = () => {
       })),
       showOn: "view",
     },
-      {
+    {
       label: "Created By",
       key: "created_by",
       type: "text",
@@ -266,7 +266,7 @@ const Stores = () => {
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
       sortable: true,
     },
-     {
+    {
       name: "Created By",
       selector: (row) => row.created_by,
       sortable: true,
@@ -324,17 +324,18 @@ const Stores = () => {
   ];
 
   const exportColumns = [
-                  { name: "Name", selector: "name" },
-                  { name: "Company Name", selector: "company_name" },
-                  { name: "Code", selector: "code" },
-                  { name: "Address", selector: "address" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                     row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created at", selector: "created_at" },
-                ];
+    { name: "Name", selector: "name" },
+    { name: "Company Name", selector: "company_name" },
+    { name: "Code", selector: "code" },
+    { name: "Address", selector: "address" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.deleted_at ? 'Trash' : (row.status === 1 ? "Active" : "Inactive"),
+    },
+    { name: "Created by", selector: "created_by" },
+    { name: "Created at", selector: "created_at" },
+  ];
   const filterFields = [
     { 'name': 'name', 'label': 'Store Name', 'type': 'text' },
     { 'name': 'company_name', 'label': 'Company Name', 'type': 'text' },
@@ -416,8 +417,8 @@ const Stores = () => {
             modalType === "create"
               ? "Create Store"
               : modalType === "edit"
-              ? "Edit Store"
-              : "View Store"
+                ? "Edit Store"
+                : "View Store"
           }
           footer={
             modalType === "view" ? (
@@ -433,11 +434,10 @@ const Stores = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -468,8 +468,8 @@ const Stores = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

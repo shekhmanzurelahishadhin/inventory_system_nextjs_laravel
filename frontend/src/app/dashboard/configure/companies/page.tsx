@@ -413,6 +413,7 @@ const Companies = () => {
       selector: (row) =>
         row.deleted_at ? 'Trash' : (row.status === 1 ? "Active" : "Inactive"),
     },
+    { name: "Created by", selector: "created_by" },
     { name: "Created at", selector: "created_at" },
   ];
   const filterColumns = [
@@ -513,8 +514,8 @@ const Companies = () => {
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
                   className={`${isSubmitting
-                      ? "opacity-60 cursor-not-allowed"
-                      : "opacity-100"
+                    ? "opacity-60 cursor-not-allowed"
+                    : "opacity-100"
                     }`}
                 >
                   {isSubmitting ? (

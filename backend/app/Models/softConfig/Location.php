@@ -2,6 +2,7 @@
 
 namespace App\Models\softConfig;
 
+use App\Models\User;
 use App\Traits\SetSlugAndAuditing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,5 +21,9 @@ class Location extends Model
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
