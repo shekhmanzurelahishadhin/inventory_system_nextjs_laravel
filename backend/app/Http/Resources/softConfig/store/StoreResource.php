@@ -23,7 +23,7 @@ class StoreResource extends JsonResource
             'slug' => $this->slug,
             'status' => $this->status,
             'address' => $this->address,
-            'created_by' => $this->created_by,
+            'created_by' => $this->createdBy?->name,
             'updated_by' => $this->updated_by,
             'deleted_by' => $this->deleted_by,
             'created_at' => $this->created_at,

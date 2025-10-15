@@ -138,6 +138,13 @@ const Stores = () => {
       })),
       showOn: "view",
     },
+      {
+      label: "Created By",
+      key: "created_by",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
     {
       label: "Created At",
       key: "created_at",
@@ -259,6 +266,11 @@ const Stores = () => {
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
       sortable: true,
     },
+     {
+      name: "Created By",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
     {
       name: "Created At",
       selector: (row) => formatDateTime(row.created_at),
@@ -311,6 +323,34 @@ const Stores = () => {
     },
   ];
 
+  const exportColumns = [
+                  { name: "Name", selector: "name" },
+                  { name: "Company Name", selector: "company_name" },
+                  { name: "Code", selector: "code" },
+                  { name: "Address", selector: "address" },
+                  {
+                    name: "Status",
+                    selector: (row) =>
+                     row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
+                  },
+                  { name: "Created at", selector: "created_at" },
+                ];
+  const filterFields = [
+    { 'name': 'name', 'label': 'Store Name', 'type': 'text' },
+    { 'name': 'company_name', 'label': 'Company Name', 'type': 'text' },
+    { 'name': 'code', 'label': 'Code', 'type': 'text' },
+    { 'name': 'address', 'label': 'Address', 'type': 'text' },
+    {
+      name: "status", label: "Status", type: "reactselect", options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ]
+    },
+    { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
+    { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
+  ];
+
   return (
     <>
       <AccessRoute
@@ -350,23 +390,14 @@ const Stores = () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/stores"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "Company Name", selector: "company_name" },
-                  { name: "Code", selector: "code" },
-                  { name: "Address", selector: "address" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                     row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
+                filterFields={filterFields}
                 exportFileName="Stores"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search stores..."
                 refreshTrigger={refreshTrigger} // Add this prop
+                filterGridCols={7}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }
