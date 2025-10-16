@@ -23,7 +23,7 @@ class ProductModelController extends Controller
     public function index(Request $request, ModelService $modelService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status');
+        $filters = $request->only('search','status','name','company_name','sub_company_name','brand_name','created_at','created_by');
 
         $productModels = $modelService->getModels($filters, $perPage);
 

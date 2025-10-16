@@ -23,7 +23,7 @@ class BrandController extends Controller
     public function index(Request $request, BrandService $brandService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status');
+        $filters = $request->only('search','status','name','created_at','created_by');
 
         $brands = $brandService->getBrands($filters, $perPage);
 
