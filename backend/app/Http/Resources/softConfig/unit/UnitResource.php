@@ -20,7 +20,7 @@ class UnitResource extends JsonResource
             'code' => $this->code,
             'slug' => $this->slug,
             'status' => $this->status,
-            'created_by' => $this->created_by,
+            'created_by' => $this->createdBy?->name,
             'updated_by' => $this->updated_by,
             'deleted_by' => $this->deleted_by,
             'created_at' => $this->created_at,

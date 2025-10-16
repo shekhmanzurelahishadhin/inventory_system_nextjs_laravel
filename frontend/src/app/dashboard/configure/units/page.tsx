@@ -51,7 +51,8 @@ const Units = () => {
     page: 1,
     perPage: 10,
   });
-  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1)); 
+  const { handleSoftDelete, handleForceDelete, handleRestore } =
+    useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
@@ -82,7 +83,7 @@ const Units = () => {
       required: true,
       options: status,
       showOn: "edit", // edit only
-    }
+    },
   ];
   const viewFields = [
     {
@@ -104,13 +105,20 @@ const Units = () => {
       key: "status",
       type: "radio",
       required: true,
-      options: status.map(opt => ({
-      ...opt,
-      className:
-        opt.value === "1"
-          ? "px-2 py-1 bg-green-100 text-green-700 rounded"
-          : "px-2 py-1 bg-red-100 text-red-700 rounded",
-    })),
+      options: status.map((opt) => ({
+        ...opt,
+        className:
+          opt.value === "1"
+            ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+            : "px-2 py-1 bg-red-100 text-red-700 rounded",
+      })),
+      showOn: "view",
+    },
+    {
+      label: "Created By",
+      key: "created_by",
+      type: "text",
+      readOnly: true,
       showOn: "view",
     },
     {
@@ -133,13 +141,11 @@ const Units = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-const fetchLookups = async () => {
+  const fetchLookups = async () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
-      setStatus(
-        res.data.map((m: any) => ({ value: m.value, label: m.label }))
-      );
+      setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
     } catch (error) {
       console.error("Failed to fetch lookups", error);
     }
@@ -201,11 +207,9 @@ const fetchLookups = async () => {
         submitData.append("_method", "PUT");
         console.log(formData);
 
-        await api.post(
-          `/configure/units/${selectedUnit.id}`,
-          submitData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        await api.post(`/configure/units/${selectedUnit.id}`, submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
         toast.success("Unit updated successfully");
       }
@@ -251,6 +255,11 @@ const fetchLookups = async () => {
       sortable: true,
     },
     {
+      name: "Created By",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
+    {
       name: "Created At",
       selector: (row) => formatDateTime(row.created_at),
       sortable: true,
@@ -280,7 +289,9 @@ const fetchLookups = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r,"/configure/units", "unit") : handleSoftDelete(r, "/configure/units", "unit"),
+                r.deleted_at
+                  ? handleForceDelete(r, "/configure/units", "unit")
+                  : handleSoftDelete(r, "/configure/units", "unit"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("unit.delete"),
@@ -301,6 +312,31 @@ const fetchLookups = async () => {
       ignoreRowClick: true,
     },
   ];
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    { name: "code", selector: "code" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.deleted_at ? "Trash" : row.status === 1 ? "Active" : "Inactive",
+    },
+    { name: "Created by", selector: "created_by" },
+    { name: "Created at", selector: "created_at" },
+  ];
+
+   const filterFields = [
+    { 'name': 'name', 'label': 'Name', 'type': 'text' },
+    { 'name': 'code', 'label': 'Code', 'type': 'text' },
+    {
+      name: "status", label: "Status", type: "reactselect", options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ]
+    },
+    { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
+    { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
+  ];
 
   return (
     <>
@@ -312,17 +348,12 @@ const fetchLookups = async () => {
           "unit.delete",
         ]}
       >
-        <PageHeader
-          title="Unit Management"
-          breadcrumbItems={breadcrumbItems}
-        />
+        <PageHeader title="Unit Management" breadcrumbItems={breadcrumbItems} />
 
         <div className="min-h-screen bg-gray-50 p-6">
           <div className="max-w-8xl mx-auto">
             <div className="bg-white flex flex-col sm:flex-row justify-between items-center p-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-800">
-                Unit List
-              </h2>
+              <h2 className="text-xl font-semibold text-gray-800">Unit List</h2>
 
               <Button
                 variant="primary"
@@ -341,21 +372,14 @@ const fetchLookups = async () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/units"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "code", selector: "code" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                      row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
+                 filterFields={filterFields}
                 exportFileName="units"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search units..."
                 refreshTrigger={refreshTrigger}
+                filterGridCols={5}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }

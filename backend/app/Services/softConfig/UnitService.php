@@ -44,7 +44,9 @@ class UnitService
             );
 
         // Eager load common relations
-        $query->orderBy('id','desc');
+        $query->with([
+            'createdBy:id,name'
+        ])->orderByDesc('id');
 
         // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
