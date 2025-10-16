@@ -23,9 +23,11 @@ class ProductModelController extends Controller
     public function index(Request $request, ModelService $modelService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status','name','company_name','sub_company_name','brand_name','created_at','created_by');
-
-        $productModels = $modelService->getModels($filters, $perPage);
+        $filters = $request->only('search','status','name','category_name','sub_category_name','brand_name','created_at','created_by');
+        $categoryId = $request->query('category_id');
+        $subCategoryId = $request->query('sub_category_id');
+        $brandId = $request->query('brand_id');
+        $productModels = $modelService->getModels($filters, $perPage, $categoryId, $subCategoryId, $brandId);
 
         if ($productModels instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             // Paginated response

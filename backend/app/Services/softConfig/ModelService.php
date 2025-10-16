@@ -8,31 +8,91 @@ use App\Models\softConfig\ProductModel;
 
 class ModelService
 {
-    public function getModels($filters = [], $perPage)
+//    public function getModels($filters = [], $perPage)
+//    {
+//        $query = ProductModel::query();
+//
+//        if (isset($filters['status'])) {
+//            $query->where('status', $filters['status']);
+//        } else {
+//            $query->withTrashed();
+//        }
+//
+//        if (!empty($filters['search'])) {
+//            $search = $filters['search'];
+//            $query->where('name', 'like', "%{$search}%")
+//                ->orWhereHas('brand', function ($q) use ($search) {
+//                    $q->where('name', 'like', "%{$search}%");
+//                })
+//                ->orWhereHas('category', function ($q) use ($search) {
+//                    $q->where('name', 'like', "%{$search}%");
+//                })
+//                ->orWhereHas('subCategory', function ($q) use ($search) {
+//                    $q->where('name', 'like', "%{$search}%");
+//                });
+//        }
+//
+//        $query->with(['brand:id,name','category:id,name','subCategory:id,name'])->orderBy('id','desc');
+//        return $perPage ? $query->paginate($perPage) : $query->get();
+//    }
+    public function getModels(array $filters = [], $perPage = null, $categoryId = null, $subCategoryId = null, $brandId = null)
     {
-        $query = ProductModel::query();
+        $query = ProductModel::query()->select(
+            'id',
+            'name',
+            'brand_id',
+            'category_id',
+            'sub_category_id',
+            'status',
+            'created_by',
+            'created_at',
+            'deleted_at'
+        );
 
-        if (isset($filters['status'])) {
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+        if ($subCategoryId) {
+            $query->where('sub_category_id', $categoryId);
+        }
+        if ($brandId) {
+            $query->where('brand_id', $brandId);
+        }
+        // Handle status / trash logic
+        if (($filters['status'] ?? '') === 'trash') {
+            $query->onlyTrashed();
+        } elseif (isset($filters['status']) && $filters['status'] !== '') {
             $query->where('status', $filters['status']);
         } else {
             $query->withTrashed();
         }
 
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhereHas('brand', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('category', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                })
-                ->orWhereHas('subCategory', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
-        }
+        // Apply filters
+        $query
+            ->when($filters['name'] ?? null, fn($q, $name) => $q->where('name', 'like', "%{$name}%"))
+            ->when($filters['created_by'] ?? null, fn($q, $createdBy) => $q->whereHas('createdBy', fn($sub) => $sub->where('name', 'like', "%{$createdBy}%")))
+            ->when($filters['category_name'] ?? null, fn($q, $category) => $q->whereHas('category', fn($cat) => $cat->where('name', 'like', "%{$category}%")))
+            ->when($filters['sub_category_name'] ?? null, fn($q, $sub_category) => $q->whereHas('subCategory', fn($subCat) => $subCat->where('name', 'like', "%{$sub_category}%")))
+            ->when($filters['brand_name'] ?? null, fn($q, $brand) => $q->whereHas('brand', fn($str) => $str->where('name', 'like', "%{$brand}%")))
+            ->when($filters['created_at'] ?? null, fn($q, $createdAt) => $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt))))
+            ->when($filters['search'] ?? null, fn($q, $term) => $q->where(function ($sub) use ($term) {
+                $sub->where('name', 'like', "%{$term}%")
+                    ->orWhereHas('category', fn($category) => $category->where('name', 'like', "%{$term}%"))
+                    ->orWhereHas('subCategory', fn($sub_category) => $sub_category->where('name', 'like', "%{$term}%"))
+                    ->orWhereHas('brand', fn($brand) => $brand->where('name', 'like', "%{$term}%"))
+                    ->orWhereHas('createdBy', fn($user) => $user->where('name', 'like', "%{$term}%"));
+            })
+            );
 
-        $query->with(['brand:id,name','category:id,name','subCategory:id,name'])->orderBy('id','desc');
+        // Eager load common relations
+        $query->with([
+            'createdBy:id,name',
+            'category:id,name',
+            'subCategory:id,name',
+            'brand:id,name',
+        ])->orderByDesc('id');
+
+        // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
 

@@ -200,6 +200,13 @@ const Models = () => {
       showOn: "view",
     },
     {
+      label: "Created By",
+      key: "created_by",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
       label: "Created At",
       key: "created_at",
       type: "date",
