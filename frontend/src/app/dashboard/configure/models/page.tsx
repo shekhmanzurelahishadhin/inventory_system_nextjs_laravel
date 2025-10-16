@@ -51,59 +51,63 @@ const Models = () => {
   const [subCategories, setSubCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
 
-
   const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
     page: 1,
-    perPage: 10
+    perPage: 10,
   });
-  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
-    setRefreshTrigger((prev) => prev + 1)
-  );
+  const { handleSoftDelete, handleForceDelete, handleRestore } =
+    useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
   const fetchDatas = async () => {
-      const res = await api.get("/configure/categories", {
+    const res = await api.get("/configure/categories", {
       params: { status: 1 }, // only status = active categories
     });
-      const brandRes = await api.get("/configure/brands", {
+    const brandRes = await api.get("/configure/brands", {
       params: { status: 1 }, // only status = active brands
     });
-      setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
-      setBrands(brandRes.data.data.map((b: any) => ({ value: b.id, label: b.name })));
-    };
+    setCategories(
+      res.data.data.map((c: any) => ({ value: c.id, label: c.name }))
+    );
+    setBrands(
+      brandRes.data.data.map((b: any) => ({ value: b.id, label: b.name }))
+    );
+  };
   useEffect(() => {
     fetchDatas();
   }, []);
 
   // When form changes
   const handleFormChange = async (updated: Record<string, any>) => {
-  // Category selected → fetch sub-categories
-  if (updated.category_id) {
-    setLoadingDropdowns(true); // start loader
-    try {
-      const res = await api.get(`/configure/sub-categories?category_id=${updated.category_id}`, {
-        params: { status: 1 }, // only status = active sub-categories
-      });
-      setSubCategories(res.data.data.map((m: any) => ({ value: m.id, label: m.name })));
-    } catch (error) {
-      console.error("Failed to fetch sub-categories", error);
-      setSubCategories([]);
-    } finally {
-      setLoadingDropdowns(false); // stop loader after fetch finishes
+    // Category selected → fetch sub-categories
+    if (updated.category_id) {
+      setLoadingDropdowns(true); // start loader
+      try {
+        const res = await api.get(
+          `/configure/sub-categories?category_id=${updated.category_id}`,
+          {
+            params: { status: 1 }, // only status = active sub-categories
+          }
+        );
+        setSubCategories(
+          res.data.data.map((m: any) => ({ value: m.id, label: m.name }))
+        );
+      } catch (error) {
+        console.error("Failed to fetch sub-categories", error);
+        setSubCategories([]);
+      } finally {
+        setLoadingDropdowns(false); // stop loader after fetch finishes
+      }
+    } else {
+      setSubCategories([]); // clear sub-categories if no category selected
+      setLoadingDropdowns(false); // stop loader immediately
     }
-  } else {
-    setSubCategories([]);      // clear sub-categories if no category selected
-    setLoadingDropdowns(false); // stop loader immediately
-  }
-};
-
+  };
 
   const fetchLookups = async () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
-      setStatus(
-        res.data.map((m: any) => ({ value: m.value, label: m.label }))
-      );
+      setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
     } catch (error) {
       console.error("Failed to fetch lookups", error);
     }
@@ -126,9 +130,9 @@ const Models = () => {
       required: true,
       showOn: "both",
       options: categories,
-      watch : true, // watch this field for changes
+      watch: true, // watch this field for changes
     },
-     {
+    {
       label: "Sub Category",
       key: "sub_category_id",
       type: "reactselect",
@@ -186,7 +190,7 @@ const Models = () => {
       key: "status",
       type: "radio",
       required: true,
-      options: status.map(opt => ({
+      options: status.map((opt) => ({
         ...opt,
         className:
           opt.value === "1"
@@ -207,32 +211,32 @@ const Models = () => {
     setIsMounted(true);
   }, []);
 
-  const openModal = (
-    type: "create" | "edit" | "view",
-    model: any = null
-  ) => {
+  const openModal = (type: "create" | "edit" | "view", model: any = null) => {
     setModalType(type);
     setSelectedModel(model);
     setBackendErrors({});
     setIsSubmitting(false);
     fetchDatas();
-       if (type === "edit" && model) {
-          setLoadingDropdowns(true);
-          (async () => {
-            try {
-              const [ res] = await Promise.all([
-                api.get(`/configure/sub-categories?category_id=${model.category_id}`, {
-      params: { status: true }, // only status = active sub-categories
-    }),
-              ]);
-              setSubCategories(
-                res.data.data.map((m: any) => ({ value: m.id, label: m.name }))
-              );
-            } finally {
-              setLoadingDropdowns(false);
-            }
-          })();
+    if (type === "edit" && model) {
+      setLoadingDropdowns(true);
+      (async () => {
+        try {
+          const [res] = await Promise.all([
+            api.get(
+              `/configure/sub-categories?category_id=${model.category_id}`,
+              {
+                params: { status: true }, // only status = active sub-categories
+              }
+            ),
+          ]);
+          setSubCategories(
+            res.data.data.map((m: any) => ({ value: m.id, label: m.name }))
+          );
+        } finally {
+          setLoadingDropdowns(false);
         }
+      })();
+    }
   };
 
   const closeModal = () => {
@@ -280,11 +284,9 @@ const Models = () => {
         submitData.append("_method", "PUT");
         console.log(formData);
 
-        await api.post(
-          `/configure/models/${selectedModel.id}`,
-          submitData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        await api.post(`/configure/models/${selectedModel.id}`, submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
         toast.success("Category updated successfully");
       }
@@ -308,7 +310,8 @@ const Models = () => {
   const columns = [
     {
       name: "#",
-      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
+      cell: (row, index) =>
+        (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -373,7 +376,9 @@ const Models = () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r, "/configure/models", "model") : handleSoftDelete(r, "/configure/models", "model"),
+                r.deleted_at
+                  ? handleForceDelete(r, "/configure/models", "model")
+                  : handleSoftDelete(r, "/configure/models", "model"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("model.delete"),
@@ -393,6 +398,20 @@ const Models = () => {
       width: "15%",
       ignoreRowClick: true,
     },
+  ];
+
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    { name: "Category", selector: "category_name" },
+    { name: "Sub Category", selector: "sub_category_name" },
+    { name: "Brand", selector: "brand_name" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.deleted_at ? "Trash" : row.status === 1 ? "Active" : "Inactive",
+    },
+    { name: "Created by", selector: "created_by" },
+    { name: "Created at", selector: "created_at" },
   ];
 
   return (
@@ -434,25 +453,15 @@ const Models = () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/models"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "Category", selector: "category_name" },
-                  { name: "Sub Category", selector: "sub_category_name" },
-                  { name: "Brand", selector: "brand_name" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                      row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created by", selector: "created_by" },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
                 exportFileName="Models"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search permission..."
                 refreshTrigger={refreshTrigger} // Add this prop
-                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
+                onPaginationChange={(page, perPage) =>
+                  setPagination({ page, perPage })
+                }
                 allowExportAll={true} // allow export all data
               />
             </div>
@@ -468,8 +477,8 @@ const Models = () => {
             modalType === "create"
               ? "Create Model"
               : modalType === "edit"
-                ? "Edit Model"
-                : "View Model"
+              ? "Edit Model"
+              : "View Model"
           }
           footer={
             modalType === "view" ? (
@@ -485,10 +494,11 @@ const Models = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting || loadingDropdowns}
-                  className={`${(isSubmitting || loadingDropdowns)
-                    ? "opacity-60 cursor-not-allowed"
-                    : "opacity-100"
-                    }`}
+                  className={`${
+                    isSubmitting || loadingDropdowns
+                      ? "opacity-60 cursor-not-allowed"
+                      : "opacity-100"
+                  }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -519,23 +529,20 @@ const Models = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                      ? "Create"
-                      : "Update"}
+                    ? "Create"
+                    : "Update"}
                 </Button>
               </>
             )
           }
         >
           {modalType === "view" && (
-            <DynamicViewTable
-              data={selectedModel}
-              fields={modelFields}
-            />
+            <DynamicViewTable data={selectedModel} fields={modelFields} />
           )}
 
           {(modalType === "create" || modalType === "edit") && (
             <>
-              {(
+              {
                 <DynamicForm
                   ref={formRef}
                   data={modalType === "edit" ? selectedModel : null}
@@ -545,7 +552,7 @@ const Models = () => {
                   backendErrors={backendErrors}
                   mode={modalType}
                 />
-              )}
+              }
             </>
           )}
         </Modal>

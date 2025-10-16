@@ -49,21 +49,21 @@ const SubCategories = () => {
 
   const [categories, setCategories] = useState<any[]>([]);
 
-
   const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
     page: 1,
-    perPage: 10
+    perPage: 10,
   });
-  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
-    setRefreshTrigger((prev) => prev + 1)
-  );  
-const fetchCategories = async () => {
-      const res = await api.get("/configure/categories", {
-      params: { status: 1 }, 
+  const { handleSoftDelete, handleForceDelete, handleRestore } =
+    useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
+  const fetchCategories = async () => {
+    const res = await api.get("/configure/categories", {
+      params: { status: 1 },
     });
-      setCategories(res.data.data.map((c: any) => ({ value: c.id, label: c.name })));
-    };
+    setCategories(
+      res.data.data.map((c: any) => ({ value: c.id, label: c.name }))
+    );
+  };
   useEffect(() => {
     fetchCategories();
   }, []);
@@ -72,9 +72,7 @@ const fetchCategories = async () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
-      setStatus(
-        res.data.map((m: any) => ({ value: m.value, label: m.label }))
-      );
+      setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
     } catch (error) {
       console.error("Failed to fetch lookups", error);
     }
@@ -125,7 +123,7 @@ const fetchCategories = async () => {
       key: "status",
       type: "radio",
       required: true,
-      options: status.map(opt => ({
+      options: status.map((opt) => ({
         ...opt,
         className:
           opt.value === "1"
@@ -229,7 +227,8 @@ const fetchCategories = async () => {
   const columns = [
     {
       name: "#",
-      cell: (row, index) => (pagination.page - 1) * pagination.perPage + index + 1,
+      cell: (row, index) =>
+        (pagination.page - 1) * pagination.perPage + index + 1,
       width: "5%",
       grow: 0,
     },
@@ -284,7 +283,17 @@ const fetchCategories = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r, "/configure/sub-categories","sub category") : handleSoftDelete(r, "/configure/sub-categories","sub category"),
+                r.deleted_at
+                  ? handleForceDelete(
+                      r,
+                      "/configure/sub-categories",
+                      "sub category"
+                    )
+                  : handleSoftDelete(
+                      r,
+                      "/configure/sub-categories",
+                      "sub category"
+                    ),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("sub-category.delete"),
@@ -292,7 +301,8 @@ const fetchCategories = async () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r, "/configure/sub-categories","sub category"),
+              onClick: (r) =>
+                handleRestore(r, "/configure/sub-categories", "sub category"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,
@@ -304,6 +314,18 @@ const fetchCategories = async () => {
       width: "15%",
       ignoreRowClick: true,
     },
+  ];
+
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    { name: "Category Name", selector: "category_name" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.deleted_at ? "Trash" : row.status === 1 ? "Active" : "Inactive",
+    },
+    { name: "Created by", selector: "created_by" },
+    { name: "Created at", selector: "created_at" },
   ];
 
   return (
@@ -345,23 +367,15 @@ const fetchCategories = async () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/sub-categories"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  { name: "Category Name", selector: "category_name" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                      row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created by", selector: "created_by" },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
                 exportFileName="SubCategories"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search sub-category..."
                 refreshTrigger={refreshTrigger} // Add this prop
-                onPaginationChange={(page, perPage) => setPagination({ page, perPage })}
+                onPaginationChange={(page, perPage) =>
+                  setPagination({ page, perPage })
+                }
                 allowExportAll={true} // allow export all data
               />
             </div>
@@ -377,8 +391,8 @@ const fetchCategories = async () => {
             modalType === "create"
               ? "Create Sub Category"
               : modalType === "edit"
-                ? "Edit Sub Category"
-                : "View Sub Category"
+              ? "Edit Sub Category"
+              : "View Sub Category"
           }
           footer={
             modalType === "view" ? (
@@ -394,10 +408,11 @@ const fetchCategories = async () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${isSubmitting
-                    ? "opacity-60 cursor-not-allowed"
-                    : "opacity-100"
-                    }`}
+                  className={`${
+                    isSubmitting
+                      ? "opacity-60 cursor-not-allowed"
+                      : "opacity-100"
+                  }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -428,8 +443,8 @@ const fetchCategories = async () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                      ? "Create"
-                      : "Update"}
+                    ? "Create"
+                    : "Update"}
                 </Button>
               </>
             )

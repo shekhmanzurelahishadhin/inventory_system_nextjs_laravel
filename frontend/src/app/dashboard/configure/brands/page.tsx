@@ -51,9 +51,8 @@ const Brands = () => {
     page: 1,
     perPage: 10,
   });
-  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
-    setRefreshTrigger((prev) => prev + 1)
-  );  
+  const { handleSoftDelete, handleForceDelete, handleRestore } =
+    useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
   // Breadcrumb items
@@ -77,7 +76,7 @@ const Brands = () => {
       required: true,
       options: status,
       showOn: "edit", // edit only
-    }
+    },
   ];
   const viewFields = [
     {
@@ -92,13 +91,13 @@ const Brands = () => {
       key: "status",
       type: "radio",
       required: true,
-      options: status.map(opt => ({
-      ...opt,
-      className:
-        opt.value === "1"
-          ? "px-2 py-1 bg-green-100 text-green-700 rounded"
-          : "px-2 py-1 bg-red-100 text-red-700 rounded",
-    })),
+      options: status.map((opt) => ({
+        ...opt,
+        className:
+          opt.value === "1"
+            ? "px-2 py-1 bg-green-100 text-green-700 rounded"
+            : "px-2 py-1 bg-red-100 text-red-700 rounded",
+      })),
       showOn: "view",
     },
     {
@@ -121,13 +120,11 @@ const Brands = () => {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-const fetchLookups = async () => {
+  const fetchLookups = async () => {
     try {
       const type = "active_status";
       const res = await api.get(`/configure/get-lookup-list/${type}`);
-      setStatus(
-        res.data.map((m: any) => ({ value: m.value, label: m.label }))
-      );
+      setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
     } catch (error) {
       console.error("Failed to fetch lookups", error);
     }
@@ -189,11 +186,9 @@ const fetchLookups = async () => {
         submitData.append("_method", "PUT");
         console.log(formData);
 
-        await api.post(
-          `/configure/brands/${selectedBrand.id}`,
-          submitData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        await api.post(`/configure/brands/${selectedBrand.id}`, submitData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
         toast.success("Brand updated successfully");
       }
@@ -268,7 +263,9 @@ const fetchLookups = async () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r, "/configure/brands", "brand") : handleSoftDelete(r, "/configure/brands", "brand"),
+                r.deleted_at
+                  ? handleForceDelete(r, "/configure/brands", "brand")
+                  : handleSoftDelete(r, "/configure/brands", "brand"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("brand.delete"),
@@ -288,6 +285,17 @@ const fetchLookups = async () => {
       width: "15%",
       ignoreRowClick: true,
     },
+  ];
+
+  const exportColumns = [
+    { name: "Name", selector: "name" },
+    {
+      name: "Status",
+      selector: (row) =>
+        row.deleted_at ? "Trash" : row.status === 1 ? "Active" : "Inactive",
+    },
+    { name: "Created by", selector: "created_by" },
+    { name: "Created at", selector: "created_at" },
   ];
 
   return (
@@ -329,16 +337,7 @@ const fetchLookups = async () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/brands"
-                exportColumns={[
-                  { name: "Name", selector: "name" },
-                  {
-                    name: "Status",
-                    selector: (row) =>
-                      row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
-                  },
-                  { name: "Created by", selector: "created_by" },
-                  { name: "Created at", selector: "created_at" },
-                ]}
+                exportColumns={exportColumns}
                 exportFileName="brands"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
