@@ -25,7 +25,7 @@ class UnitController extends Controller
     public function index(Request $request, UnitService $unitService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status');
+        $filters = $request->only('search','status','name','code','created_at','created_by');
 
         $units = $unitService->getUnits($filters, $perPage);
 
