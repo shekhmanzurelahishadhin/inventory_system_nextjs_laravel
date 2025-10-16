@@ -5,28 +5,50 @@ namespace App\Services\softConfig;
 
 
 use App\Models\softConfig\Brand;
+use Illuminate\Support\Facades\Auth;
 
 class BrandService
 {
-    public function getBrands($filters = [], $perPage)
+    public function getBrands(array $filters = [], $perPage = null)
     {
-        $query = Brand::query();
+        $query = Brand::query()->select(
+            'id',
+            'name',
+            'status',
+            'created_by',
+            'created_at',
+            'deleted_at'
+        );
 
-        // Apply "status" filter if passed
-        if (isset($filters['status'])) {
+        // Handle status / trash logic
+        if (($filters['status'] ?? '') === 'trash') {
+            $query->onlyTrashed();
+        } elseif (isset($filters['status']) && $filters['status'] !== '') {
             $query->where('status', $filters['status']);
         } else {
             $query->withTrashed();
         }
 
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where('name', 'like', "%{$search}%");
-        }
+        // Apply filters
+        $query
+            ->when($filters['name'] ?? null, fn($q, $name) => $q->where('name', 'like', "%{$name}%"))
+            ->when($filters['created_by'] ?? null, fn($q, $createdBy) => $q->whereHas('createdBy', fn($sub) => $sub->where('name', 'like', "%{$createdBy}%")))
+            ->when($filters['created_at'] ?? null, fn($q, $createdAt) => $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt))))
+            ->when($filters['search'] ?? null, fn($q, $term) => $q->where(function ($sub) use ($term) {
+                $sub->where('name', 'like', "%{$term}%")
+                    ->orWhereHas('createdBy', fn($user) => $user->where('name', 'like', "%{$term}%"));
+            })
+            );
 
-        $query->orderBy('id','desc');
+        // Eager load common relations
+        $query->with([
+            'createdBy:id,name',
+        ])->orderByDesc('id');
+
+        // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
     public function createBrand(array $data)
     {

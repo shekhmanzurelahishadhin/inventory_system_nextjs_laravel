@@ -5,32 +5,57 @@ namespace App\Services\softConfig;
 
 
 use App\Models\softConfig\SubCategory;
+use Illuminate\Support\Facades\Auth;
 
 class SubCategoryService
 {
-    public function getSubCategories($filters = [], $perPage, $categoryId)
+    public function getSubCategories(array $filters = [], $perPage = null, $categoryId = null)
     {
-        $query = SubCategory::query();
+        $query = SubCategory::query()->select(
+            'id',
+            'name',
+            'category_id',
+            'status',
+            'created_by',
+            'created_at',
+            'deleted_at'
+        );
 
-        if (isset($filters['status'])) {
+        if ($categoryId) {
+            $query->where('category_id', $categoryId);
+        }
+        // Handle status / trash logic
+        if (($filters['status'] ?? '') === 'trash') {
+            $query->onlyTrashed();
+        } elseif (isset($filters['status']) && $filters['status'] !== '') {
             $query->where('status', $filters['status']);
         } else {
             $query->withTrashed();
         }
 
-        if (!empty($filters['search'])) {
-            $search = $filters['search'];
-            $query->where('name', 'like', "%{$search}%")
-                ->orWhereHas('category', function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%");
-                });
-        }
-        if ($categoryId) {
-            $query->where('category_id', $categoryId);
-        }
-        $query->with('category:id,name')->orderBy('id','desc');
+        // Apply filters
+        $query
+            ->when($filters['name'] ?? null, fn($q, $name) => $q->where('name', 'like', "%{$name}%"))
+            ->when($filters['created_by'] ?? null, fn($q, $createdBy) => $q->whereHas('createdBy', fn($sub) => $sub->where('name', 'like', "%{$createdBy}%")))
+            ->when($filters['category_name'] ?? null, fn($q, $category) => $q->whereHas('category', fn($cat) => $cat->where('name', 'like', "%{$category}%")))
+            ->when($filters['created_at'] ?? null, fn($q, $createdAt) => $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt))))
+            ->when($filters['search'] ?? null, fn($q, $term) => $q->where(function ($sub) use ($term) {
+                $sub->where('name', 'like', "%{$term}%")
+                    ->orWhereHas('category', fn($category) => $category->where('name', 'like', "%{$term}%"))
+                    ->orWhereHas('createdBy', fn($user) => $user->where('name', 'like', "%{$term}%"));
+            })
+            );
+
+        // Eager load common relations
+        $query->with([
+            'createdBy:id,name',
+            'category:id,name',
+        ])->orderByDesc('id');
+
+        // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
 
     public function createSubCategory(array $data)
     {

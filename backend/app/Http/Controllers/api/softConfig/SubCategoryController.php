@@ -22,7 +22,7 @@ class SubCategoryController extends Controller
     public function index(Request $request, SubCategoryService $subCategoryService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status','name','company_name','created_at','created_by');
+        $filters = $request->only('search','status','name','category_name','created_at','created_by');
         $categoryId = $request->query('category_id');
 
         $subCategories = $subCategoryService->getSubCategories($filters, $perPage, $categoryId);

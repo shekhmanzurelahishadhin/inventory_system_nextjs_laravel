@@ -9,35 +9,6 @@ use Illuminate\Support\Facades\Auth;
 
 class LocationService
 {
-//    public function getLocations($filters = [], $perPage, $companyId, $storeId)
-//    {
-//        $query = Location::query();
-//
-//        if (isset($filters['status'])) {
-//            $query->where('status', $filters['status']);
-//        } else {
-//            $query->withTrashed();
-//        }
-//
-//        if (!empty($filters['search'])) {
-//            $search = $filters['search'];
-//            $query->where('name', 'like', "%{$search}%")
-//                ->orWhereHas('store', function ($q) use ($search) {
-//                    $q->where('name', 'like', "%{$search}%");
-//                })
-//                ->orWhereHas('company', function ($q) use ($search) {
-//                    $q->where('name', 'like', "%{$search}%");
-//                });
-//        }
-//        if ($companyId) {
-//            $query->where('company_id', $companyId);
-//        }
-//        if ($storeId) {
-//            $query->where('store_id', $storeId);
-//        }
-//        $query->with(['store:id,name','company:id,name'])->orderBy('id','desc');
-//        return $perPage ? $query->paginate($perPage) : $query->get();
-//    }
 
     public function getLocations(array $filters = [], $perPage = null, $companyId = null, $storeId = null)
     {

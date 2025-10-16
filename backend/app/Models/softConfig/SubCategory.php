@@ -2,6 +2,7 @@
 
 namespace App\Models\softConfig;
 
+use App\Models\User;
 use App\Traits\SetSlugAndAuditing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,5 +18,9 @@ class SubCategory extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }
