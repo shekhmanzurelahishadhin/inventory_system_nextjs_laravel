@@ -414,6 +414,25 @@ const Models = () => {
     { name: "Created at", selector: "created_at" },
   ];
 
+  const filterFields = [
+    { name: "name", label: "Name", type: "text" },
+    { name: "category_name", label: "Category", type: "text" },
+    { name: "sub_category_name", label: "Sub Category", type: "text" },
+    { name: "brand_name", label: "Brand", type: "text" },
+    {
+      name: "status",
+      label: "Status",
+      type: "reactselect",
+      options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ],
+    },
+    { name: "created_by", label: "Created By", type: "text" },
+    { name: "created_at", label: "Created At", type: "date" },
+  ];
+
   return (
     <>
       <AccessRoute
@@ -454,6 +473,8 @@ const Models = () => {
                 columns={columns}
                 apiEndpoint="/configure/models"
                 exportColumns={exportColumns}
+                filterFields={filterFields}
+                filterGridCols={7}
                 exportFileName="Models"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}

@@ -328,6 +328,23 @@ const SubCategories = () => {
     { name: "Created at", selector: "created_at" },
   ];
 
+  const filterFields = [
+    { name: "name", label: "Name", type: "text" },
+    { name: "category_name", label: "Category", type: "text" },
+    {
+      name: "status",
+      label: "Status",
+      type: "reactselect",
+      options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ],
+    },
+    { name: "created_by", label: "Created By", type: "text" },
+    { name: "created_at", label: "Created At", type: "date" },
+  ];
+
   return (
     <>
       <AccessRoute
@@ -368,11 +385,13 @@ const SubCategories = () => {
                 columns={columns}
                 apiEndpoint="/configure/sub-categories"
                 exportColumns={exportColumns}
+                filterFields={filterFields}
                 exportFileName="SubCategories"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search sub-category..."
                 refreshTrigger={refreshTrigger} // Add this prop
+                filterGridCols={5}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }

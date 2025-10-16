@@ -298,6 +298,22 @@ const Brands = () => {
     { name: "Created at", selector: "created_at" },
   ];
 
+  const filterFields = [
+    { name: "name", label: "Name", type: "text" },
+    {
+      name: "status",
+      label: "Status",
+      type: "reactselect",
+      options: [
+        { value: "trash", label: "Trashed" },
+        { value: "1", label: "Active" },
+        { value: "0", label: "Inactive" },
+      ],
+    },
+    { name: "created_by", label: "Created By", type: "text" },
+    { name: "created_at", label: "Created At", type: "date" },
+  ];
+
   return (
     <>
       <AccessRoute
@@ -338,11 +354,13 @@ const Brands = () => {
                 columns={columns}
                 apiEndpoint="/configure/brands"
                 exportColumns={exportColumns}
+                filterFields={filterFields}
                 exportFileName="brands"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
                 searchPlaceholder="Search brands..."
                 refreshTrigger={refreshTrigger}
+                filterGridCols={4}
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }
