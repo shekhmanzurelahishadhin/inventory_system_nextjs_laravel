@@ -250,6 +250,11 @@ const fetchCategories = async () => {
       sortable: true,
     },
     {
+      name: "Created By",
+      selector: (row) => row.created_by,
+      sortable: true,
+    },
+    {
       name: "Created At",
       selector: (row) => formatDateTime(row.created_at),
       sortable: true,
@@ -348,6 +353,7 @@ const fetchCategories = async () => {
                     selector: (row) =>
                       row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
                   },
+                  { name: "Created by", selector: "created_by" },
                   { name: "Created at", selector: "created_at" },
                 ]}
                 exportFileName="SubCategories"

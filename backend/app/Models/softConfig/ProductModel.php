@@ -2,6 +2,7 @@
 
 namespace App\Models\softConfig;
 
+use App\Models\User;
 use App\Traits\SetSlugAndAuditing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,5 +23,9 @@ class ProductModel extends Model
     }
     public function subCategory(){
         return $this->hasOne(SubCategory::class,'id', 'sub_category_id');
+    }
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

@@ -12,6 +12,7 @@ class Lookup extends Model
 {
     use HasFactory, SoftDeletes, SetSlugAndAuditing;
     protected $guarded = ['id'];
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
