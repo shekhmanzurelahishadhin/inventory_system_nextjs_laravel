@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\Role\UserHasRole;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\DB as FacadesDB;
 use Illuminate\Support\Facades\Hash;
@@ -16,6 +17,11 @@ class UserService
     public function getUsers($filters = [], $perPage)
     {
         $query = User::query();
+
+        // Restrict data if user is not superadmin and has a company_id
+        if (Auth::check() && !Auth::user()->hasRole('Super Admin') && !empty(Auth::user()->company_id)) {
+            $query->where('company_id', Auth::user()->company_id);
+        }
 
         if (!empty($filters['search'])) {
             $search = $filters['search'];

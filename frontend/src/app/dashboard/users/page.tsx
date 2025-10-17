@@ -45,6 +45,7 @@ const Users = () => {
     page: 1,
     perPage: 10,
   });
+  const {user: currentLoginUser} = useAuth();
   const { handleForceDelete } = useActionConfirmAlert(() =>
     setRefreshTrigger((prev) => prev + 1)
   ); // Custom hook for delete with confirmation
@@ -268,7 +269,7 @@ const Users = () => {
               size: "sm",
               show: (user) =>
                 !user.rolesName?.includes("Super Admin") &&
-                hasPermission("user.delete"),
+                hasPermission("user.delete") && user.id !== currentLoginUser?.id,
               tooltip: "Delete",
             },
           ]}
