@@ -435,8 +435,8 @@ const Stores = () => {
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
                   className={`${isSubmitting
-                      ? "opacity-60 cursor-not-allowed"
-                      : "opacity-100"
+                    ? "opacity-60 cursor-not-allowed"
+                    : "opacity-100"
                     }`}
                 >
                   {isSubmitting ? (

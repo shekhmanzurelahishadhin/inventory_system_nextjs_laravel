@@ -239,7 +239,7 @@ const Companies = () => {
     {
       name: "Status",
       selector: (row) =>
-        row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
+        row.deleted_at ? 'Trash' : (row.status === 1 ? "Active" : "Inactive"),
     },
     { name: "Created by", selector: "created_by" },
     { name: "Created at", selector: "created_at" },
@@ -254,8 +254,8 @@ const Companies = () => {
         { value: "0", label: "Inactive" },
       ]
     },
-     { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
-     { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
+    { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
+    { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
   ];
 
   // Columns for DataTable
@@ -381,7 +381,7 @@ const Companies = () => {
                 apiEndpoint="/configure/categories"
                 exportColumns={exportColumns}
                 filterFields={filterColumns}
-                allowExportAll = {true}
+                allowExportAll={true}
                 exportFileName="categories"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}

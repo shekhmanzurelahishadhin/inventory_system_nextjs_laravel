@@ -378,8 +378,8 @@ const Brands = () => {
             modalType === "create"
               ? "Create Brand"
               : modalType === "edit"
-              ? "Edit Brand"
-              : "View Brand"
+                ? "Edit Brand"
+                : "View Brand"
           }
           footer={
             modalType === "view" ? (
@@ -395,11 +395,10 @@ const Brands = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -430,8 +429,8 @@ const Brands = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

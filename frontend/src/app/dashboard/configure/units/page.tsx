@@ -324,7 +324,7 @@ const Units = () => {
     { name: "Created at", selector: "created_at" },
   ];
 
-   const filterFields = [
+  const filterFields = [
     { 'name': 'name', 'label': 'Name', 'type': 'text' },
     { 'name': 'code', 'label': 'Code', 'type': 'text' },
     {
@@ -373,7 +373,7 @@ const Units = () => {
                 columns={columns}
                 apiEndpoint="/configure/units"
                 exportColumns={exportColumns}
-                 filterFields={filterFields}
+                filterFields={filterFields}
                 exportFileName="units"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
@@ -397,8 +397,8 @@ const Units = () => {
             modalType === "create"
               ? "Create Unit"
               : modalType === "edit"
-              ? "Edit Unit"
-              : "View Unit"
+                ? "Edit Unit"
+                : "View Unit"
           }
           footer={
             modalType === "view" ? (
@@ -414,11 +414,10 @@ const Units = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -449,8 +448,8 @@ const Units = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

@@ -285,15 +285,15 @@ const SubCategories = () => {
               onClick: (r) =>
                 r.deleted_at
                   ? handleForceDelete(
-                      r,
-                      "/configure/sub-categories",
-                      "sub category"
-                    )
+                    r,
+                    "/configure/sub-categories",
+                    "sub category"
+                  )
                   : handleSoftDelete(
-                      r,
-                      "/configure/sub-categories",
-                      "sub category"
-                    ),
+                    r,
+                    "/configure/sub-categories",
+                    "sub category"
+                  ),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("sub-category.delete"),
@@ -410,8 +410,8 @@ const SubCategories = () => {
             modalType === "create"
               ? "Create Sub Category"
               : modalType === "edit"
-              ? "Edit Sub Category"
-              : "View Sub Category"
+                ? "Edit Sub Category"
+                : "View Sub Category"
           }
           footer={
             modalType === "view" ? (
@@ -427,11 +427,10 @@ const SubCategories = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${
-                    isSubmitting
+                  className={`${isSubmitting
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -462,8 +461,8 @@ const SubCategories = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

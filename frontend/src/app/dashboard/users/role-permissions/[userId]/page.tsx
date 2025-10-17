@@ -410,14 +410,14 @@ const UserPermissionsPage = () => {
                         <div
                           key={perm.name}
                           className={`flex items-center p-3 rounded-md border cursor-pointer transition-all ${selectedPermissions.includes(perm.name)
-                              ? "bg-blue-50 border-blue-200"
-                              : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                            ? "bg-blue-50 border-blue-200"
+                            : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                             }`}
                           onClick={() => togglePermission(perm.name)}
                         >
                           <div className={`flex items-center justify-center h-5 w-5 rounded border mr-3 ${selectedPermissions.includes(perm.name)
-                              ? "bg-blue-500 border-blue-500 text-white"
-                              : "bg-white border-gray-300"
+                            ? "bg-blue-500 border-blue-500 text-white"
+                            : "bg-white border-gray-300"
                             }`}>
                             {selectedPermissions.includes(perm.name) && (
                               <FontAwesomeIcon icon={faCheck} className="text-xs" />

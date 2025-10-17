@@ -505,8 +505,8 @@ const Models = () => {
             modalType === "create"
               ? "Create Model"
               : modalType === "edit"
-              ? "Edit Model"
-              : "View Model"
+                ? "Edit Model"
+                : "View Model"
           }
           footer={
             modalType === "view" ? (
@@ -522,11 +522,10 @@ const Models = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting || loadingDropdowns}
-                  className={`${
-                    isSubmitting || loadingDropdowns
+                  className={`${isSubmitting || loadingDropdowns
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                  }`}
+                    }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -557,8 +556,8 @@ const Models = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                    ? "Create"
-                    : "Update"}
+                      ? "Create"
+                      : "Update"}
                 </Button>
               </>
             )

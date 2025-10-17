@@ -61,19 +61,19 @@ const Users = () => {
   ];
 
   const fetchRoles = async () => {
-      const res = await api.get("/roles");
-      setRoles(
-        res.data.data.map((role: any) => ({ value: role.id, label: role.name }))
-      );
-    };
-    const fetchCompanies = async () => {
-      const res = await api.get("/configure/companies", {
-        params: { status: 1 }, // only status = active companies
-      });
-      setCompanies(
-        res.data.data.map((c: any) => ({ value: c.id, label: c.name }))
-      );
-    };
+    const res = await api.get("/roles");
+    setRoles(
+      res.data.data.map((role: any) => ({ value: role.id, label: role.name }))
+    );
+  };
+  const fetchCompanies = async () => {
+    const res = await api.get("/configure/companies", {
+      params: { status: 1 }, // only status = active companies
+    });
+    setCompanies(
+      res.data.data.map((c: any) => ({ value: c.id, label: c.name }))
+    );
+  };
   useEffect(() => {
     fetchCompanies();
     fetchRoles();
@@ -359,8 +359,8 @@ const Users = () => {
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
                   className={`${isSubmitting
-                      ? "opacity-60 cursor-not-allowed"
-                      : "opacity-100"
+                    ? "opacity-60 cursor-not-allowed"
+                    : "opacity-100"
                     }`}
                 >
                   {isSubmitting ? (

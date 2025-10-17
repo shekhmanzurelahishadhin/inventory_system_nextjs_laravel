@@ -142,7 +142,7 @@ const Lookups = () => {
       ],
       showOn: "view",
     },
-       {
+    {
       label: "Created By",
       key: "created_by",
       type: "text",
@@ -232,7 +232,7 @@ const Lookups = () => {
       cell: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }), // or statusMap[row.status]
     },
-       {
+    {
       name: "Created By",
       selector: (row) => row.created_by,
       sortable: true,
@@ -291,9 +291,9 @@ const Lookups = () => {
 
   const filterColumns = [
     { 'name': 'name', 'label': 'Lookups Name', 'type': 'text' },
-     { 'name': 'type', 'label': 'Type', 'type': 'reactselect', options: lookupTypes },
+    { 'name': 'type', 'label': 'Type', 'type': 'reactselect', options: lookupTypes },
     { 'name': 'code', 'label': 'Code', 'type': 'text' },
-   
+
     {
       name: "status", label: "Status", type: "reactselect", options: [
         { value: "trash", label: "Trashed" },
@@ -311,7 +311,7 @@ const Lookups = () => {
     {
       name: "Status",
       selector: (row) =>
-        row.deleted_at ? 'Trash' : ( row.status === 1 ? "Active" : "Inactive"),
+        row.deleted_at ? 'Trash' : (row.status === 1 ? "Active" : "Inactive"),
     },
     { name: "Created by", selector: "created_by" },
     { name: "Created at", selector: "created_at" },
@@ -399,8 +399,8 @@ const Lookups = () => {
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
                   className={`${isSubmitting
-                      ? "opacity-60 cursor-not-allowed"
-                      : "opacity-100"
+                    ? "opacity-60 cursor-not-allowed"
+                    : "opacity-100"
                     }`}
                 >
                   {isSubmitting ? (
