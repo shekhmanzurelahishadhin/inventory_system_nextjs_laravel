@@ -169,10 +169,10 @@ Route::prefix('v1')->group(function () {
             });
         });
 
-        // Supplier Route
+        // Purchase Route
         Route::prefix('purchase')->group(function () {
 
-            // Companies Route
+            // Supplier Route
             Route::prefix('suppliers')->group(function () {
                 Route::get('/', [SupplierController::class, 'index']);
                 Route::post('/', [SupplierController::class, 'store']);

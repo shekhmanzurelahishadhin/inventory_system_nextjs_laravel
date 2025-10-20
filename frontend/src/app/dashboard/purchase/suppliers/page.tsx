@@ -103,6 +103,20 @@ const Suppliers = () => {
       showOn: "all",
     },
     {
+      label: "Phone",
+      key: "phone",
+      type: "text",
+      required: false,
+      showOn: "all",
+    },
+    {
+      label: "Email",
+      key: "email",
+      type: "email",
+      required: false,
+      showOn: "all",
+    },
+    {
       label: "Address",
       key: "address",
       type: "textarea",
