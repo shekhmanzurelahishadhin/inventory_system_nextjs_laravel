@@ -509,5 +509,49 @@ class ModuleMenuPermissionSeeder extends Seeder
                 'sub_menu_id' => null,
             ]
         );
+
+        // Purchase module
+        $purchaseModule = Module::updateOrCreate(
+            ['name' => 'Purchase'],
+            ['slug' => 'purchase']
+        );
+        $supplierMenu = Menu::updateOrCreate(
+            ['name' => 'Supplier', 'module_id' => $purchaseModule->id],
+            ['slug' => 'supplier']
+        );
+
+        // Company
+        Permission::updateOrCreate(
+            ['name' => 'supplier.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $purchaseModule->id,
+                'menu_id'     => $supplierMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'supplier.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $purchaseModule->id,
+                'menu_id'     => $supplierMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'supplier.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $purchaseModule->id,
+                'menu_id'     => $supplierMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'supplier.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $purchaseModule->id,
+                'menu_id'     => $supplierMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
     }
 }
