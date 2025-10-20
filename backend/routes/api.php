@@ -15,6 +15,7 @@ use App\Http\Controllers\api\softConfig\ProductModelController;
 use App\Http\Controllers\api\softConfig\UnitController;
 use App\Http\Controllers\api\softConfig\StoreController;
 use App\Http\Controllers\api\softConfig\LocationController;
+use App\Http\Controllers\api\purchase\SupplierController;
 
 
 Route::prefix('v1')->group(function () {
@@ -165,6 +166,21 @@ Route::prefix('v1')->group(function () {
                 Route::post('trash/{location}', [LocationController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [LocationController::class, 'restore']);
                 Route::delete('/{id}', [LocationController::class, 'destroy']); // force delete
+            });
+        });
+
+        // Supplier Route
+        Route::prefix('purchase')->group(function () {
+
+            // Companies Route
+            Route::prefix('suppliers')->group(function () {
+                Route::get('/', [SupplierController::class, 'index']);
+                Route::post('/', [SupplierController::class, 'store']);
+                Route::get('/{supplier}', [SupplierController::class, 'show']);
+                Route::put('/{supplier}', [SupplierController::class, 'update']);
+                Route::post('trash/{supplier}', [SupplierController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [SupplierController::class, 'restore']);
+                Route::delete('/{id}', [SupplierController::class, 'destroy']); // force delete
             });
         });
     });
