@@ -354,6 +354,8 @@ const Suppliers = () => {
     { 'name': 'name', 'label': 'Supplier Name', 'type': 'text' },
     { 'name': 'company_name', 'label': 'Company Name', 'type': 'text' },
     { 'name': 'code', 'label': 'Code', 'type': 'text' },
+    { 'name': 'phone', 'label': 'Phone', 'type': 'text' },
+    { 'name': 'email', 'label': 'Email', 'type': 'email' },
     { 'name': 'address', 'label': 'Address', 'type': 'text' },
     {
       name: "status", label: "Status", type: "reactselect", options: [
