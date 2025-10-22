@@ -71,4 +71,9 @@ class SupplierService
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
 
+    public function createSupplier(array $data)
+    {
+        return Supplier::create($data);
+    }
+
 }

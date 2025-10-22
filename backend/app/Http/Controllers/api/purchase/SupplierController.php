@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\purchase;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\purchase\supplier\CreateSupplierRequest;
 use App\Http\Resources\purchase\SupplierResource;
 use App\Services\purchase\SupplierService;
 use Illuminate\Http\Request;
@@ -41,6 +42,18 @@ class SupplierController extends Controller
             'total' => $suppliers->count(),
             'current_page' => 1,
             'per_page' => $suppliers->count(),
+        ]);
+    }
+
+    public function store(CreateSupplierRequest $request, SupplierService $supplierService)
+    {
+        $validatedData = $request->validated();
+
+        $supplier = $supplierService->createSupplier($validatedData);
+
+        return response()->json([
+            'message' => 'Model created successfully',
+            'data' => new SupplierResource($supplier),
         ]);
     }
 }
