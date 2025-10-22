@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('slug')->unique();
             $table->string('code')->unique()->nullable();
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade'); // company id
             $table->string('phone')->nullable();

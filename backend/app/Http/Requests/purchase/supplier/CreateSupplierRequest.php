@@ -23,6 +23,7 @@ class CreateSupplierRequest extends FormRequest
     {
         return [
             'company_id' => 'required|exists:companies,id',
+            'slug' => 'nullable|string|max:255|unique:suppliers,slug',
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
@@ -40,6 +41,9 @@ class CreateSupplierRequest extends FormRequest
         return [
             'company_id.required' => 'Company is required.',
             'company_id.exists' => 'Selected company does not exist.',
+            'slug.string' => 'The supplier slug must be a string.',
+            'slug.max' => 'The supplier slug cannot exceed 255 characters.',
+            'slug.unique' => 'This supplier slug already exists.',
             'name.required' => 'Supplier name is required.',
         ];
     }
