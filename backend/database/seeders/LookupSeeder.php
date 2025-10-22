@@ -27,6 +27,8 @@ class LookupSeeder extends Seeder
             ['name' => 'Kg',    'type' => 'unit', 'code' => 2],
             ['name' => 'Litre', 'type' => 'unit', 'code' => 3],
 
+            ['name' => 'Debit',  'type' => 'transaction_type', 'code' => 1],
+            ['name' => 'Credit', 'type' => 'transaction_type', 'code' => 2],
         ];
 
         foreach ($lookups as $lookup) {
