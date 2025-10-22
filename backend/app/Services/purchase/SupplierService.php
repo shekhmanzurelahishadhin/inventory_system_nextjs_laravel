@@ -17,6 +17,8 @@ class SupplierService
             'code',
             'address',
             'company_id',
+            'opening_balance',
+            'opening_balance_type',
             'phone',
             'email',
             'status',
@@ -73,6 +75,7 @@ class SupplierService
 
     public function createSupplier(array $data)
     {
+        $data['code'] = generateCode('SUP', 'suppliers', 'code');
         return Supplier::create($data);
     }
 
