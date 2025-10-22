@@ -123,6 +123,14 @@ const Suppliers = () => {
       required: false,
       showOn: "all",
     },
+     {
+      label: "Opening Balance",
+      key: "opening_balance",
+      type: "number",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
+    },
     {
       label: "Status",
       key: "status",

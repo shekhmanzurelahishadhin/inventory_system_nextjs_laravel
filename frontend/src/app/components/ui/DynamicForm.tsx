@@ -116,14 +116,15 @@ const DynamicForm = forwardRef(
 
     // Common input classes
     const inputClasses = (key: string) =>
-      `mt-1 block w-full p-3 rounded-sm border ${errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
+      `mt-1 block w-full p-3 rounded-sm border ${
+        errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
       } focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;
 
     // Check field visibility based on mode + showOn
     const shouldShowField = (field: any) => {
       // check dynamic/static hidden first
       if (typeof field.hidden === "function") {
-        return !field.hidden(formData); // invert because hidden=true → hide 
+        return !field.hidden(formData); // invert because hidden=true → hide
       }
       if (typeof field.hidden === "boolean") {
         return !field.hidden; // static hide/show
@@ -141,7 +142,6 @@ const DynamicForm = forwardRef(
 
       return visible;
     };
-
 
     return (
       <form className="my-5 space-y-4" onSubmit={(e) => e.preventDefault()}>
@@ -194,7 +194,9 @@ const DynamicForm = forwardRef(
                   <SingleSelectField
                     value={formData[field.key] ?? null}
                     options={field.options || []}
-                    onChange={(val) => !isReadOnly && handleChange(field.key, val)}
+                    onChange={(val) =>
+                      !isReadOnly && handleChange(field.key, val)
+                    }
                     placeholder={field.placeholder || `Select ${field.label}`}
                     isDisabled={isReadOnly || field.isDisabled}
                     isLoading={field.isLoading}
@@ -202,80 +204,101 @@ const DynamicForm = forwardRef(
                     isRtl={field.isRtl}
                     isSearchable={field.isSearchable}
                     name={field.name || field.key}
-                  />) : field.type === "multiselect" ? (
-                    <MultiSelectField
-                      value={formData[field.key] || []}
-                      options={field.options || []}
-                      onChange={(vals) =>
-                        !isReadOnly && handleChange(field.key, vals)
-                      }
-                      placeholder={field.placeholder || `Select ${field.label}`}
+                  />
+                ) : field.type === "multiselect" ? (
+                  <MultiSelectField
+                    value={formData[field.key] || []}
+                    options={field.options || []}
+                    onChange={(vals) =>
+                      !isReadOnly && handleChange(field.key, vals)
+                    }
+                    placeholder={field.placeholder || `Select ${field.label}`}
                     // disabled={isReadOnly}
-                    />
-                  ) : field.type === "checkbox" ? (
+                  />
+                ) : field.type === "checkbox" ? (
+                  <input
+                    type="checkbox"
+                    checked={!!value}
+                    onChange={(e) =>
+                      !isReadOnly && handleChange(field.key, e.target.checked)
+                    }
+                    disabled={isReadOnly}
+                  />
+                ) : field.type === "radio" ? (
+                  <div className="flex gap-4">
+                    {field.options?.map((opt) => (
+                      <label
+                        key={opt.value}
+                        className="flex items-center gap-2"
+                      >
+                        <input
+                          type="radio"
+                          name={field.key}
+                          value={opt.value}
+                          checked={value == opt.value}
+                          onChange={(e) =>
+                            !isReadOnly &&
+                            handleChange(field.key, e.target.value)
+                          }
+                          disabled={isReadOnly}
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                ) : field.type === "file" ? (
+                  <div>
                     <input
-                      type="checkbox"
-                      checked={!!value}
+                      type="file"
                       onChange={(e) =>
-                        !isReadOnly && handleChange(field.key, e.target.checked)
+                        !isReadOnly &&
+                        handleChange(field.key, e.target.files?.[0] || null)
                       }
                       disabled={isReadOnly}
+                      className={inputClasses(field.key)}
+                      accept={field.accept || "*"} // Add accept attribute
                     />
-                  ) : field.type === "radio" ? (
-                    <div className="flex gap-4">
-                      {field.options?.map((opt) => (
-                        <label
-                          key={opt.value}
-                          className="flex items-center gap-2"
-                        >
-                          <input
-                            type="radio"
-                            name={field.key}
-                            value={opt.value}
-                            checked={value == opt.value}
-                            onChange={(e) =>
-                              !isReadOnly &&
-                              handleChange(field.key, e.target.value)
-                            }
-                            disabled={isReadOnly}
-                          />
-                          {opt.label}
-                        </label>
-                      ))}
-                    </div>
-                  ) : field.type === "file" ? (
-                    <div>
-                      <input
-                        type="file"
-                        onChange={(e) =>
-                          !isReadOnly &&
-                          handleChange(field.key, e.target.files?.[0] || null)
-                        }
-                        disabled={isReadOnly}
-                        className={inputClasses(field.key)}
-                        accept={field.accept || "*"} // Add accept attribute
-                      />
-                      {/* Show current file name if editing */}
-                      {mode === "edit" && value instanceof File && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          Selected: {value.name}
-                        </p>
-                      )}
-                      {/* Show existing file info if editing and no new file selected */}
-                      {mode === "edit" && typeof value === "string" && value && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          Current: {value.split("/").pop()}
-                        </p>
-                      )}
-                    </div>
-                  ) : (
+                    {/* Show current file name if editing */}
+                    {mode === "edit" && value instanceof File && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        Selected: {value.name}
+                      </p>
+                    )}
+                    {/* Show existing file info if editing and no new file selected */}
+                    {mode === "edit" && typeof value === "string" && value && (
+                      <p className="text-sm text-gray-600 mt-1">
+                        Current: {value.split("/").pop()}
+                      </p>
+                    )}
+                  </div>
+                ) : (
                   <input
-                    type={field.type || "text"}
+                    type={
+                      field.type === "number" ? "number" : field.type || "text"
+                    }
+                    step={
+                      field.type === "number"
+                        ? field.isDecimal
+                          ? "any" // allows decimal (e.g. 12.50)
+                          : "1" // allows only whole numbers
+                        : undefined
+                    }
                     value={value}
                     placeholder={field.placeholder || `Enter ${field.label}`}
-                    onChange={(e) =>
-                      !isReadOnly && handleChange(field.key, e.target.value)
-                    }
+                    onChange={(e) => {
+                      if (isReadOnly) return;
+
+                      let newValue = e.target.value;
+
+                      // Optional: auto-parse numeric fields
+                      if (field.type === "number") {
+                        newValue = field.isDecimal
+                          ? parseFloat(newValue || 0)
+                          : parseInt(newValue || 0);
+                      }
+
+                      handleChange(field.key, newValue);
+                    }}
                     readOnly={isReadOnly}
                     disabled={isReadOnly}
                     className={inputClasses(field.key)}
