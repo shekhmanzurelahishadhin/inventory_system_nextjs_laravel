@@ -44,6 +44,7 @@ const Suppliers = () => {
   const { hasPermission } = useAuth();
   const [loadingDropdowns, setLoadingDropdowns] = useState(false);
   const [status, setStatus] = useState<any[]>([]);
+  const [transactionType, setTransactionType] = useState<any[]>([]);
 
   const formRef = useRef<any>(null);
 
@@ -68,9 +69,12 @@ const Suppliers = () => {
 
   const fetchLookups = async () => {
     try {
-      const type = "active_status";
-      const res = await api.get(`/configure/get-lookup-list/${type}`);
+      const status_type = "active_status";
+      const transaction_type = "transaction_type";
+      const res = await api.get(`/configure/get-lookup-list/${status_type}`);
+      const transactionRes = await api.get(`/configure/get-lookup-list/${transaction_type}`);
       setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
+      setTransactionType(transactionRes.data.map((m: any) => ({ value: m.value, label: m.label })));
     } catch (error) {
       console.error("Failed to fetch lookups", error);
     }
@@ -122,6 +126,14 @@ const Suppliers = () => {
       type: "textarea",
       required: false,
       showOn: "all",
+    },
+     {
+      label: "Opening Balance Type",
+      key: "opening_balance_type",
+      type: "reactselect",
+      required: true,
+      options: transactionType,
+      showOn: "all", 
     },
      {
       label: "Opening Balance",
