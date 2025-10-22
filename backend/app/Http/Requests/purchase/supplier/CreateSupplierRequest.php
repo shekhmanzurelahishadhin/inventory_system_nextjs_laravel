@@ -11,7 +11,7 @@ class CreateSupplierRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,25 @@ class CreateSupplierRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'company_id' => 'required|exists:companies,id',
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:500',
+            'opening_balance' => 'nullable|numeric|min:0',
+            'opening_balance_type' => 'required',
+        ];
+    }
+
+    /**
+     * Custom error messages (optional)
+     */
+    public function messages(): array
+    {
+        return [
+            'company_id.required' => 'Company is required.',
+            'company_id.exists' => 'Selected company does not exist.',
+            'name.required' => 'Supplier name is required.',
         ];
     }
 }

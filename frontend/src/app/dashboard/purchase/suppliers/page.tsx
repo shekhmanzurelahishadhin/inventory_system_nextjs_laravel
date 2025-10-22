@@ -131,7 +131,7 @@ const Suppliers = () => {
       label: "Opening Balance Type",
       key: "opening_balance_type",
       type: "reactselect",
-      required: true,
+      required: false,
       options: transactionType,
       showOn: "all", 
     },

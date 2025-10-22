@@ -52,7 +52,7 @@ class SupplierController extends Controller
         $supplier = $supplierService->createSupplier($validatedData);
 
         return response()->json([
-            'message' => 'Model created successfully',
+            'message' => 'Supplier created successfully',
             'data' => new SupplierResource($supplier),
         ]);
     }
