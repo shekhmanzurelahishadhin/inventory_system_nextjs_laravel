@@ -21,7 +21,9 @@ return new class extends Migration
             $table->decimal('debit', 15, 2)->default(0);
             $table->decimal('credit', 15, 2)->default(0);
             $table->decimal('balance', 15, 2)->default(0)->comment('Running balance'); // Running balance
-            $table->enum('balance_type', ['DR', 'CR'])->default('DR')->comment('Current balance type'); // Current balance type
+            $table->enum('balance_type', ['1', '2'])
+                ->default('2')
+                ->comment('1->Debit / 2->Credit');
             $table->timestamps();
 
             $table->unsignedBigInteger('created_by')->nullable();
