@@ -5,7 +5,9 @@ namespace App\Services\purchase;
 
 
 use App\Models\purchase\Supplier;
+use App\Models\purchase\SupplierLedger;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SupplierService
 {
@@ -75,8 +77,31 @@ class SupplierService
 
     public function createSupplier(array $data)
     {
-        $data['code'] = generateCode('SUP', 'suppliers', 'code');
-        return Supplier::create($data);
+        return DB::transaction(function () use ($data) {
+            // Generate unique supplier code
+            $data['code'] = generateCode('SUP', 'suppliers', 'code');
+
+            // Create supplier
+            $supplier = Supplier::create($data);
+
+            // If opening balance exists, insert into supplier_ledger
+            if (!empty($supplier->opening_balance) && $supplier->opening_balance > 0) {
+                SupplierLedger::create([
+                    'supplier_id'   => $supplier->id,
+                    'company_id'    => $supplier->company_id,
+                    'date'          => now(),
+                    'reference'     => 'Opening Balance',
+                    'description'   => 'Opening balance entry for supplier',
+                    'debit'         => $supplier->opening_balance_type === '1' ? $supplier->opening_balance : 0,
+                    'credit'        => $supplier->opening_balance_type === '2' ? $supplier->opening_balance : 0,
+                    'balance'       => $supplier->opening_balance,
+                    'balance_type'  => $supplier->opening_balance_type,
+                    'created_by'    => Auth::id(),
+                ]);
+            }
+
+            return $supplier;
+        });
     }
 
 }
