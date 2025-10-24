@@ -73,6 +73,7 @@ const Suppliers = () => {
       const transaction_type = "transaction_type";
       const res = await api.get(`/configure/get-lookup-list/${status_type}`);
       const transactionRes = await api.get(`/configure/get-lookup-list/${transaction_type}`);
+      console.log("Lookup Data:", res.data, transactionRes.data);
       setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
       setTransactionType(transactionRes.data.map((m: any) => ({ value: m.value, label: m.label })));
     } catch (error) {
@@ -200,6 +201,7 @@ const Suppliers = () => {
   }, []);
 
   const openModal = (type: "create" | "edit" | "view", supplier: any = null) => {
+    console.log("Opening modal:", type, supplier);
     setModalType(type);
     setSelectedSupplier(supplier);
     setBackendErrors({});
