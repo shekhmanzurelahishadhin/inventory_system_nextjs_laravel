@@ -108,9 +108,58 @@ class SupplierService
 
     public function updateSupplier(Supplier $supplier, array $data)
     {
-        $supplier->update($data); // updates the model
-        return $supplier;         // return the model itself
+        return DB::transaction(function () use ($supplier, $data) {
+
+            // Update supplier basic info
+            $supplier->update($data);
+
+            // Check if supplier has opening balance
+            $hasOpeningBalance = !empty($data['opening_balance']) && $data['opening_balance'] > 0;
+
+            // Try to find existing opening balance ledger entry
+            $existingLedger = SupplierLedger::where('supplier_id', $supplier->id)
+                ->where('reference', 'Opening Balance')
+                ->first();
+
+            if ($hasOpeningBalance) {
+                if ($existingLedger) {
+                    // Update existing opening balance ledger
+                    $existingLedger->update([
+                        'date'          => now(),
+                        'company_id'    => $supplier->company_id,
+                        'description'   => 'Updated opening balance entry for supplier',
+                        'debit'         => $data['opening_balance_type'] == 1 ? $data['opening_balance'] : 0,
+                        'credit'        => $data['opening_balance_type'] == 2 ? $data['opening_balance'] : 0,
+                        'balance'       => $data['opening_balance'],
+                        'balance_type'  => $data['opening_balance_type'],
+                        'updated_by'    => Auth::id(),
+                    ]);
+                } else {
+                    // Create new opening balance ledger
+                    SupplierLedger::create([
+                        'supplier_id'   => $supplier->id,
+                        'company_id'    => $supplier->company_id,
+                        'date'          => now(),
+                        'reference'     => 'Opening Balance',
+                        'description'   => 'Opening balance entry for supplier',
+                        'debit'         => $data['opening_balance_type'] == 1 ? $data['opening_balance'] : 0,
+                        'credit'        => $data['opening_balance_type'] == 2 ? $data['opening_balance'] : 0,
+                        'balance'       => $data['opening_balance'],
+                        'balance_type'  => $data['opening_balance_type'],
+                        'created_by'    => Auth::id(),
+                    ]);
+                }
+            } else {
+                // If opening balance is removed, delete existing ledger entry
+                if ($existingLedger) {
+                    $existingLedger->delete();
+                }
+            }
+
+            return $supplier->fresh(); // return the updated supplier with relations if needed
+        });
     }
+
 
 
     public function softDeleteSupplier(Supplier $supplier)
