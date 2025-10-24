@@ -77,7 +77,7 @@ class StoreController extends Controller
         $store  = $storeService->updateStore($store , $request->validated());
 
         return response()->json([
-            'message' => 'Category updated successfully',
+            'message' => 'Store updated successfully',
             'data' => new StoreResource($store),
         ]);
     }
