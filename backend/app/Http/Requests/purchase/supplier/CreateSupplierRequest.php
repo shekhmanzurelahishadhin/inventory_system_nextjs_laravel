@@ -29,7 +29,7 @@ class CreateSupplierRequest extends FormRequest
             'email' => 'nullable|email|max:255',
             'address' => 'nullable|string|max:500',
             'opening_balance' => 'nullable|numeric|min:0',
-            'opening_balance_type' => 'required',
+            'opening_balance_type' => 'nullable',
         ];
     }
 
