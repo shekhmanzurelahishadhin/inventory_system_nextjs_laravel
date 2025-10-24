@@ -104,4 +104,34 @@ class SupplierService
         });
     }
 
+
+    public function updateSupplier(Supplier $supplier, array $data)
+    {
+        $supplier->update($data); // updates the model
+        return $supplier;         // return the model itself
+    }
+
+
+    public function softDeleteSupplier(Supplier $supplier)
+    {
+        $supplier->delete();
+    }
+
+    public function restoreSupplier(Supplier $supplier)
+    {
+        if ($supplier->trashed()) {
+            $supplier->restore();
+        }
+        return $supplier;
+    }
+
+    public function forceDeleteSupplier(Supplier $supplier)
+    {
+        if ($supplier->trashed()) {
+            $supplier->forceDelete();
+            return true;
+        }
+        return false;
+    }
+
 }
