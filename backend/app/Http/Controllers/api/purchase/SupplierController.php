@@ -21,7 +21,7 @@ class SupplierController extends Controller
     public function index(Request $request, SupplierService $supplierService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status','name','code','company_name','address','prone','email','created_at','created_by');
+        $filters = $request->only('search','status','name','code','company_name','address','phone','email','created_at','created_by');
         $companyId = $request->query('company_id');
 
         $suppliers = $supplierService->getSuppliers($filters, $perPage, $companyId);

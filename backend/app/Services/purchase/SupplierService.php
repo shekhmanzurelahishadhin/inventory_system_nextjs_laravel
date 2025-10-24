@@ -47,7 +47,7 @@ class SupplierService
         // Apply filters
         $query
             ->when($filters['name'] ?? null, fn($q, $name) => $q->where('name', 'like', "%{$name}%"))
-            ->when($filters['code'] ?? null, fn($q, $code) => $q->where('name', 'like', "%{$code}%"))
+            ->when($filters['code'] ?? null, fn($q, $code) => $q->where('code', 'like', "%{$code}%"))
             ->when($filters['address'] ?? null, fn($q, $address) => $q->where('address', 'like', "%{$address}%"))
             ->when($filters['email'] ?? null, fn($q, $email) => $q->where('email', 'like', "%{$email}%"))
             ->when($filters['phone'] ?? null, fn($q, $phone) => $q->where('phone', 'like', "%{$phone}%"))
@@ -56,7 +56,7 @@ class SupplierService
             ->when($filters['created_at'] ?? null, fn($q, $createdAt) => $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt))))
             ->when($filters['search'] ?? null, fn($q, $term) => $q->where(function ($sub) use ($term) {
                 $sub->where('name', 'like', "%{$term}%")
-                    ->orWhere('code', 'like', "%{$code}%")
+                    ->orWhere('code', 'like', "%{$term}%")
                     ->orWhere('phone', 'like', "%{$term}%")
                     ->orWhere('email', 'like', "%{$term}%")
                     ->orWhere('address', 'like', "%{$term}%")
