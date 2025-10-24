@@ -3,6 +3,7 @@
 namespace App\Models\purchase;
 
 use App\Models\softConfig\Company;
+use App\Models\softConfig\Lookup;
 use App\Models\User;
 use App\Traits\SetSlugAndAuditing;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,5 +23,9 @@ class Supplier extends Model
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+    public function balanceType()
+    {
+        return $this->hasOne(Lookup::class, 'code','opening_balance_type')->where('type','=','transaction_type');
     }
 }

@@ -21,6 +21,7 @@ class SupplierResource extends JsonResource
             'phone' => $this->phone,
             'email' => $this->email,
             'opening_balance_type' => $this->opening_balance_type,
+            'opening_type' => $this->balanceType?->name,
             'opening_balance' => $this->opening_balance,
             'company_id' => $this->company?->id ?? null,
             'company_name' => $this->company?->name ?? null,

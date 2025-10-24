@@ -68,6 +68,7 @@ class SupplierService
         // Eager load common relations
         $query->with([
             'createdBy:id,name',
+            'balanceType:code,name',
             'company:id,name'
         ])->orderByDesc('id');
 

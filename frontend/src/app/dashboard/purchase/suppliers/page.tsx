@@ -106,6 +106,13 @@ const Suppliers = () => {
       required: true,
       showOn: "all",
     },
+     {
+      label: "Company",
+      key: "company_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
     {
       label: "Phone",
       key: "phone",
@@ -133,7 +140,14 @@ const Suppliers = () => {
       type: "reactselect",
       required: false,
       options: transactionType,
-      showOn: "all", 
+      showOn: "both", 
+    },
+     {
+      label: "Opening Type",
+      key: "opening_type",
+      type: "text",
+      required: false,
+      showOn: "view", 
     },
      {
       label: "Opening Balance",
@@ -151,13 +165,7 @@ const Suppliers = () => {
       options: status,
       showOn: "edit", // edit only
     },
-    {
-      label: "Company Name",
-      key: "company_name",
-      type: "text",
-      readOnly: true,
-      showOn: "view",
-    },
+   
     {
       label: "Status",
       key: "status",
@@ -289,21 +297,33 @@ const Suppliers = () => {
       selector: (row) => row.code,
       sortable: true,
     },
+
     {
-      name: "Phone",
-      selector: (row) => row.phone,
+      name: "Opening Balance",
+      selector: (row) => row.opening_balance,
       sortable: true,
     },
+
     {
-      name: "Email",
-      selector: (row) => row.email,
+      name: "Balance Type",
+      selector: (row) => row.opening_type,
       sortable: true,
     },
-    {
-      name: "Address",
-      selector: (row) => row.address,
-      sortable: true,
-    },
+    // {
+    //   name: "Phone",
+    //   selector: (row) => row.phone,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Email",
+    //   selector: (row) => row.email,
+    //   sortable: true,
+    // },
+    // {
+    //   name: "Address",
+    //   selector: (row) => row.address,
+    //   sortable: true,
+    // },
     {
       name: "Status",
       selector: (row) =>
