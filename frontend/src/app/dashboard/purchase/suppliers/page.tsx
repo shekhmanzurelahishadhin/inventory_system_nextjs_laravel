@@ -290,6 +290,16 @@ const Suppliers = () => {
       sortable: true,
     },
     {
+      name: "Phone",
+      selector: (row) => row.phone,
+      sortable: true,
+    },
+    {
+      name: "Email",
+      selector: (row) => row.email,
+      sortable: true,
+    },
+    {
       name: "Address",
       selector: (row) => row.address,
       sortable: true,
