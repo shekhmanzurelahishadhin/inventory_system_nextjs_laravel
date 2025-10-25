@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\sales;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\sales\customer\CreateCustomerRequest;
 use App\Http\Requests\sales\customer\UpdateCustomerRequest;
+use App\Http\Resources\sales\CustomerResource;
 use App\Models\sales\Customer;
 use App\Services\sales\CustomerService;
 use Illuminate\Http\Request;
