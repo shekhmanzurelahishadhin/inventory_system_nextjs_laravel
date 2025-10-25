@@ -23,7 +23,7 @@ class CustomerController extends Controller
     public function index(Request $request, CustomerService $customerService)
     {
         $perPage = $request->get('per_page');
-        $filters = $request->only('search','status','name','code','company_name','address','phone','email','created_at','created_by');
+        $filters = $request->only('search','status','name','code','company_name','address','opening_balance','opening_balance_type','phone','email','created_at','created_by');
         $companyId = $request->query('company_id');
 
         $customers = $customerService->getCustomers($filters, $perPage, $companyId);

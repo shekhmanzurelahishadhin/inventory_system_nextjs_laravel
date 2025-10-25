@@ -51,6 +51,8 @@ class CustomerService
             ->when($filters['address'] ?? null, fn($q, $address) => $q->where('address', 'like', "%{$address}%"))
             ->when($filters['email'] ?? null, fn($q, $email) => $q->where('email', 'like', "%{$email}%"))
             ->when($filters['phone'] ?? null, fn($q, $phone) => $q->where('phone', 'like', "%{$phone}%"))
+            ->when($filters['opening_balance'] ?? null, fn($q, $opening_balance) => $q->where('opening_balance', 'like', "%{$opening_balance}%"))
+            ->when($filters['opening_balance_type'] ?? null, fn($q, $opening_balance_type) => $q->where('opening_balance_type',  $opening_balance_type))
             ->when($filters['created_by'] ?? null, fn($q, $createdBy) => $q->whereHas('createdBy', fn($sub) => $sub->where('name', 'like', "%{$createdBy}%")))
             ->when($filters['company_name'] ?? null, fn($q, $company) => $q->whereHas('company', fn($com) => $com->where('name', 'like', "%{$company}%")))
             ->when($filters['created_at'] ?? null, fn($q, $createdAt) => $q->whereDate('created_at', date('Y-m-d', strtotime($createdAt))))
@@ -60,7 +62,9 @@ class CustomerService
                     ->orWhere('phone', 'like', "%{$term}%")
                     ->orWhere('email', 'like', "%{$term}%")
                     ->orWhere('address', 'like', "%{$term}%")
+                    ->orWhere('opening_balance', 'like', "%{$term}%")
                     ->orWhereHas('company', fn($company) => $company->where('name', 'like', "%{$term}%"))
+                    ->orWhereHas('balanceType', fn($type) => $type->where('name', 'like', "%{$term}%"))
                     ->orWhereHas('createdBy', fn($user) => $user->where('name', 'like', "%{$term}%"));
             })
             );

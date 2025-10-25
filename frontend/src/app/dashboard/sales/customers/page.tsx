@@ -55,9 +55,8 @@ const Customers = () => {
     page: 1,
     perPage: 10,
   });
-  const { handleSoftDelete, handleForceDelete, handleRestore } = useActionConfirmAlert(() =>
-    setRefreshTrigger((prev) => prev + 1)
-  );
+  const { handleSoftDelete, handleForceDelete, handleRestore } =
+    useActionConfirmAlert(() => setRefreshTrigger((prev) => prev + 1));
   const fetchCompanies = async () => {
     const res = await api.get("/configure/companies", {
       params: { status: 1 }, // only status = active companies
@@ -72,10 +71,17 @@ const Customers = () => {
       const status_type = "active_status";
       const transaction_type = "transaction_type";
       const res = await api.get(`/configure/get-lookup-list/${status_type}`);
-      const transactionRes = await api.get(`/configure/get-lookup-list/${transaction_type}`);
+      const transactionRes = await api.get(
+        `/configure/get-lookup-list/${transaction_type}`
+      );
       console.log("Lookup Data:", res.data, transactionRes.data);
       setStatus(res.data.map((m: any) => ({ value: m.value, label: m.label })));
-      setTransactionType(transactionRes.data.map((m: any) => ({ value: m.value, label: m.label })));
+      setTransactionType(
+        transactionRes.data.map((m: any) => ({
+          value: m.value,
+          label: m.label,
+        }))
+      );
     } catch (error) {
       console.error("Failed to fetch lookups", error);
     }
@@ -107,7 +113,7 @@ const Customers = () => {
       required: true,
       showOn: "all",
     },
-     {
+    {
       label: "Company",
       key: "company_name",
       type: "text",
@@ -135,22 +141,22 @@ const Customers = () => {
       required: false,
       showOn: "all",
     },
-     {
+    {
       label: "Opening Balance Type",
       key: "opening_balance_type",
       type: "reactselect",
       required: false,
       options: transactionType,
-      showOn: "both", 
+      showOn: "both",
     },
-     {
+    {
       label: "Opening Type",
       key: "opening_type",
       type: "text",
       required: false,
-      showOn: "view", 
+      showOn: "view",
     },
-     {
+    {
       label: "Opening Balance",
       key: "opening_balance",
       type: "number",
@@ -166,7 +172,7 @@ const Customers = () => {
       options: status,
       showOn: "edit", // edit only
     },
-   
+
     {
       label: "Status",
       key: "status",
@@ -200,7 +206,10 @@ const Customers = () => {
     setIsMounted(true);
   }, []);
 
-  const openModal = (type: "create" | "edit" | "view", customer: any = null) => {
+  const openModal = (
+    type: "create" | "edit" | "view",
+    customer: any = null
+  ) => {
     console.log("Opening modal:", type, customer);
     setModalType(type);
     setSelectedCustomer(customer);
@@ -367,7 +376,9 @@ const Customers = () => {
             {
               icon: row.deleted_at ? faTrashRestore : faTrash,
               onClick: (r) =>
-                r.deleted_at ? handleForceDelete(r, "/sales/customers", "customer") : handleSoftDelete(r, "/sales/customers", "customer"),
+                r.deleted_at
+                  ? handleForceDelete(r, "/sales/customers", "customer")
+                  : handleSoftDelete(r, "/sales/customers", "customer"),
               variant: "danger",
               size: "sm",
               show: (r) => hasPermission("customer.delete"),
@@ -393,31 +404,48 @@ const Customers = () => {
     { name: "Name", selector: "name" },
     { name: "Company Name", selector: "company_name" },
     { name: "Code", selector: "code" },
+    { name: "Opening Balance", selector: "opening_balance" },
+    { name: "Balance Type", selector: "opening_type" },
+    { name: "Phone", selector: "phone" },
+    { name: "Email", selector: "email" },
     { name: "Address", selector: "address" },
     {
       name: "Status",
       selector: (row) =>
-        row.deleted_at ? 'Trash' : (row.status === 1 ? "Active" : "Inactive"),
+        row.deleted_at ? "Trash" : row.status === 1 ? "Active" : "Inactive",
     },
     { name: "Created by", selector: "created_by" },
     { name: "Created at", selector: "created_at" },
   ];
   const filterFields = [
-    { 'name': 'name', 'label': 'Customer Name', 'type': 'text' },
-    { 'name': 'company_name', 'label': 'Company Name', 'type': 'text' },
-    { 'name': 'code', 'label': 'Code', 'type': 'text' },
-    { 'name': 'phone', 'label': 'Phone', 'type': 'text' },
-    { 'name': 'email', 'label': 'Email', 'type': 'email' },
-    { 'name': 'address', 'label': 'Address', 'type': 'text' },
+    { name: "name", label: "Supplier Name", type: "text" },
+    { name: "company_name", label: "Company Name", type: "text" },
+    { name: "code", label: "Code", type: "text" },
+    { name: "opening_balance", label: "Opening Balance", type: "text" },
     {
-      name: "status", label: "Status", type: "reactselect", options: [
+      name: "opening_balance_type",
+      label: "Type",
+      type: "reactselect",
+      options: [
+        { value: "1", label: "Debit" },
+        { value: "2", label: "Credit" },
+      ],
+    },
+    { name: "phone", label: "Phone", type: "text" },
+    { name: "email", label: "Email", type: "email" },
+    { name: "address", label: "Address", type: "text" },
+    {
+      name: "status",
+      label: "Status",
+      type: "reactselect",
+      options: [
         { value: "trash", label: "Trashed" },
         { value: "1", label: "Active" },
         { value: "0", label: "Inactive" },
-      ]
+      ],
     },
-    { 'name': 'created_by', 'label': 'Created By', 'type': 'text' },
-    { 'name': 'created_at', 'label': 'Created At', 'type': 'date' },
+    { name: "created_by", label: "Created By", type: "text" },
+    { name: "created_at", label: "Created At", type: "date" },
   ];
 
   return (
@@ -485,8 +513,8 @@ const Customers = () => {
             modalType === "create"
               ? "Create Customer"
               : modalType === "edit"
-                ? "Edit Customer"
-                : "View Customer"
+              ? "Edit Customer"
+              : "View Customer"
           }
           footer={
             modalType === "view" ? (
@@ -502,10 +530,11 @@ const Customers = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting}
-                  className={`${isSubmitting
-                    ? "opacity-60 cursor-not-allowed"
-                    : "opacity-100"
-                    }`}
+                  className={`${
+                    isSubmitting
+                      ? "opacity-60 cursor-not-allowed"
+                      : "opacity-100"
+                  }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -536,8 +565,8 @@ const Customers = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                      ? "Create"
-                      : "Update"}
+                    ? "Create"
+                    : "Update"}
                 </Button>
               </>
             )
