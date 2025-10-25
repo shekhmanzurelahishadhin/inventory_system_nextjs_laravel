@@ -516,8 +516,8 @@ class ModuleMenuPermissionSeeder extends Seeder
             ['slug' => 'purchase']
         );
         $supplierMenu = Menu::updateOrCreate(
-            ['name' => 'Supplier', 'module_id' => $purchaseModule->id],
-            ['slug' => 'supplier']
+            ['name' => 'Suppliers', 'module_id' => $purchaseModule->id],
+            ['slug' => 'suppliers']
         );
 
         // Company
@@ -550,6 +550,50 @@ class ModuleMenuPermissionSeeder extends Seeder
             [
                 'module_id'   => $purchaseModule->id,
                 'menu_id'     => $supplierMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
+        // Sales module
+        $salesModule = Module::updateOrCreate(
+            ['name' => 'Sales'],
+            ['slug' => 'sales']
+        );
+        $customerMenu = Menu::updateOrCreate(
+            ['name' => 'Customers', 'module_id' => $salesModule->id],
+            ['slug' => 'customers']
+        );
+
+        // Company
+        Permission::updateOrCreate(
+            ['name' => 'customer.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $salesModule->id,
+                'menu_id'     => $customerMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'customer.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $salesModule->id,
+                'menu_id'     => $customerMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'customer.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $salesModule->id,
+                'menu_id'     => $customerMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'customer.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $salesModule->id,
+                'menu_id'     => $customerMenu->id,
                 'sub_menu_id' => null,
             ]
         );
