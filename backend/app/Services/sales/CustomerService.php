@@ -5,6 +5,7 @@ namespace App\Services\sales;
 
 
 use App\Models\sales\Customer;
+use App\Models\sales\CustomerLedger;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 

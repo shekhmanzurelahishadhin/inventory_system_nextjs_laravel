@@ -3,6 +3,7 @@
 namespace App\Http\Requests\sales\customer;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateCustomerRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,41 @@ class UpdateCustomerRequest extends FormRequest
      */
     public function rules(): array
     {
+        $customerId = $this->route('id') ?? $this->route('customer');
+        // adjust based on your route parameter (e.g. customer/{id})
+
         return [
-            //
+            'company_id' => 'required|exists:companies,id',
+            'slug' => [
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('customers', 'slug')->ignore($customerId),
+            ],
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:500',
+            'opening_balance' => 'nullable|numeric|min:0',
+            'opening_balance_type' => 'nullable',
+            'status' => 'required|boolean', // 1=Active, 0=Inactive
+        ];
+    }
+
+    /**
+     * Custom error messages (optional)
+     */
+    public function messages(): array
+    {
+        return [
+            'company_id.required' => 'Company is required.',
+            'company_id.exists' => 'Selected company does not exist.',
+            'slug.string' => 'The customer slug must be a string.',
+            'slug.max' => 'The customer slug cannot exceed 255 characters.',
+            'slug.unique' => 'This customer slug already exists.',
+            'name.required' => 'Supplier name is required.',
+            'status.required' => 'Status is required.',
+            'status.boolean' => 'Status must be true/false.',
         ];
     }
 }
