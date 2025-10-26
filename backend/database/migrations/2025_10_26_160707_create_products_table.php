@@ -27,7 +27,7 @@ return new class extends Migration
 
             $table->decimal('purchase_price', 15, 2)->default(0);
             $table->decimal('selling_price', 15, 2)->default(0);
-            $table->decimal('reorder_level', 15, 2)->default(0);
+            $table->decimal('reorder_level', 15, 2)->default(0)->comment('alert low order qty');
 
             $table->softDeletes();
 

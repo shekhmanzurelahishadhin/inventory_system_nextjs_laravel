@@ -53,7 +53,7 @@ class ModelService
             $query->where('category_id', $categoryId);
         }
         if ($subCategoryId) {
-            $query->where('sub_category_id', $categoryId);
+            $query->where('sub_category_id', $subCategoryId);
         }
         if ($brandId) {
             $query->where('brand_id', $brandId);

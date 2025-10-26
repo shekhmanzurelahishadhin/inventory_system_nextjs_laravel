@@ -50,6 +50,7 @@ const Products = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [subCategories, setSubCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
+  const [models, setModels] = useState<any[]>([]);
 
   const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
@@ -101,6 +102,39 @@ const Products = () => {
       setSubCategories([]); // clear sub-categories if no category selected
       setLoadingDropdowns(false); // stop loader immediately
     }
+
+      if (updated.brand_id) {
+      if (!updated.category_id) {
+        toast.error("Please select a category first to load models.");
+        setModels([]); 
+        return false;
+      }
+       if (!updated.sub_category_id) {
+        toast.error("Please select a sub category first to load models.");
+        setModels([]); 
+        return false;
+      }
+      setLoadingDropdowns(true); // start loader
+      try {
+        const res = await api.get(
+          `/configure/models?category_id=${updated.category_id}&brand_id=${updated.brand_id}&sub_category_id=${updated.sub_category_id}`,
+          {
+            params: { status: 1 }, // only status = active models
+          }
+        );
+        setModels(
+          res.data.data.map((m: any) => ({ value: m.id, label: m.name }))
+        );
+      } catch (error) {
+        console.error("Failed to fetch models", error);
+        setModels([]);
+      } finally {
+        setLoadingDropdowns(false); // stop loader after fetch finishes
+      }
+    } else {
+      setModels([]); // clear models if no category selected
+      setLoadingDropdowns(false); // stop loader immediately
+    }
   };
 
   const fetchLookups = async () => {
@@ -140,6 +174,7 @@ const Products = () => {
       showOn: "both",
       options: subCategories,
       isLoading: loadingDropdowns,
+      watch: true, // watch this field for changes
     },
     {
       label: "Brand",
@@ -148,6 +183,16 @@ const Products = () => {
       required: true,
       showOn: "both",
       options: brands,
+      watch: true, // watch this field for changes
+    },
+     {
+      label: "Model",
+      key: "model_id",
+      type: "reactselect",
+      required: true,
+      showOn: "both",
+      options: models,
+      isLoading: loadingDropdowns,
     },
     {
       label: "Name",
@@ -252,6 +297,7 @@ const Products = () => {
     setBackendErrors({});
     setIsSubmitting(false);
     setSubCategories([]);
+    setModels([]);
   };
 
   const handleFormSubmit = async (formData: Record<string, any>) => {
