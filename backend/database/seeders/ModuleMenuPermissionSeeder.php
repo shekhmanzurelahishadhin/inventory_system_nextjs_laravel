@@ -510,6 +510,44 @@ class ModuleMenuPermissionSeeder extends Seeder
             ]
         );
 
+        // Product
+        $productMenu = Menu::updateOrCreate(
+            ['name' => 'Products', 'module_id' => $softConfigModule->id],
+            ['slug' => 'products']
+        );
+        Permission::updateOrCreate(
+            ['name' => 'product.create', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $productMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'product.view', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $productMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'product.edit', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $productMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+        Permission::updateOrCreate(
+            ['name' => 'product.delete', 'guard_name' => 'web'],
+            [
+                'module_id'   => $softConfigModule->id,
+                'menu_id'     => $productMenu->id,
+                'sub_menu_id' => null,
+            ]
+        );
+
         // Purchase module
         $purchaseModule = Module::updateOrCreate(
             ['name' => 'Purchase'],

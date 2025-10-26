@@ -223,7 +223,7 @@ const Sidebar = ({
           ],
         },
         {
-          name: "Product",
+          name: "Products",
           href: "/dashboard/configure/products",
           icon: solidIcons.faBox,
           requiredPermissions: [
