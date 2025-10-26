@@ -17,6 +17,7 @@ use App\Http\Controllers\api\softConfig\StoreController;
 use App\Http\Controllers\api\softConfig\LocationController;
 use App\Http\Controllers\api\purchase\SupplierController;
 use App\Http\Controllers\api\sales\CustomerController;
+use App\Http\Controllers\api\softConfig\ProductController;
 
 
 Route::prefix('v1')->group(function () {
@@ -167,6 +168,16 @@ Route::prefix('v1')->group(function () {
                 Route::post('trash/{location}', [LocationController::class, 'trash']); // soft delete
                 Route::post('/restore/{id}', [LocationController::class, 'restore']);
                 Route::delete('/{id}', [LocationController::class, 'destroy']); // force delete
+            });
+            // Product Route
+            Route::prefix('products')->group(function () {
+                Route::get('/', [ProductController::class, 'index']);
+                Route::post('/', [ProductController::class, 'store']);
+                Route::get('/{product}', [ProductController::class, 'show']);
+                Route::put('/{product}', [ProductController::class, 'update']);
+                Route::post('trash/{product}', [ProductController::class, 'trash']); // soft delete
+                Route::post('/restore/{id}', [ProductController::class, 'restore']);
+                Route::delete('/{id}', [ProductController::class, 'destroy']); // force delete
             });
         });
 
