@@ -222,6 +222,17 @@ const Sidebar = ({
             "location.delete",
           ],
         },
+        {
+          name: "Product",
+          href: "/dashboard/configure/products",
+          icon: solidIcons.faBox,
+          requiredPermissions: [
+            "product.view",
+            "product.create",
+            "product.edit",
+            "product.delete",
+          ],
+        },
       ],
     },
     {
