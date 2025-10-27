@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\api\softConfig;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\softConfig\product\CreateProductRequest;
+use App\Http\Requests\softConfig\product\UpdateProductRequest;
+use App\Http\Resources\softConfig\product\ProductResource;
 use App\Models\softconfig\Product;
+use App\Services\softConfig\ProductService;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
