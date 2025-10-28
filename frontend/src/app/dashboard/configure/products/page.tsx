@@ -157,6 +157,13 @@ const Products = () => {
   ];
 
   const productFields = [
+       {
+      label: "Name",
+      key: "name",
+      type: "text",
+      required: true,
+      showOn: "all",
+    },
     {
       label: "Category",
       key: "category_id",
@@ -194,13 +201,39 @@ const Products = () => {
       options: models,
       isLoading: loadingDropdowns,
     },
-    {
-      label: "Name",
-      key: "name",
-      type: "text",
-      required: true,
+        {
+      label: "Purchase Price",
+      key: "purchase_price",
+      type: "number",
+      isDecimal: true,
+      required: false,
       showOn: "all",
     },
+     {
+      label: "Selling Price",
+      key: "selling_price",
+      type: "number",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
+    },
+     {
+      label: "Reorder Level",
+      key: "reorder_level",
+      type: "number",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
+    },
+       {
+      label: "Description",
+      key: "description",
+      type: "textarea",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
+    },
+ 
     {
       label: "Status",
       key: "status",
