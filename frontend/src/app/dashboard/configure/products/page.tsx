@@ -51,6 +51,7 @@ const Products = () => {
   const [subCategories, setSubCategories] = useState<any[]>([]);
   const [brands, setBrands] = useState<any[]>([]);
   const [models, setModels] = useState<any[]>([]);
+  const [units, setUnits] = useState<any[]>([]);
 
   const [perPage, setPerPage] = useState(10);
   const [pagination, setPagination] = useState({
@@ -66,11 +67,17 @@ const Products = () => {
     const brandRes = await api.get("/configure/brands", {
       params: { status: 1 }, // only status = active brands
     });
+      const units = await api.get("/configure/units", {
+      params: { status: 1 }, // only status = active brands
+    });
     setCategories(
       res.data.data.map((c: any) => ({ value: c.id, label: c.name }))
     );
     setBrands(
       brandRes.data.data.map((b: any) => ({ value: b.id, label: b.name }))
+    );
+    setUnits(
+      units.data.data.map((u: any) => ({ value: u.id, label: u.name }))
     );
   };
   useEffect(() => {
@@ -177,7 +184,7 @@ const Products = () => {
       label: "Sub Category",
       key: "sub_category_id",
       type: "reactselect",
-      required: true,
+      required: false,
       showOn: "both",
       options: subCategories,
       isLoading: loadingDropdowns,
@@ -187,7 +194,7 @@ const Products = () => {
       label: "Brand",
       key: "brand_id",
       type: "reactselect",
-      required: true,
+      required: false,
       showOn: "both",
       options: brands,
       watch: true, // watch this field for changes
@@ -200,6 +207,14 @@ const Products = () => {
       showOn: "both",
       options: models,
       isLoading: loadingDropdowns,
+    },
+     {
+      label: "Units",
+      key: "unit_id",
+      type: "reactselect",
+      required: true,
+      showOn: "both",
+      options: units,
     },
         {
       label: "Purchase Price",
