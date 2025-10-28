@@ -189,7 +189,7 @@ const Products = () => {
       label: "Model",
       key: "model_id",
       type: "reactselect",
-      required: true,
+      required: false,
       showOn: "both",
       options: models,
       isLoading: loadingDropdowns,
