@@ -453,6 +453,7 @@ const Products = () => {
     },
   ];
 
+  // Export columns
   const exportColumns = [
     { name: "Name", selector: "name" },
     { name: "Category", selector: "category_name" },
@@ -467,6 +468,7 @@ const Products = () => {
     { name: "Created at", selector: "created_at" },
   ];
 
+  // Filter fields
   const filterFields = [
     { name: "name", label: "Name", type: "text" },
     { name: "category_name", label: "Category", type: "text" },
