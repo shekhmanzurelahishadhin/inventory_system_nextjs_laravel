@@ -30,7 +30,7 @@ class CreateProductRequest extends FormRequest
 
             'name'             => 'required|string|max:255|unique:products,name',
             'slug'             => 'nullable|string|max:255|unique:products,slug',
-            'code'             => 'required|string|max:100|unique:products,code',
+            'code'             => 'nullable|string|max:100|unique:products,code',
             'description'      => 'nullable|string',
 
             'purchase_price'   => 'required|numeric|min:0',
@@ -49,7 +49,6 @@ class CreateProductRequest extends FormRequest
 
             'name.required'            => 'Product name is required.',
             'name.unique'              => 'This product name already exists.',
-            'code.required'            => 'Product code is required.',
             'code.unique'              => 'This product code already exists.',
 
             'purchase_price.required'  => 'Please enter a purchase price.',

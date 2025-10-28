@@ -81,4 +81,11 @@ class ProductService
         // Return results
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+    public function createProduct(array $data)
+    {
+        $data['code'] = generateCode('PROD', 'companies', 'code');
+
+        return Company::create($data);
+    }
+
 }
