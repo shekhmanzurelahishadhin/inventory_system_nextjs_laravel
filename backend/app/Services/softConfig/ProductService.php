@@ -4,7 +4,7 @@
 namespace App\Services\softConfig;
 
 
-use App\Models\softconfig\Product;
+use App\Models\softConfig\Product;
 
 class ProductService
 {

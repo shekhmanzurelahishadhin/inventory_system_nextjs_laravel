@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('code')->unique();
             $table->text('description')->nullable();
 //            $table->string('image')->nullable();
-
+            $table->boolean('status')->default(true);
             $table->decimal('purchase_price', 15, 2)->default(0);
             $table->decimal('selling_price', 15, 2)->default(0);
             $table->decimal('reorder_level', 15, 2)->default(0)->comment('alert low order qty');

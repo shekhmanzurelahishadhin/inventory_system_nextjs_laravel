@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\softconfig;
+namespace App\Models\softConfig;
 
 use App\Models\User;
 use App\Traits\SetSlugAndAuditing;
