@@ -17,11 +17,8 @@ class Product extends Model
     public function brand(){
         return $this->hasOne(Brand::class,'id', 'brand_id');
     }
-    public function model(){
-        return $this->hasOne(Brand::class,'id', 'model_id');
-    }
     public function unit(){
-        return $this->hasOne(Brand::class,'id', 'unit_id');
+        return $this->hasOne(Unit::class,'id', 'unit_id');
     }
     public function productModel(){
         return $this->hasOne(ProductModel::class,'id', 'model_id');

@@ -437,6 +437,31 @@ const Products = () => {
       sortable: true,
     },
     {
+      name: "Model",
+      selector: (row) => row.model_name,
+      sortable: true,
+    },
+    {
+      name: "Unit",
+      selector: (row) => row.unit_name,
+      sortable: true,
+    },
+    {
+      name: "Purchase Price",
+      selector: (row) => row.purchase_price,
+      sortable: true,
+    },
+    {
+      name: "Selling Price",
+      selector: (row) => row.selling_price,
+      sortable: true,
+    },
+    {
+      name: "Reorder Level",
+      selector: (row) => row.reorder_level,
+      sortable: true,
+    },
+    {
       name: "Status",
       selector: (row) =>
         formatStatusBadge({ status: row.status, deletedAt: row.deleted_at }),
