@@ -5,6 +5,7 @@ namespace App\Services\softConfig;
 
 
 use App\Models\softConfig\Product;
+use function Symfony\Component\Console\Style\tree;
 
 class ProductService
 {
@@ -64,7 +65,7 @@ class ProductService
                     ->orWhereHas('category', fn($category) => $category->where('name', 'like', "%{$term}%"))
                     ->orWhereHas('subCategory', fn($sub_category) => $sub_category->where('name', 'like', "%{$term}%"))
                     ->orWhereHas('brand', fn($brand) => $brand->where('name', 'like', "%{$term}%"))
-                    ->orWhereHas('model', fn($model) => $model->where('name', 'like', "%{$term}%"))
+                    ->orWhereHas('productModel', fn($model) => $model->where('name', 'like', "%{$term}%"))
                     ->orWhereHas('createdBy', fn($user) => $user->where('name', 'like', "%{$term}%"));
             })
             );
@@ -83,7 +84,7 @@ class ProductService
     }
     public function createProduct(array $data)
     {
-        $data['code'] = generateCode('PROD', 'companies', 'code');
+        $data['code'] = generateComplexCode('PRD', 'products', 'code',true);
 
         return Product::create($data);
     }
