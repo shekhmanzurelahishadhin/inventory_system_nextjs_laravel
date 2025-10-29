@@ -29,6 +29,7 @@ import DatatableLoader from "@/app/components/ui/DatatableLoader";
 import { formatDateTime } from "@/app/components/common/DateFormat";
 import { formatStatusBadge } from "@/app/components/common/StatusFormat";
 import { useActionConfirmAlert } from "@/app/hooks/useActionConfirmAlert";
+import { wrap } from "module";
 
 const Products = () => {
   const [modalType, setModalType] = useState<"create" | "edit" | "view" | null>(
@@ -420,31 +421,38 @@ const Products = () => {
       name: "Name",
       selector: (row) => row.name,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Category",
       selector: (row) => row.category_name,
       sortable: true,
+      wrap: true,
+      
     },
     {
       name: "Sub Category",
       selector: (row) => row.sub_category_name,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Brand",
       selector: (row) => row.brand_name,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Model",
       selector: (row) => row.model_name,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Unit",
       selector: (row) => row.unit_name,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Purchase Price",
@@ -471,11 +479,13 @@ const Products = () => {
       name: "Created By",
       selector: (row) => row.created_by,
       sortable: true,
+      wrap: true,
     },
     {
       name: "Created At",
       selector: (row) => formatDateTime(row.created_at),
       sortable: true,
+      wrap: true,
     },
     {
       name: "Actions",
