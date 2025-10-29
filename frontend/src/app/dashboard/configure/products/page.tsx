@@ -424,14 +424,14 @@ const Products = () => {
       wrap: true,
     },
     {
-      name: "Category",
+      name: <div>Category</div>,
       selector: (row) => row.category_name,
       sortable: true,
       wrap: true,
       
     },
     {
-      name: "Sub Category",
+      name: <div>Sub Category</div>,
       selector: (row) => row.sub_category_name,
       sortable: true,
       wrap: true,
@@ -455,17 +455,17 @@ const Products = () => {
       wrap: true,
     },
     {
-      name: "Purchase Price",
+      name: <div>Purchase Price</div>,
       selector: (row) => row.purchase_price,
       sortable: true,
     },
     {
-      name: "Selling Price",
+      name: <div>Selling Price</div>,
       selector: (row) => row.selling_price,
       sortable: true,
     },
     {
-      name: "Reorder Level",
+      name: <div>Reorder Level</div>,
       selector: (row) => row.reorder_level,
       sortable: true,
     },
@@ -476,13 +476,13 @@ const Products = () => {
       sortable: true,
     },
     {
-      name: "Created By",
+      name: <div>Created By</div>,
       selector: (row) => row.created_by,
       sortable: true,
       wrap: true,
     },
     {
-      name: "Created At",
+      name: <div>Created At</div>,
       selector: (row) => formatDateTime(row.created_at),
       sortable: true,
       wrap: true,
