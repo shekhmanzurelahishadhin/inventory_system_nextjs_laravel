@@ -85,7 +85,7 @@ class ProductService
     {
         $data['code'] = generateCode('PROD', 'companies', 'code');
 
-        return Company::create($data);
+        return Product::create($data);
     }
 
 }
