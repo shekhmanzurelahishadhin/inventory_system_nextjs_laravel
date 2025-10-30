@@ -215,14 +215,7 @@ const Products = () => {
       showOn: "both",
       options: units,
     },
-    {
-      label: "Status",
-      key: "status",
-      type: "radio",
-      required: true,
-      options: status,
-      showOn: "edit", // edit only
-    },
+ 
     {
       label: "Category Name",
       key: "category_name",
@@ -290,6 +283,14 @@ const Products = () => {
       required: false,
       showOn: "all",
     },
+       {
+      label: "Status",
+      key: "status",
+      type: "radio",
+      required: true,
+      options: status,
+      showOn: "edit", // edit only
+    },
     {
       label: "Status",
       key: "status",
@@ -337,12 +338,20 @@ const Products = () => {
             api.get(
               `/configure/sub-categories?category_id=${product.category_id}`,
               {
-                params: { status: true }, // only status = active sub-categories
+                params: { status: 1 }, // only status = active sub-categories
               }
             ),
           ]);
-          setSubCategories(
-            res.data.data.map((m: any) => ({ value: m.id, label: m.name }))
+            const [model] = await Promise.all([
+            api.get(
+          `/configure/models?category_id=${product.category_id}&brand_id=${product.brand_id}&sub_category_id=${product.sub_category_id}`,
+              {
+                params: { status: 1 }, // only status = active sub-categories
+              }
+            ),
+          ]);
+          setModels(
+            model.data.data.map((m: any) => ({ value: m.id, label: m.name }))
           );
         } finally {
           setLoadingDropdowns(false);

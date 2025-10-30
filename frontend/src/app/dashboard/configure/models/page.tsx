@@ -232,7 +232,7 @@ const Models = () => {
             api.get(
               `/configure/sub-categories?category_id=${model.category_id}`,
               {
-                params: { status: true }, // only status = active sub-categories
+                params: { status: 1 }, // only status = active sub-categories
               }
             ),
           ]);
