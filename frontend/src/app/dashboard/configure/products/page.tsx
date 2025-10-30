@@ -439,6 +439,12 @@ const Products = () => {
       wrap: true,
     },
     {
+      name: "Code",
+      selector: (row) => row.code,
+      sortable: true,
+      wrap: true,
+    },
+    {
       name: <div>Category</div>,
       selector: (row) => row.category_name,
       sortable: true,
@@ -546,7 +552,7 @@ const Products = () => {
           ]}
         />
       ),
-      width: "15%",
+      width: "10%",
       ignoreRowClick: true,
     },
   ];
