@@ -68,7 +68,7 @@ const Products = () => {
     const brandRes = await api.get("/configure/brands", {
       params: { status: 1 }, // only status = active brands
     });
-      const units = await api.get("/configure/units", {
+    const units = await api.get("/configure/units", {
       params: { status: 1 }, // only status = active brands
     });
     setCategories(
@@ -77,9 +77,7 @@ const Products = () => {
     setBrands(
       brandRes.data.data.map((b: any) => ({ value: b.id, label: b.name }))
     );
-    setUnits(
-      units.data.data.map((u: any) => ({ value: u.id, label: u.name }))
-    );
+    setUnits(units.data.data.map((u: any) => ({ value: u.id, label: u.name })));
   };
   useEffect(() => {
     fetchDatas();
@@ -111,15 +109,15 @@ const Products = () => {
       setLoadingDropdowns(false); // stop loader immediately
     }
 
-      if (updated.brand_id) {
+    if (updated.brand_id) {
       if (!updated.category_id) {
         toast.error("Please select a category first to load models.");
-        setModels([]); 
+        setModels([]);
         return false;
       }
-       if (!updated.sub_category_id) {
+      if (!updated.sub_category_id) {
         toast.error("Please select a sub category first to load models.");
-        setModels([]); 
+        setModels([]);
         return false;
       }
       setLoadingDropdowns(true); // start loader
@@ -165,7 +163,7 @@ const Products = () => {
   ];
 
   const productFields = [
-       {
+    {
       label: "Name",
       key: "name",
       type: "text",
@@ -200,7 +198,7 @@ const Products = () => {
       options: brands,
       watch: true, // watch this field for changes
     },
-     {
+    {
       label: "Model",
       key: "model_id",
       type: "reactselect",
@@ -209,7 +207,7 @@ const Products = () => {
       options: models,
       isLoading: loadingDropdowns,
     },
-     {
+    {
       label: "Units",
       key: "unit_id",
       type: "reactselect",
@@ -217,39 +215,6 @@ const Products = () => {
       showOn: "both",
       options: units,
     },
-        {
-      label: "Purchase Price",
-      key: "purchase_price",
-      type: "number",
-      isDecimal: true,
-      required: false,
-      showOn: "all",
-    },
-     {
-      label: "Selling Price",
-      key: "selling_price",
-      type: "number",
-      isDecimal: true,
-      required: false,
-      showOn: "all",
-    },
-     {
-      label: "Reorder Level",
-      key: "reorder_level",
-      type: "number",
-      isDecimal: true,
-      required: false,
-      showOn: "all",
-    },
-       {
-      label: "Description",
-      key: "description",
-      type: "textarea",
-      isDecimal: true,
-      required: false,
-      showOn: "all",
-    },
- 
     {
       label: "Status",
       key: "status",
@@ -278,6 +243,52 @@ const Products = () => {
       type: "text",
       readOnly: true,
       showOn: "view",
+    },
+    {
+      label: "Model",
+      key: "model_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Unit",
+      key: "unit_name",
+      type: "text",
+      readOnly: true,
+      showOn: "view",
+    },
+    {
+      label: "Purchase Price",
+      key: "purchase_price",
+      type: "number",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
+    },
+    {
+      label: "Selling Price",
+      key: "selling_price",
+      type: "number",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
+    },
+    {
+      label: "Reorder Level",
+      key: "reorder_level",
+      type: "number",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
+    },
+    {
+      label: "Description",
+      key: "description",
+      type: "textarea",
+      isDecimal: true,
+      required: false,
+      showOn: "all",
     },
     {
       label: "Status",
@@ -386,9 +397,13 @@ const Products = () => {
         submitData.append("_method", "PUT");
         console.log(formData);
 
-        await api.post(`/configure/products/${selectedProduct.id}`, submitData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await api.post(
+          `/configure/products/${selectedProduct.id}`,
+          submitData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
 
         toast.success("Product updated successfully");
       }
@@ -428,7 +443,6 @@ const Products = () => {
       selector: (row) => row.category_name,
       sortable: true,
       wrap: true,
-      
     },
     {
       name: <div>Sub Category</div>,
@@ -522,7 +536,8 @@ const Products = () => {
             },
             {
               icon: faUndo,
-              onClick: (r) => handleRestore(r, "/configure/products", "product"),
+              onClick: (r) =>
+                handleRestore(r, "/configure/products", "product"),
               variant: "success",
               size: "sm",
               show: (r) => r.deleted_at,
@@ -636,8 +651,8 @@ const Products = () => {
             modalType === "create"
               ? "Create Product"
               : modalType === "edit"
-                ? "Edit Product"
-                : "View Product"
+              ? "Edit Product"
+              : "View Product"
           }
           footer={
             modalType === "view" ? (
@@ -653,10 +668,11 @@ const Products = () => {
                   variant="primary"
                   onClick={() => formRef.current?.submitForm()}
                   disabled={isSubmitting || loadingDropdowns}
-                  className={`${isSubmitting || loadingDropdowns
+                  className={`${
+                    isSubmitting || loadingDropdowns
                       ? "opacity-60 cursor-not-allowed"
                       : "opacity-100"
-                    }`}
+                  }`}
                 >
                   {isSubmitting ? (
                     <svg
@@ -687,8 +703,8 @@ const Products = () => {
                       ? "Creating..."
                       : "Updating..."
                     : modalType === "create"
-                      ? "Create"
-                      : "Update"}
+                    ? "Create"
+                    : "Update"}
                 </Button>
               </>
             )
