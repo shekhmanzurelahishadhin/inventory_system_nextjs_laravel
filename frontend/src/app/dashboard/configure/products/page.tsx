@@ -631,7 +631,7 @@ const Products = () => {
                 exportFileName="Products"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search permission..."
+                searchPlaceholder="Search products..."
                 refreshTrigger={refreshTrigger} // Add this prop
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })

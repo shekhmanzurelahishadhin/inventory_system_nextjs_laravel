@@ -485,7 +485,7 @@ const Models = () => {
                 exportFileName="Models"
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search permission..."
+                searchPlaceholder="Search models..."
                 refreshTrigger={refreshTrigger} // Add this prop
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
