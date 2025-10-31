@@ -89,4 +89,28 @@ class ProductService
         return Product::create($data);
     }
 
+
+
+    public function softDeleteProduct(Product $product)
+    {
+        $product->delete();
+    }
+
+    public function restoreProduct(Product $product)
+    {
+        if ($product->trashed()) {
+            $product->restore();
+        }
+        return $product;
+    }
+
+    public function forceDeleteProduct(Product $product)
+    {
+        if ($product->trashed()) {
+            $product->forceDelete();
+            return true;
+        }
+        return false;
+    }
+
 }
