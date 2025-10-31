@@ -317,6 +317,7 @@ const DynamicForm = forwardRef(
                     readOnly={isReadOnly}
                     disabled={isReadOnly}
                     className={inputClasses(field.key)}
+                    onWheel={(e) => e.currentTarget.blur()}
                   />
                 )}
 
