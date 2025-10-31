@@ -343,6 +343,9 @@ const Products = () => {
               }
             ),
           ]);
+            setSubCategories(
+            res.data.data.map((s: any) => ({ value: s.id, label: s.name }))
+          );
             const [model] = await Promise.all([
             api.get(
           `/configure/models?category_id=${product.category_id}&brand_id=${product.brand_id}&sub_category_id=${product.sub_category_id}`,
