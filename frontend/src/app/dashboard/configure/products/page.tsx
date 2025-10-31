@@ -169,6 +169,7 @@ const Products = () => {
       type: "text",
       required: true,
       showOn: "all",
+       colSpan: 2,
     },
     {
       label: "Category",
@@ -279,9 +280,9 @@ const Products = () => {
       label: "Description",
       key: "description",
       type: "textarea",
-      isDecimal: true,
       required: false,
       showOn: "all",
+       colSpan: 2,
     },
        {
       label: "Status",
@@ -740,6 +741,7 @@ const Products = () => {
                   onChange={handleFormChange}
                   backendErrors={backendErrors}
                   mode={modalType}
+                  columns={2} // set form to 3 columns
                 />
               }
             </>

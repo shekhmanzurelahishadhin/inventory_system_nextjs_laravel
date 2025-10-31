@@ -12,34 +12,50 @@ import SingleSelectField from "./SingleSelectField";
 interface DynamicFormProps {
   data?: Record<string, any> | null;
   fields: FieldConfigArray;
-  mode?: "create" | "edit" | "view"; // 👈 added mode
+  mode?: "create" | "edit" | "view";
   onChange?: (updated: Record<string, any>) => void;
   onSubmit?: (formData: Record<string, any>) => Promise<void> | void;
   backendErrors?: Record<string, string[]>;
+  columns?: 1 | 2 | 3 | 4; // only allowed values to keep tailwind classes static
 }
+
+const columnsClassMap: Record<1 | 2 | 3 | 4, string> = {
+  // For each allowed columns value we return a concrete responsive class string
+  1: "grid-cols-1",
+  2: "grid-cols-1 md:grid-cols-2 lg:grid-cols-2",
+  3: "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+  4: "grid-cols-1 md:grid-cols-2 lg:grid-cols-4",
+};
+
+// Map span values to concrete classes (1..4). Extend if you need >4.
+const colSpanClassMap: Record<number, string> = {
+  1: "col-span-1",
+  2: "col-span-2",
+  3: "col-span-3",
+  4: "col-span-4",
+};
 
 const DynamicForm = forwardRef(
   (
     {
       data = {},
       fields,
-      mode = "create", // default
+      mode = "create",
       onChange,
       onSubmit,
       backendErrors = {},
+      columns = 1,
     }: DynamicFormProps,
     ref
   ) => {
     const [formData, setFormData] = useState<Record<string, any>>({});
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    // Initialize formData only once or when data changes and form is empty
     useEffect(() => {
       if (Object.keys(formData).length === 0) {
         const initial: Record<string, any> = {};
         fields.forEach((f) => {
           if (f.type === "file") {
-            // File input starts empty (null)
             initial[f.key] = null;
           } else if (f.type === "checkbox") {
             initial[f.key] = data?.[f.key] ?? f.defaultValue ?? false;
@@ -47,20 +63,18 @@ const DynamicForm = forwardRef(
             initial[f.key] = data?.[f.key] ?? f.defaultValue ?? "";
           }
         });
-
         setFormData(initial);
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [data, fields]);
 
-    // Handle input change
     const handleChange = (key: string, value: any) => {
       const updated = { ...formData, [key]: value };
       setFormData(updated);
 
-      // Check if this field is marked as watch
       const field = fields.find((f) => f.key === key);
       if (field?.watch && onChange) {
-        onChange(updated); // only call onChange for watched fields
+        onChange(updated);
       }
       if (field) {
         const error = validateField(field, value);
@@ -68,7 +82,6 @@ const DynamicForm = forwardRef(
       }
     };
 
-    // Validate one field
     const validateField = (field: any, value: any) => {
       const isRequired =
         typeof field.required === "function"
@@ -78,10 +91,10 @@ const DynamicForm = forwardRef(
       if (isRequired && (value === "" || value === null)) {
         return `${field.label} is required`;
       }
-      if (field.minLength && value.length < field.minLength) {
+      if (field.minLength && value?.length < field.minLength) {
         return `Minimum ${field.minLength} characters required`;
       }
-      if (field.maxLength && value.length > field.maxLength) {
+      if (field.maxLength && value?.length > field.maxLength) {
         return `Maximum ${field.maxLength} characters allowed`;
       }
       if (field.pattern && !new RegExp(field.pattern).test(value)) {
@@ -93,11 +106,10 @@ const DynamicForm = forwardRef(
       return "";
     };
 
-    // Validate all fields
     const validateAll = () => {
       const newErrors: Record<string, string> = {};
       fields.forEach((field) => {
-        if (!shouldShowField(field)) return; // skip hidden fields
+        if (!shouldShowField(field)) return;
         const error = validateField(field, formData[field.key]);
         if (error) newErrors[field.key] = error;
       });
@@ -105,7 +117,6 @@ const DynamicForm = forwardRef(
       return Object.keys(newErrors).length === 0;
     };
 
-    // Expose submit function to parent via ref
     useImperativeHandle(ref, () => ({
       submitForm: () => {
         if (validateAll() && onSubmit) {
@@ -114,23 +125,19 @@ const DynamicForm = forwardRef(
       },
     }));
 
-    // Common input classes
     const inputClasses = (key: string) =>
       `mt-1 block w-full p-3 rounded-sm border ${
         errors[key] || backendErrors[key] ? "border-red-500" : "border-gray-300"
       } focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500`;
 
-    // Check field visibility based on mode + showOn
     const shouldShowField = (field: any) => {
-      // check dynamic/static hidden first
       if (typeof field.hidden === "function") {
-        return !field.hidden(formData); // invert because hidden=true → hide
+        return !field.hidden(formData);
       }
       if (typeof field.hidden === "boolean") {
-        return !field.hidden; // static hide/show
+        return !field.hidden;
       }
 
-      // fallback to showOn logic (optional)
       let visible = false;
       const showOn = field.showOn || "both";
 
@@ -143,17 +150,31 @@ const DynamicForm = forwardRef(
       return visible;
     };
 
+    // Get grid classes safely from map (avoids dynamic tailwind class generation)
+    const gridColsClass = columnsClassMap[columns] || columnsClassMap[2];
+
     return (
-      <form className="my-5 space-y-4" onSubmit={(e) => e.preventDefault()}>
+      <form
+        className={`my-5 grid ${gridColsClass} gap-4`}
+        onSubmit={(e) => e.preventDefault()}
+      >
         {fields
           .filter((f) => shouldShowField(f))
           .map((field) => {
             const value = formData[field.key] ?? "";
-            console.log(`Rendering field '${field.key}' with value:`, value);
-            const isReadOnly = mode === "view" || field.readOnly; // disable in view mode
+            const isReadOnly = mode === "view" || field.readOnly;
+
+            // Resolve col-span class safely using explicit map
+            const rawSpan = Number(field.colSpan || 1);
+            const span = Math.max(1, Math.min(rawSpan, 4)); // clamp 1..4
+            const colSpanClass = colSpanClassMap[span] || "col-span-1";
 
             return (
-              <div key={field.key} className={field.className || ""}>
+              <div
+                key={field.key}
+                // include both user className and our static col-span class
+                className={`${field.className || ""} ${colSpanClass}`}
+              >
                 <label className="block text-sm font-medium text-gray-700">
                   {field.label}
                   {field.required && (
@@ -161,6 +182,7 @@ const DynamicForm = forwardRef(
                   )}
                 </label>
 
+                {/* Input rendering (same as before) */}
                 {field.type === "textarea" ? (
                   <textarea
                     value={value}
@@ -213,7 +235,6 @@ const DynamicForm = forwardRef(
                       !isReadOnly && handleChange(field.key, vals)
                     }
                     placeholder={field.placeholder || `Select ${field.label}`}
-                    // disabled={isReadOnly}
                   />
                 ) : field.type === "checkbox" ? (
                   <input
@@ -229,7 +250,7 @@ const DynamicForm = forwardRef(
                     {field.options?.map((opt) => (
                       <label
                         key={opt.value}
-                        className="flex items-center gap-2"
+                        className={`flex items-center gap-2 ${opt.className || ""}`}
                       >
                         <input
                           type="radio"
@@ -256,15 +277,13 @@ const DynamicForm = forwardRef(
                       }
                       disabled={isReadOnly}
                       className={inputClasses(field.key)}
-                      accept={field.accept || "*"} // Add accept attribute
+                      accept={field.accept || "*"}
                     />
-                    {/* Show current file name if editing */}
                     {mode === "edit" && value instanceof File && (
                       <p className="text-sm text-gray-600 mt-1">
                         Selected: {value.name}
                       </p>
                     )}
-                    {/* Show existing file info if editing and no new file selected */}
                     {mode === "edit" && typeof value === "string" && value && (
                       <p className="text-sm text-gray-600 mt-1">
                         Current: {value.split("/").pop()}
@@ -279,24 +298,20 @@ const DynamicForm = forwardRef(
                     step={
                       field.type === "number"
                         ? field.isDecimal
-                          ? "any" // allows decimal (e.g. 12.50)
-                          : "1" // allows only whole numbers
+                          ? "any"
+                          : "1"
                         : undefined
                     }
                     value={value}
                     placeholder={field.placeholder || `Enter ${field.label}`}
                     onChange={(e) => {
                       if (isReadOnly) return;
-
-                      let newValue = e.target.value;
-
-                      // Optional: auto-parse numeric fields
+                      let newValue: any = e.target.value;
                       if (field.type === "number") {
                         newValue = field.isDecimal
                           ? parseFloat(newValue || 0)
                           : parseInt(newValue || 0);
                       }
-
                       handleChange(field.key, newValue);
                     }}
                     readOnly={isReadOnly}
