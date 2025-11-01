@@ -594,9 +594,15 @@ const Products = () => {
   // Filter fields
   const filterFields = [
     { name: "name", label: "Name", type: "text" },
+    { name: "code", label: "Came", type: "text" },
     { name: "category_name", label: "Category", type: "text" },
     { name: "sub_category_name", label: "Sub Category", type: "text" },
     { name: "brand_name", label: "Brand", type: "text" },
+    { name: "model_name", label: "Model", type: "text" },
+    { name: "unit_name", label: "Unit", type: "text" },
+    { name: "purchase_price", label: "Purchase Price", type: "number" },
+    { name: "selling_price", label: "Selling Price", type: "number" },
+    { name: "reorder_level", label: "Reorder Level", type: "number" },
     {
       name: "status",
       label: "Status",
