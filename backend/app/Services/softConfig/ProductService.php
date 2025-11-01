@@ -86,6 +86,7 @@ class ProductService
             'category:id,name',
             'subCategory:id,name',
             'brand:id,name',
+            'unit:id,name',
             'productModel:id,name',
         ])->orderByDesc('id');
 
