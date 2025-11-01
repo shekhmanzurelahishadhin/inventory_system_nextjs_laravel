@@ -573,9 +573,15 @@ const Products = () => {
   // Export columns
   const exportColumns = [
     { name: "Name", selector: "name" },
+    { name: "Code", selector: "code" },
     { name: "Category", selector: "category_name" },
     { name: "Sub Category", selector: "sub_category_name" },
     { name: "Brand", selector: "brand_name" },
+    { name: "Model", selector: "model_name" },
+    { name: "Unit", selector: "unit_name" },
+    { name: "Purchase Price", selector: "purchase_price" },
+    { name: "Selling Price", selector: "selling_price" },
+    { name: "Reorder Level", selector: "reorder_level" },
     {
       name: "Status",
       selector: (row) =>
