@@ -594,7 +594,7 @@ const Products = () => {
   // Filter fields
   const filterFields = [
     { name: "name", label: "Name", type: "text" },
-    { name: "code", label: "Came", type: "text" },
+    { name: "code", label: "Code", type: "text" },
     { name: "category_name", label: "Category", type: "text" },
     { name: "sub_category_name", label: "Sub Category", type: "text" },
     { name: "brand_name", label: "Brand", type: "text" },
