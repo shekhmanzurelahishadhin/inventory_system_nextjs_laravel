@@ -88,7 +88,6 @@ class StoreService
         return $store;         // return the model itself
     }
 
-
     public function softDeleteStore(Store $store)
     {
         $store->delete();

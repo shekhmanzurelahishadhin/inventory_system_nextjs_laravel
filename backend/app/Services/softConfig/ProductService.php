@@ -89,7 +89,11 @@ class ProductService
         return Product::create($data);
     }
 
-
+    public function updateProduct(Product $product, array $data)
+    {
+        $product->update($data);
+        return $product;
+    }
 
     public function softDeleteProduct(Product $product)
     {
