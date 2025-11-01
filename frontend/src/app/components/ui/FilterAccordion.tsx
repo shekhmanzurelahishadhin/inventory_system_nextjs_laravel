@@ -174,6 +174,7 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
                   value={values[field.name] || ""}
                   onChange={(e) => onChange(field.name, e.target.value)}
                   placeholder={field.placeholder || field.label}
+                  onWheel={(e) => e.currentTarget.blur()}
                 />
               )}
             </div>
