@@ -667,7 +667,7 @@ const Products = () => {
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
                 }
-                allowExportAll={true} // allow export all data
+                allowExportAll={false} // allow export all data
               />
             </div>
           </div>
