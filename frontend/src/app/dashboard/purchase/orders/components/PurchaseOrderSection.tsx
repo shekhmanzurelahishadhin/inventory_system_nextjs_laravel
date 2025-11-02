@@ -1,3 +1,4 @@
+import DatePickerField from "@/app/components/ui/DatePickerField";
 import SingleSelectField from "@/app/components/ui/SingleSelectField";
 
 interface FormData {
@@ -25,7 +26,6 @@ interface PurchaseOrderSectionProps {
 export default function PurchaseOrderSection({
   formData,
   onInputChange,
-  isMobile,
 }: PurchaseOrderSectionProps) {
   return (
     <fieldset className="border p-3 md:p-4 rounded-lg">
@@ -40,14 +40,16 @@ export default function PurchaseOrderSection({
                 Issue Date
               </label>
             </td>
-            <td className="py-1">
-              <input
-                type="date"
-                value={formData.issue_date}
-                onChange={(e) => onInputChange("issue_date", e.target.value)}
-                className="w-full p-1 border rounded text-xs md:text-sm"
-              />
-            </td>
+           <td className="py-1">
+  <DatePickerField
+    value={formData.issue_date}
+    onChange={(val) => onInputChange("issue_date", val)}
+    placeholder="Select issue date"
+    marginTop="0px"
+    padding="7px 10px"
+  />
+</td>
+
           </tr>
           <tr>
             <td className="py-1">
@@ -55,23 +57,21 @@ export default function PurchaseOrderSection({
                 Cash/Due
               </label>
             </td>
-          <td className="py-1">
-  <SingleSelectField
-  value={formData.cash_due}
-  onChange={(val) => onInputChange("cash_due", val)}
-  options={[
-    { value: "81", label: "Cash" },
-    { value: "82", label: "Due" },
-  ]}
-  placeholder="Select"
-  padding="0px 0px"
-  marginTop="0px"
-  minHeight="0px"
-  backgroundColor= "#F9FAFB"
-/>
-
-</td>
-
+            <td className="py-1">
+              <SingleSelectField
+                value={formData.cash_due}
+                onChange={(val) => onInputChange("cash_due", val)}
+                options={[
+                  { value: "81", label: "Cash" },
+                  { value: "82", label: "Due" },
+                ]}
+                placeholder="Select"
+                padding="0px 0px"
+                marginTop="0px"
+                minHeight="0px"
+                backgroundColor="#F9FAFB"
+              />
+            </td>
           </tr>
           <tr>
             <td className="py-1">

@@ -15,6 +15,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import DatePickerField from "./DatePickerField";
 
 export interface FilterField {
   name: string;
@@ -118,55 +119,11 @@ const FilterAccordion: React.FC<FilterAccordionProps> = ({
                   name={field.name}
                 />
               ) : field.type === "date" ? (
-                <Popover
-                  open={!!datePopovers[field.name]}
-                  onOpenChange={(open) => toggleDatePopover(field.name, open)}
-                >
-                  <PopoverTrigger asChild>
-                    <div className="mt-1 flex items-center justify-between w-full px-3 py-3 border border-gray-300 rounded-sm text-left cursor-pointer focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">
-                      <span
-                        className={!values[field.name] ? "text-gray-400" : ""}
-                      >
-                        {values[field.name]
-                          ? new Date(values[field.name]).toLocaleDateString()
-                          : field.placeholder || "Select date"}
-                      </span>
-                      <FontAwesomeIcon
-                        icon={faCalendarAlt}
-                        className="ml-2 text-gray-500"
-                      />
-                    </div>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={
-                        values[field.name]
-                          ? new Date(values[field.name] as string)
-                          : undefined
-                      }
-                      onSelect={(date) => {
-                        onChange(field.name, date?.toISOString() ?? "");
-                        toggleDatePopover(field.name, false);
-                      }}
-                      initialFocus
-                      captionLayout="dropdown"
-                    />
-                    {/* Clear button */}
-                    {values[field.name] && (
-                      <button
-                        type="button"
-                        className="mt-2 w-full text-sm text-red-600 hover:text-red-800"
-                        onClick={() => {
-                          onChange(field.name, "");
-                          toggleDatePopover(field.name, false);
-                        }}
-                      >
-                        Clear
-                      </button>
-                    )}
-                  </PopoverContent>
-                </Popover>
+                <DatePickerField
+                  value={values[field.name]?.toString()}
+                  onChange={(val) => onChange(field.name, val)}
+                  placeholder="Created At"
+                />
               ) : (
                 <input
                   type={field.type}
