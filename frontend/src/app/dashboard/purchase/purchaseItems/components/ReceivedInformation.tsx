@@ -109,7 +109,7 @@ export default function ReceivedInformation({ formData, supplierInfo, onInputCha
                 type="text"
                 value={supplierInfo.due_amount.toFixed(2)}
                 readOnly
-                className="w-full p-1 border rounded text-sm text-center bg-gray-100"
+                className="w-full p-1 border rounded text-sm text-right bg-gray-100"
               />
             </td>
           </tr>

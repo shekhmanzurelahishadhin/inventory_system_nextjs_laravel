@@ -7,6 +7,7 @@ interface FormData {
   local_import: string;
   store_id: string;
   location_id: string;
+  unit_id: string;
   ship_by: string;
   supplier_id: string;
   payment_type: string;
@@ -78,11 +79,11 @@ export default function ProductInformation({
       <legend className="font-bold">Product Information</legend>
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-gray-50">
+          <tr className="bg-gray-50 text-[12px]">
             <th className="p-2 border w-[8%]">Location</th>
-            <th className="p-2 border w-[10%]">Product Name</th>
+            <th className="p-2 border w-[8%]">Product Name</th>
             <th className="p-2 border w-[6%]">Part Number</th>
-            <th className="p-2 border w-[4%]">Unit</th>
+            <th className="p-2 border w-[6%]">Unit</th>
             <th className="p-2 border w-[8%]">Qty</th>
             <th className="p-2 border w-[6%]">Unit Price</th>
             <th className="p-2 border w-[6%]">PER KG</th>
@@ -116,13 +117,6 @@ export default function ProductInformation({
                   className="flex-1 p-1 border rounded text-sm bg-gray-100"
                   placeholder="Select product"
                 />
-                <button
-                  type="button"
-                  onClick={() => onOpenModal('product')}
-                  className="ml-1 p-1 bg-blue-500 text-white rounded text-sm"
-                >
-                  +
-                </button>
               </div>
             </td>
             <td className="p-1 border">
@@ -134,7 +128,15 @@ export default function ProductInformation({
               />
             </td>
             <td className="p-1 border text-center">
-              <span className="text-sm">-</span>
+              <span className="text-sm">
+                 <select
+                value={formData.unit_id}
+                onChange={(e) => onInputChange('unit_id', e.target.value)}
+                className="w-full p-1 border rounded text-sm"
+              >
+                <option value="">Select</option>
+              </select>
+              </span>
             </td>
             <td className="p-1 border">
               <input

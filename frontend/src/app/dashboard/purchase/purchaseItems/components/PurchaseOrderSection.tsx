@@ -70,6 +70,54 @@ export default function PurchaseOrderSection({ formData, onInputChange }: Purcha
               </select>
             </td>
           </tr>
+             <tr>
+            <td className="py-1">
+              <label className="block text-sm font-medium">Company</label>
+            </td>
+            <td className="py-1">
+              <select
+                value={formData.company_id}
+                onChange={(e) => onInputChange('company_id', e.target.value)}
+                className="w-full p-1 border rounded text-sm"
+              >
+                <option value="">Select</option>
+                <option value="53">Local</option>
+                <option value="54">Import</option>
+              </select>
+            </td>
+          </tr>
+           <tr>
+            <td className="py-1">
+              <label className="block text-sm font-medium">Store</label>
+            </td>
+            <td className="py-1">
+              <select
+                value={formData.store_id}
+                onChange={(e) => onInputChange('store_id', e.target.value)}
+                className="w-full p-1 border rounded text-sm"
+              >
+                <option value="">Select</option>
+                <option value="53">Local</option>
+                <option value="54">Import</option>
+              </select>
+            </td>
+          </tr>
+           <tr>
+            <td className="py-1">
+              <label className="block text-sm font-medium">Supplier</label>
+            </td>
+            <td className="py-1">
+              <select
+                value={formData.supplier_id}
+                onChange={(e) => onInputChange('supplier_id', e.target.value)}
+                className="w-full p-1 border rounded text-sm"
+              >
+                <option value="">Select</option>
+                <option value="53">Local</option>
+                <option value="54">Import</option>
+              </select>
+            </td>
+          </tr>
         </tbody>
       </table>
     </fieldset>

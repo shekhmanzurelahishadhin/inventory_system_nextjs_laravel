@@ -4,9 +4,6 @@ import PurchaseOrderSection from './components/PurchaseOrderSection';
 import ReceivedInformation from './components/ReceivedInformation';
 import ProductInformation from './components/ProductInformation';
 import AddedProductsTable from './components/AddedProductsTable';
-import ProductModal from './components/ProductModal';
-import SupplierModal from './components/SupplierModal';
-import ShipByModal from './components/ShipByModal';
 
 interface FormData {
   po_no: string;
@@ -262,43 +259,6 @@ export default function PurchaseForm() {
           </button>
         </div>
       </form>
-
-      <ProductModal 
-        isOpen={modals.product}
-        onClose={() => setModals(prev => ({ ...prev, product: false }))}
-        onProductSelect={(product: any) => {
-          setCurrentProduct(prev => ({
-            ...prev,
-            model_id: product.id,
-            model_name: product.name,
-            code: product.code,
-            sell_price: product.sell_price,
-            purchase_price: product.purchase_price,
-            weight_unit_qty: product.weight
-          }));
-        }}
-      />
-
-      <SupplierModal 
-        isOpen={modals.supplier}
-        onClose={() => setModals(prev => ({ ...prev, supplier: false }))}
-        onSupplierSelect={(supplier: any) => {
-          setFormData(prev => ({ ...prev, supplier_id: supplier.id }));
-          setSupplierInfo({
-            name: supplier.company_name,
-            mobile_no: supplier.mobile,
-            due_amount: supplier.due_amount
-          });
-        }}
-      />
-
-      <ShipByModal 
-        isOpen={modals.shipBy}
-        onClose={() => setModals(prev => ({ ...prev, shipBy: false }))}
-        onShipBySelect={(shipBy: any) => {
-          setFormData(prev => ({ ...prev, ship_by: shipBy.id }));
-        }}
-      />
     </div>
   );
 }

@@ -28,7 +28,7 @@ export default function AddedProductsTable({ products, onRemoveProduct }: AddedP
       <legend className="font-bold">Added List</legend>
       <table className="w-full text-sm border-collapse border">
         <thead>
-          <tr className="bg-gray-50">
+          <tr className="bg-gray-50 text-[12px]">
             <th className="p-2 border w-[3%]">SL</th>
             <th className="p-2 border w-[6%]">Location</th>
             <th className="p-2 border w-[10%]">Product Name</th>
