@@ -230,7 +230,7 @@ export default function PurchaseForm() {
   };
 
   return (
-    <div className="p-4 md:p-6 bg-white rounded-lg shadow-md">
+    <div className="p-4 md:p-6">
       <form
         onSubmit={(e) => {
           e.preventDefault();
