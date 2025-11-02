@@ -4,6 +4,8 @@ import PurchaseOrderSection from "./components/PurchaseOrderSection";
 import ReceivedInformation from "./components/ReceivedInformation";
 import ProductInformation from "./components/ProductInformation";
 import AddedProductsTable from "./components/AddedProductsTable";
+import Button from "@/app/components/ui/Button";
+import { useAuth } from "@/app/context/AuthContext";
 
 interface FormData {
   po_no: string;
@@ -102,13 +104,14 @@ export default function PurchaseForm() {
   });
 
   const [isMobile, setIsMobile] = useState(false);
+  const { hasPermission } = useAuth();
 
   useEffect(() => {
     generatePONumber();
     checkScreenSize();
-    window.addEventListener('resize', checkScreenSize);
-    
-    return () => window.removeEventListener('resize', checkScreenSize);
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
   const checkScreenSize = () => {
@@ -239,7 +242,9 @@ export default function PurchaseForm() {
         className="space-y-4 md:space-y-6"
       >
         <fieldset className="border p-3 md:p-4 rounded-lg">
-          <legend className="text-base md:text-lg font-bold px-2">Purchase Form</legend>
+          <legend className="text-base md:text-lg font-bold px-2">
+            Purchase Form
+          </legend>
 
           {/* Mobile: Stack sections vertically, Desktop: 2 columns */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
@@ -275,20 +280,22 @@ export default function PurchaseForm() {
         </fieldset>
 
         <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
-          <button
-            type="button"
-            onClick={resetProductForm}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm md:text-base order-2 sm:order-1"
-          >
-            Clear Form
-          </button>
-          <button
-            type="submit"
-            className="px-6 py-2 bg-indigo-800 text-white rounded hover:bg-blue-700 text-sm md:text-base order-1 sm:order-2"
-            id="submitBtn"
+          <Button
+            variant="primary"
+            size="md"
+            className="mt-2 sm:mt-0"
+            show={hasPermission("order.create")}
           >
             Create PO
-          </button>
+          </Button>
+          <Button
+            variant="secondary"
+            size="md"
+            className="mt-2 sm:mt-0"
+            show={hasPermission("order.create")}
+          >
+            Clear Form
+          </Button>
         </div>
       </form>
     </div>

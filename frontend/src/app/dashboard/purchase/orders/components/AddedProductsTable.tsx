@@ -23,7 +23,11 @@ interface AddedProductsTableProps {
   isMobile: boolean;
 }
 
-export default function AddedProductsTable({ products, onRemoveProduct, isMobile }: AddedProductsTableProps) {
+export default function AddedProductsTable({
+  products,
+  onRemoveProduct,
+  isMobile,
+}: AddedProductsTableProps) {
   if (isMobile) {
     return (
       <fieldset className="border p-3 md:p-4 rounded-lg">
@@ -38,7 +42,10 @@ export default function AddedProductsTable({ products, onRemoveProduct, isMobile
         ) : (
           <div className="space-y-3">
             {products.map((product, index) => (
-              <div key={product.id} className="border rounded-lg p-3 bg-white shadow-sm">
+              <div
+                key={product.id}
+                className="border rounded-lg p-3 bg-white shadow-sm"
+              >
                 <div className="flex justify-between items-start mb-2">
                   <span className="font-bold text-sm">#{index + 1}</span>
                   <button
@@ -50,52 +57,70 @@ export default function AddedProductsTable({ products, onRemoveProduct, isMobile
                     Remove
                   </button>
                 </div>
-                
+
                 <div className="space-y-2 text-xs">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <span className="font-medium">Product:</span>
-                      <div className="text-gray-600 truncate">{product.model_name || '-'}</div>
+                      <div className="text-gray-600 truncate">
+                        {product.model_name || "-"}
+                      </div>
                     </div>
                     <div>
                       <span className="font-medium">Part No:</span>
-                      <div className="text-gray-600">{product.code || '-'}</div>
+                      <div className="text-gray-600">{product.code || "-"}</div>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <span className="font-medium">Qty:</span>
-                      <div className="text-gray-600">{product.order_qty} {product.unit || ''}</div>
+                      <div className="text-gray-600">
+                        {product.order_qty} {product.unit || ""}
+                      </div>
                     </div>
                     <div>
                       <span className="font-medium">Unit Price:</span>
-                      <div className="text-gray-600">{parseFloat(product.purchase_price || '0').toFixed(2)}</div>
+                      <div className="text-gray-600">
+                        {parseFloat(product.purchase_price || "0").toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <span className="font-medium">PER KG:</span>
-                      <div className="text-gray-600">{parseFloat(product.weight_unit_price || '0').toFixed(2)}</div>
+                      <div className="text-gray-600">
+                        {parseFloat(product.weight_unit_price || "0").toFixed(
+                          2
+                        )}
+                      </div>
                     </div>
                     <div>
                       <span className="font-medium">SP:</span>
-                      <div className="text-gray-600">{parseFloat(product.sell_price || '0').toFixed(2)}</div>
+                      <div className="text-gray-600">
+                        {parseFloat(product.sell_price || "0").toFixed(2)}
+                      </div>
                     </div>
                   </div>
-                  
+
                   <div className="border-t pt-2">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <span className="font-medium text-green-600">Total Price:</span>
+                        <span className="font-medium text-green-600">
+                          Total Price:
+                        </span>
                         <div className="text-green-600 font-bold">
-                          {parseFloat(product.total_purchase_price || '0').toFixed(2)}
+                          {parseFloat(
+                            product.total_purchase_price || "0"
+                          ).toFixed(2)}
                         </div>
                       </div>
                       <div>
                         <span className="font-medium">Location:</span>
-                        <div className="text-gray-600">{product.location_name || '-'}</div>
+                        <div className="text-gray-600">
+                          {product.location_name || "-"}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -141,21 +166,47 @@ export default function AddedProductsTable({ products, onRemoveProduct, isMobile
             {products.map((product, index) => (
               <tr key={product.id} className="hover:bg-gray-50">
                 <td className="p-1 md:p-2 border text-center">{index + 1}</td>
-                <td className="p-1 md:p-2 border">{product.location_name || '-'}</td>
-                <td className="p-1 md:p-2 border">{product.model_name || '-'}</td>
-                <td className="p-1 md:p-2 border">{product.code || '-'}</td>
-                <td className="p-1 md:p-2 border text-center">{product.unit || '-'}</td>
-                <td className="p-1 md:p-2 border text-center">{product.order_qty}</td>
-                <td className="p-1 md:p-2 border text-right">{parseFloat(product.purchase_price || '0').toFixed(2)}</td>
-                <td className="p-1 md:p-2 border text-right">{parseFloat(product.weight_unit_price || '0').toFixed(2)}</td>
-                <td className="p-1 md:p-2 border text-right">{parseFloat(product.sell_price || '0').toFixed(2)}</td>
-                <td className="p-1 md:p-2 border text-right bg-gray-100">{parseFloat(product.total_product_unit_price || '0').toFixed(2)}</td>
-                <td className="p-1 md:p-2 border text-right bg-gray-100">{parseFloat(product.total_product_price || '0').toFixed(2)}</td>
-                <td className="p-1 md:p-2 border text-right">{parseFloat(product.weight_unit_qty || '0').toFixed(2)}</td>
-                <td className="p-1 md:p-2 border text-right">{parseFloat(product.total_weight || '0').toFixed(2)}</td>
-                <td className="p-1 md:p-2 border text-right bg-gray-100">{parseFloat(product.total_weight_amount || '0').toFixed(2)}</td>
+                <td className="p-1 md:p-2 border">
+                  {product.location_name || "-"}
+                </td>
+                <td className="p-1 md:p-2 border">
+                  {product.model_name || "-"}
+                </td>
+                <td className="p-1 md:p-2 border">{product.code || "-"}</td>
+                <td className="p-1 md:p-2 border text-center">
+                  {product.unit || "-"}
+                </td>
+                <td className="p-1 md:p-2 border text-center">
+                  {product.order_qty}
+                </td>
+                <td className="p-1 md:p-2 border text-right">
+                  {parseFloat(product.purchase_price || "0").toFixed(2)}
+                </td>
+                <td className="p-1 md:p-2 border text-right">
+                  {parseFloat(product.weight_unit_price || "0").toFixed(2)}
+                </td>
+                <td className="p-1 md:p-2 border text-right">
+                  {parseFloat(product.sell_price || "0").toFixed(2)}
+                </td>
+                <td className="p-1 md:p-2 border text-right bg-gray-100">
+                  {parseFloat(product.total_product_unit_price || "0").toFixed(
+                    2
+                  )}
+                </td>
+                <td className="p-1 md:p-2 border text-right bg-gray-100">
+                  {parseFloat(product.total_product_price || "0").toFixed(2)}
+                </td>
+                <td className="p-1 md:p-2 border text-right">
+                  {parseFloat(product.weight_unit_qty || "0").toFixed(2)}
+                </td>
+                <td className="p-1 md:p-2 border text-right">
+                  {parseFloat(product.total_weight || "0").toFixed(2)}
+                </td>
+                <td className="p-1 md:p-2 border text-right bg-gray-100">
+                  {parseFloat(product.total_weight_amount || "0").toFixed(2)}
+                </td>
                 <td className="p-1 md:p-2 border text-right bg-gray-100 font-medium text-green-600">
-                  {parseFloat(product.total_purchase_price || '0').toFixed(2)}
+                  {parseFloat(product.total_purchase_price || "0").toFixed(2)}
                 </td>
                 <td className="p-1 md:p-2 border text-center">
                   <button
@@ -172,7 +223,10 @@ export default function AddedProductsTable({ products, onRemoveProduct, isMobile
 
             {products.length === 0 && (
               <tr>
-                <td colSpan={16} className="p-4 text-center text-gray-500 text-sm">
+                <td
+                  colSpan={16}
+                  className="p-4 text-center text-gray-500 text-sm"
+                >
                   No products added yet
                 </td>
               </tr>

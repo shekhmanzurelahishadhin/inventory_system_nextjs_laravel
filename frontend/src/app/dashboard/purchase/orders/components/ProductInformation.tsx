@@ -87,12 +87,16 @@ export default function ProductInformation({
   if (isMobile) {
     return (
       <fieldset className="border p-3 md:p-4 rounded-lg">
-        <legend className="font-bold text-sm md:text-base px-2">ADD PRODUCT</legend>
-        
+        <legend className="font-bold text-sm md:text-base px-2">
+          ADD PRODUCT
+        </legend>
+
         <div className="space-y-3">
           {/* Location */}
           <div>
-            <label className="block text-xs md:text-sm font-medium mb-1">Location</label>
+            <label className="block text-xs md:text-sm font-medium mb-1">
+              Location
+            </label>
             <select
               value={formData.location_id}
               onChange={(e) => onInputChange("location_id", e.target.value)}
@@ -104,7 +108,9 @@ export default function ProductInformation({
 
           {/* Product Name */}
           <div>
-            <label className="block text-xs md:text-sm font-medium mb-1">Product Name</label>
+            <label className="block text-xs md:text-sm font-medium mb-1">
+              Product Name
+            </label>
             <div className="flex space-x-2">
               <input
                 type="text"
@@ -113,20 +119,15 @@ export default function ProductInformation({
                 className="flex-1 p-2 border rounded text-xs md:text-sm bg-gray-100"
                 placeholder="Select product"
               />
-              <button
-                type="button"
-                onClick={() => onOpenModal('product')}
-                className="px-3 bg-blue-500 text-white rounded text-xs md:text-sm"
-              >
-                Browse
-              </button>
             </div>
           </div>
 
           {/* Part Number & Unit */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Part No</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Part No
+              </label>
               <input
                 type="text"
                 value={currentProduct.code}
@@ -135,7 +136,9 @@ export default function ProductInformation({
               />
             </div>
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Unit</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Unit
+              </label>
               <select
                 value={formData.unit_id}
                 onChange={(e) => onInputChange("unit_id", e.target.value)}
@@ -149,7 +152,9 @@ export default function ProductInformation({
           {/* Qty & Unit Price */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Qty</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Qty
+              </label>
               <input
                 type="number"
                 value={currentProduct.order_qty}
@@ -159,11 +164,15 @@ export default function ProductInformation({
               />
             </div>
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Unit Price</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Unit Price
+              </label>
               <input
                 type="number"
                 value={currentProduct.purchase_price}
-                onChange={(e) => onProductChange("purchase_price", e.target.value)}
+                onChange={(e) =>
+                  onProductChange("purchase_price", e.target.value)
+                }
                 className="w-full p-2 border rounded text-xs md:text-sm"
                 step="0.01"
               />
@@ -173,18 +182,24 @@ export default function ProductInformation({
           {/* PER KG & SP */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">PER KG</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                PER KG
+              </label>
               <input
                 type="number"
                 value={currentProduct.weight_unit_price}
-                onChange={(e) => onProductChange("weight_unit_price", e.target.value)}
+                onChange={(e) =>
+                  onProductChange("weight_unit_price", e.target.value)
+                }
                 readOnly={formData.local_import === "54"}
                 className="w-full p-2 border rounded text-xs md:text-sm"
                 step="0.01"
               />
             </div>
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">SP</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                SP
+              </label>
               <input
                 type="number"
                 value={currentProduct.sell_price}
@@ -198,7 +213,9 @@ export default function ProductInformation({
           {/* Totals */}
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Total Unit Price</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Total Unit Price
+              </label>
               <input
                 type="text"
                 value={currentProduct.total_product_unit_price}
@@ -207,7 +224,9 @@ export default function ProductInformation({
               />
             </div>
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Total Product Price</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Total Product Price
+              </label>
               <input
                 type="text"
                 value={currentProduct.total_product_price}
@@ -219,7 +238,9 @@ export default function ProductInformation({
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Weight Unit</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Weight Unit
+              </label>
               <input
                 type="number"
                 value={currentProduct.weight_unit_qty}
@@ -228,7 +249,9 @@ export default function ProductInformation({
               />
             </div>
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Total Weight</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Total Weight
+              </label>
               <input
                 type="text"
                 value={currentProduct.total_weight}
@@ -240,7 +263,9 @@ export default function ProductInformation({
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Total Weight Amount</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Total Weight Amount
+              </label>
               <input
                 type="text"
                 value={currentProduct.total_weight_amount}
@@ -249,7 +274,9 @@ export default function ProductInformation({
               />
             </div>
             <div>
-              <label className="block text-xs md:text-sm font-medium mb-1">Total Purchase Price</label>
+              <label className="block text-xs md:text-sm font-medium mb-1">
+                Total Purchase Price
+              </label>
               <input
                 type="text"
                 value={currentProduct.total_purchase_price}
@@ -276,7 +303,9 @@ export default function ProductInformation({
 
   return (
     <fieldset className="border p-3 md:p-4 rounded-lg">
-      <legend className="font-bold text-sm md:text-base px-2">PRODUCT INFORMATION</legend>
+      <legend className="font-bold text-sm md:text-base px-2">
+        PRODUCT INFORMATION
+      </legend>
 
       <div className="overflow-x-auto">
         <table className="w-full text-[11px] md:text-xs lg:text-sm min-w-[900px] border-collapse">
@@ -323,7 +352,6 @@ export default function ProductInformation({
                     className="flex-1 p-1 border rounded text-[11px] md:text-xs bg-gray-100"
                     placeholder="Select product"
                   />
-                 
                 </div>
               </td>
 
@@ -364,7 +392,9 @@ export default function ProductInformation({
                 <input
                   type="number"
                   value={currentProduct.purchase_price}
-                  onChange={(e) => onProductChange("purchase_price", e.target.value)}
+                  onChange={(e) =>
+                    onProductChange("purchase_price", e.target.value)
+                  }
                   className="w-full p-1 border rounded text-[11px] md:text-xs"
                   step="0.01"
                 />
@@ -375,7 +405,9 @@ export default function ProductInformation({
                 <input
                   type="number"
                   value={currentProduct.weight_unit_price}
-                  onChange={(e) => onProductChange("weight_unit_price", e.target.value)}
+                  onChange={(e) =>
+                    onProductChange("weight_unit_price", e.target.value)
+                  }
                   readOnly={formData.local_import === "54"}
                   className="w-full p-1 border rounded text-[11px] md:text-xs"
                   step="0.01"
@@ -387,7 +419,9 @@ export default function ProductInformation({
                 <input
                   type="number"
                   value={currentProduct.sell_price}
-                  onChange={(e) => onProductChange("sell_price", e.target.value)}
+                  onChange={(e) =>
+                    onProductChange("sell_price", e.target.value)
+                  }
                   className="w-full p-1 border rounded text-[11px] md:text-xs bg-gray-100"
                   step="0.01"
                 />
