@@ -1,3 +1,5 @@
+import SingleSelectField from "@/app/components/ui/SingleSelectField";
+
 interface FormData {
   po_no: string;
   issue_date: string;
@@ -53,17 +55,23 @@ export default function PurchaseOrderSection({
                 Cash/Due
               </label>
             </td>
-            <td className="py-1">
-              <select
-                value={formData.cash_due}
-                onChange={(e) => onInputChange("cash_due", e.target.value)}
-                className="w-full p-1 border rounded text-xs md:text-sm"
-              >
-                <option value="">Select</option>
-                <option value="81">Cash</option>
-                <option value="82">Due</option>
-              </select>
-            </td>
+          <td className="py-1">
+  <SingleSelectField
+  value={formData.cash_due}
+  onChange={(val) => onInputChange("cash_due", val)}
+  options={[
+    { value: "81", label: "Cash" },
+    { value: "82", label: "Due" },
+  ]}
+  placeholder="Select"
+  padding="0px 0px"
+  marginTop="0px"
+  minHeight="0px"
+  backgroundColor= "#F9FAFB"
+/>
+
+</td>
+
           </tr>
           <tr>
             <td className="py-1">

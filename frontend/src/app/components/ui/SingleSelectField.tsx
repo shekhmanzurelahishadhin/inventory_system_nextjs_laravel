@@ -18,6 +18,11 @@ interface SingleSelectFieldProps {
   isRtl?: boolean;
   isSearchable?: boolean;
   name?: string;
+  // Custom styles
+    backgroundColor?: string;
+    padding?: string;
+  marginTop?: string | number;
+  minHeight?: string | number;
 }
 
 const SingleSelectField: React.FC<SingleSelectFieldProps> = ({
@@ -31,6 +36,11 @@ const SingleSelectField: React.FC<SingleSelectFieldProps> = ({
   isRtl = false,
   isSearchable = true,
   name = "select",
+  // Default styles
+    padding = "3px 4px",
+  marginTop = "4px",
+  minHeight = "50px",
+  backgroundColor= "white",
 }) => {
   return (
     <Select
@@ -49,9 +59,10 @@ const SingleSelectField: React.FC<SingleSelectFieldProps> = ({
       styles={{
         control: (provided) => ({
           ...provided,
-          padding: "3px 4px",
-          marginTop: "4px",
-          minHeight: "50px",
+          backgroundColor,
+           padding,
+          marginTop,
+          minHeight,
         }),
       }}
     />
