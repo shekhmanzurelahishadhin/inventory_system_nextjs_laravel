@@ -656,13 +656,13 @@ const Products = () => {
               <DynamicDataTable
                 columns={columns}
                 apiEndpoint="/configure/products"
-                exportColumns={exportColumns}
-                filterFields={filterFields}
-                filterGridCols={7}
-                exportFileName="Products"
+                exportColumns={exportColumns} // Add export columns
+                filterFields={filterFields} // Add filter fields
+                filterGridCols={7} // Set filter grid columns
+                exportFileName="Products" // Set export file name
                 paginationRowsPerPageOptions={[10, 20, 50, 100]}
                 defaultPerPage={perPage}
-                searchPlaceholder="Search products..."
+                searchPlaceholder="Search products..." // Customize search placeholder
                 refreshTrigger={refreshTrigger} // Add this prop
                 onPaginationChange={(page, perPage) =>
                   setPagination({ page, perPage })
